@@ -9,17 +9,17 @@ export default function LoginForm() {
   const [rememberMe, setRememberMe] = React.useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center ">
+    <div className="w-full flex flex-col items-center justify-center ">
       <h1 className="text-2xl font-bold">Welcome back</h1>
       <p>Login to your account</p>
       {/* Google Login Button */}
       <div class="inline-flex items-center justify-center w-full relative">
         <hr class="w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-        <span class="absolute px-3 text-gray-900 -translate-x-1/2 bg-white left-1/2 ">
+        <span class="absolute px-3 text-gray-900 text-sm -translate-x-1/2 bg-white left-1/2 ">
           or continue with
         </span>
       </div>
-      <form className="flex flex-col space-y-4">
+      <form className="w-full flex flex-col space-y-4">
         <input
           type="email"
           placeholder="Email"
@@ -47,7 +47,7 @@ export default function LoginForm() {
             </Switch>
             &nbsp;
             <span
-              className=""
+              className="text-xs"
               style={{
                 color: themes.secondaryText,
               }}
@@ -57,7 +57,7 @@ export default function LoginForm() {
           </div>
           <Link
             href="/forgotpassword"
-            className=" text-sm"
+            className=" text-xs"
             style={{ color: themes.warningColor }}
           >
             Forgot password?

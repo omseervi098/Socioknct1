@@ -18,7 +18,7 @@ const darkTheme = {
   blueText: "#1b8dff",
   warningColor: "#d93f21",
   successColor: "#4caf50",
-  primaryColor: "1B8DFF",
+  primaryColor: "#1B8DFF",
   secondaryColor: "#fff",
   secondaryColorHover: "#cfcfcf68",
 };
