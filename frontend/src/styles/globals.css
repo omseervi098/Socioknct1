@@ -11,7 +11,7 @@
   --alternative-text: #fff;
   --warning-color: #d93f21;
   --success-color: #4caf50;
-  --secondary-color-hover: #abababd0;
+  --secondary-color-hover: #cfcfcf68;
 }
 [data-theme="dark"] {
   --body-color: rgb(17, 17, 17);
@@ -22,7 +22,7 @@
   --alternative-text: #fff;
   --warning-color: #d93f21;
   --success-color: #4caf50;
-  --secondary-color-hover: #ababab80;
+  --secondary-color-hover: #cfcfcf68;
 }
 
 body {

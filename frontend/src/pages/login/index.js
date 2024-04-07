@@ -12,11 +12,11 @@ export default function Login() {
   return (
     <div className="h-auto flex flex-col items-center justify-center sm:p-10 p-5">
       <div className="flex rounded-xl bg-white shadow-md overflow-hidden h-full w-full">
+        <div className=" flex-auto p-20">
+          <LoginForm />
+        </div>
         <div className="flex-none relative w-1/2 sm:block hidden">
           <Image src="/login.jpg" layout="fill" objectFit="cover" />
-        </div>
-        <div className="flex-auto p-20">
-          <LoginForm />
         </div>
       </div>
     </div>

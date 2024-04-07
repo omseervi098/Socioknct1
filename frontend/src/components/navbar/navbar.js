@@ -27,14 +27,17 @@ export default function Navbar() {
           className="flex-grow flex justify-center md:flex-grow-0"
         >
           <button
-            className={`p-2 w-full`}
+            className={`p-2 w-full px-4`}
             style={{
               background:
                 router.pathname === "/login" ? themes.secondaryColorHover : "",
-              color: themes.alternativeText,
+              color:
+                router.pathname === "/login"
+                  ? themes.primaryText
+                  : themes.alternativeText,
               borderBottom:
                 router.pathname === "/login"
-                  ? "3px solid" + themes.secondaryColor
+                  ? "4px solid" + themes.secondaryColor
                   : "",
             }}
           >
@@ -51,7 +54,10 @@ export default function Navbar() {
             style={{
               background:
                 router.pathname === "/signup" ? themes.secondaryColorHover : "",
-              color: themes.alternativeText,
+              color:
+                router.pathname === "/signup"
+                  ? themes.primaryText
+                  : themes.alternativeText,
               borderBottom:
                 router.pathname === "/signup"
                   ? "3px solid" + themes.secondaryColor
