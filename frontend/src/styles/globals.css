@@ -5,15 +5,27 @@
 :root {
   --body-color: #efefef;
   --primary-color: #1b8dff;
-  --primary-text: #333;
+  --secondary-color: #ffffff;
+  --primary-text: #000;
+  --secondary-text: #6c6c6c;
+  --alternative-text: #fff;
+  --warning-color: #d93f21;
+  --success-color: #4caf50;
+  --secondary-color-hover: #abababd0;
 }
 [data-theme="dark"] {
-  --body-color: #333;
+  --body-color: rgb(17, 17, 17);
   --primary-color: #1b8dff;
-  --primary-text: #efefef;
+  --secondary-color: #ffffff;
+  --primary-text: #ffffff;
+  --secondary-text: #6c6c6c;
+  --alternative-text: #fff;
+  --warning-color: #d93f21;
+  --success-color: #4caf50;
+  --secondary-color-hover: #ababab80;
 }
 
 body {
   background-color: var(--body-color);
-  color: var(--primary-color);
+  color: var(--primary-text);
 }
