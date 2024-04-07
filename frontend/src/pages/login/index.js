@@ -10,12 +10,12 @@ export default function Login() {
   const { state, toggleTheme } = useGeneralContext();
 
   return (
-    <div className="h-auto flex flex-col items-center justify-center sm:p-10 p-5">
-      <div className="flex rounded-xl bg-white shadow-md overflow-hidden h-full w-full">
-        <div className="w-full flex-auto p-2 md:p-20">
+    <div className="flex flex-col items-center justify-center sm:p-10 md:px-20 p-5">
+      <div className="flex rounded-xl bg-white shadow-md overflow-hidden h-full w-full md:w-full">
+        <div className="w-full p-2  md:p-10 py-5">
           <LoginForm />
         </div>
-        <div className="flex-none relative w-1/2 sm:block hidden">
+        <div className="flex-none relative w-2/3 md:block hidden">
           <Image src="/login.jpg" layout="fill" objectFit="cover" />
         </div>
       </div>

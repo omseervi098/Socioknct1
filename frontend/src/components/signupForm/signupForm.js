@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { useGeneralContext } from "@/context/generalcontext";
 import { Switch } from "@headlessui/react";
-import { themes } from "@/theme";
 import { GoogleLogin } from "@react-oauth/google";
-export default function LoginForm() {
+export default function SignupForm() {
   const { state, toggleTheme } = useGeneralContext();
   const { theme, themes } = state;
   const [rememberMe, setRememberMe] = React.useState(false);
@@ -12,13 +11,12 @@ export default function LoginForm() {
   return (
     <div className=" flex flex-col items-center justify-center gap-2">
       <div className="text-center">
-        <h1 className="text-2xl font-bold pt-2">Welcome back</h1>
-        <p className="text-sm" style={{ color: themes.secondaryText }}>
-          Log in to your account
+        <h1 className="text-2xl font-bold pt-2">Create Your Account</h1>
+        <p className="text-sm pt-1" style={{ color: themes.secondaryText }}>
+          sign up to your account
         </p>
       </div>
-      {/* Google Login Button */}
-      <div className="py-6 pb-0">
+      <div className="py-3 pb-0">
         <GoogleLogin
           onSuccess={(response) => {
             console.log(response);
@@ -37,6 +35,21 @@ export default function LoginForm() {
         </span>
       </div>
       <form className="w-full flex flex-col space-y-4">
+        <div class="relative">
+          <input
+            type="text"
+            id="name"
+            class="w-full rounded-lg p-2 border border-gray-300  peer"
+            placeholder=" "
+          />
+          <label
+            for="name"
+            style={{ color: themes.secondaryText }}
+            class="absolute text-sm  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+          >
+            Name
+          </label>
+        </div>
         <div class="relative">
           <input
             type="email"
@@ -116,46 +129,19 @@ export default function LoginForm() {
             Password
           </label>
         </div>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <Switch
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              className={`${rememberMe ? "bg-blue-500" : "bg-gray-200"}
-          relative inline-flex h-[20px] w-[35px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
-            >
-              <span className="sr-only">Use setting</span>
-              <span
-                aria-hidden="true"
-                className={`${rememberMe ? "translate-x-4" : "translate-x-0"}
-            pointer-events-none inline-block h-[16px] w-[16px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-              />
-            </Switch>
-            &nbsp;
-            <span
-              className="text-xs"
-              style={{
-                color: themes.secondaryText,
-              }}
-            >
-              Remember me
-            </span>
-          </div>
-          <Link
-            href="/forgotpassword"
-            className=" text-xs"
-            style={{ color: themes.warningColor }}
-          >
-            Forgot password?
-          </Link>
-        </div>
+        <p className="text-xs" style={{ color: themes.secondaryText }}>
+          By signing up you agree to our{" "}
+          <span style={{ color: themes.primaryColor }}>Terms of Service</span>{" "}
+          and <span style={{ color: themes.primaryColor }}>Privacy policy</span>{" "}
+          and confirm that you are at least 18 years old
+        </p>
         <button
           className="text-white p-2 rounded"
           style={{
             background: themes.primaryColor,
           }}
         >
-          LOG IN
+          SIGN UP
         </button>
       </form>
     </div>

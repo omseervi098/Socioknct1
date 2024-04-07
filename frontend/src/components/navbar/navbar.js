@@ -41,7 +41,7 @@ export default function Navbar() {
                   : "",
             }}
           >
-            <FontAwesomeIcon icon={faRightToBracket} className="h-[20px]" />{" "}
+            <FontAwesomeIcon icon={faRightToBracket} />{" "}
             <div className>Login</div>
           </button>
         </Link>
