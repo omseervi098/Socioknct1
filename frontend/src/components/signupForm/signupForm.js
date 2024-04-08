@@ -3,11 +3,51 @@ import Link from "next/link";
 import { useGeneralContext } from "@/context/generalcontext";
 import { Switch } from "@headlessui/react";
 import { GoogleLogin } from "@react-oauth/google";
+import { useAuthContext } from "@/context/authcontext";
+import { toast } from "react-hot-toast";
+import {
+  validateEmail,
+  validateName,
+  validatePassword,
+} from "@/validations/validations";
 export default function SignupForm() {
   const { state, toggleTheme } = useGeneralContext();
+  const { signup, googleLogin } = useAuthContext();
   const { theme, themes } = state;
   const [rememberMe, setRememberMe] = React.useState(false);
   const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [form, setForm] = React.useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const check = await validateEmail(form.email);
+    const check1 = await validatePassword(form.password);
+    const check2 = await validateName(form.name);
+    if (!check) {
+      return toast.error("Invalid email");
+    }
+    if (!check1) {
+      return toast.error("Invalid password");
+    }
+    if (!check2) {
+      return toast.error("Invalid name");
+    }
+    toast.promise(signup(form), {
+      loading: "Signing up...",
+      success: "Signup successful",
+      error: "Signup failed",
+    });
+  };
+  const handleGoogleLogin = (response) => {
+    toast.promise(googleLogin(response), {
+      loading: "Logging in...",
+      success: "Login successful",
+      error: "Login failed",
+    });
+  };
   return (
     <div className=" flex flex-col items-center justify-center gap-2">
       <div className="text-center">
@@ -20,6 +60,7 @@ export default function SignupForm() {
         <GoogleLogin
           onSuccess={(response) => {
             console.log(response);
+            handleGoogleLogin(response);
           }}
           onError={(error) => {
             toast.error("Login Failed");
@@ -41,10 +82,12 @@ export default function SignupForm() {
             id="name"
             class="w-full rounded-lg p-2 border border-gray-300  peer"
             placeholder=" "
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <label
             for="name"
             style={{ color: themes.secondaryText }}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
             class="absolute text-sm  duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
           >
             Name
@@ -54,6 +97,7 @@ export default function SignupForm() {
           <input
             type="email"
             id="email"
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
             class="w-full rounded-lg p-2 border border-gray-300  peer"
             placeholder=" "
           />
@@ -140,6 +184,7 @@ export default function SignupForm() {
           style={{
             background: themes.primaryColor,
           }}
+          onClick={handleSignup}
         >
           SIGN UP
         </button>

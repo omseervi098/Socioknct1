@@ -24,25 +24,28 @@ export default function Navbar() {
       <div className="w-full md:w-auto flex  justify-evenly md:justify-end">
         <Link
           href="/login"
-          className="flex-grow flex justify-center md:flex-grow-0"
+          className="flex-grow flex justify-center md:flex-grow-0 "
         >
           <button
-            className={`p-2 w-full px-4`}
-            style={{
-              background:
-                router.pathname === "/login" ? themes.secondaryColorHover : "",
-              color:
-                router.pathname === "/login"
-                  ? themes.primaryText
-                  : themes.alternativeText,
-              borderBottom:
-                router.pathname === "/login"
-                  ? "4px solid" + themes.secondaryColor
-                  : "",
-            }}
+            className={`p-2 w-full ${
+              router.pathname === "/login"
+                ? "border-t-4 md:border-t-0 border-b-0 md:border-b-4"
+                : ""
+            } px-4`}
+            style={
+              router.pathname === "/login"
+                ? {
+                    background: themes.secondaryColorHover,
+                    color: themes.primaryText,
+                    borderBottomColor: themes.secondaryColor,
+                    borderTopColor: themes.secondaryColor,
+                  }
+                : {
+                    color: themes.alternativeText,
+                  }
+            }
           >
-            <FontAwesomeIcon icon={faRightToBracket} />{" "}
-            <div className>Login</div>
+            <FontAwesomeIcon icon={faRightToBracket} /> <div>Login</div>
           </button>
         </Link>
         <Link
@@ -50,19 +53,23 @@ export default function Navbar() {
           className="flex-grow flex justify-center md:flex-grow-0"
         >
           <button
-            className="p-2 w-full"
-            style={{
-              background:
-                router.pathname === "/signup" ? themes.secondaryColorHover : "",
-              color:
-                router.pathname === "/signup"
-                  ? themes.primaryText
-                  : themes.alternativeText,
-              borderBottom:
-                router.pathname === "/signup"
-                  ? "3px solid" + themes.secondaryColor
-                  : "",
-            }}
+            className={`p-2 w-full ${
+              router.pathname === "/signup"
+                ? "border-t-4 md:border-t-0 md:border-b-4"
+                : ""
+            } `}
+            style={
+              router.pathname === "/signup"
+                ? {
+                    background: themes.secondaryColorHover,
+                    color: themes.primaryText,
+                    borderBottomColor: themes.secondaryColor,
+                    borderTopColor: themes.secondaryColor,
+                  }
+                : {
+                    color: themes.alternativeText,
+                  }
+            }
           >
             <FontAwesomeIcon icon={faUserPlus} /> <div>Join Now</div>
           </button>
