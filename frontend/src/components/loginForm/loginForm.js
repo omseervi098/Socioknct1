@@ -9,7 +9,7 @@ import { validateEmail, validatePassword } from "@/validations/validations";
 import { useRouter } from "next/router";
 export default function LoginForm() {
   const { state, toggleTheme } = useGeneralContext();
-  const { login } = useAuthContext();
+  const { login, googleLogin } = useAuthContext();
   const { theme, themes } = state;
   const router = useRouter();
   const [passwordVisible, setPasswordVisible] = React.useState(false);
@@ -38,6 +38,15 @@ export default function LoginForm() {
       toast.error("Failed to login");
     }
   };
+  const handleGoogleLogin = async (response) => {
+    toast
+      .promise(googleLogin(response), {
+        loading: "Logging in...",
+        success: "Login successful",
+        error: "Login failed",
+      })
+      .then(() => router.push("/feed"));
+  };
   return (
     <div className=" flex flex-col items-center justify-center gap-2">
       <div className="text-center">
@@ -50,7 +59,7 @@ export default function LoginForm() {
       <div className="py-6 pb-0">
         <GoogleLogin
           onSuccess={(response) => {
-            console.log(response);
+            handleGoogleLogin(response);
           }}
           onError={(error) => {
             toast.error("Login Failed");

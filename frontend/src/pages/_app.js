@@ -23,7 +23,7 @@ export default function App({ Component, pageProps }) {
               <Navbar />
             </div>
             <div className="md:hidden">
-              <div className="fixed top-0 w-full z-50">
+              <div className="fixed top-0 w-full z-0">
                 <Navbar1 />
               </div>
             </div>

@@ -115,7 +115,9 @@ export const AuthProvider = ({ children }) => {
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: SET_TOKEN, payload: token });
       dispatch({ type: SET_USER, payload: user });
+      dispatch({ type: SET_AUTH, payload: true });
     } catch (err) {
       console.log(err);
     }

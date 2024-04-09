@@ -54,14 +54,17 @@ export default function SignupForm() {
       success: "OTP sent",
       error: "Failed to send OTP",
     });
+
     router.push("/verify");
   };
   const handleGoogleLogin = (response) => {
-    toast.promise(googleLogin(response), {
-      loading: "Logging in...",
-      success: "Login successful",
-      error: "Login failed",
-    });
+    toast
+      .promise(googleLogin(response), {
+        loading: "Logging in...",
+        success: "Login successful",
+        error: "Login failed",
+      })
+      .then(() => router.push("/feed"));
   };
   return (
     <div className=" flex flex-col items-center justify-center gap-2">
