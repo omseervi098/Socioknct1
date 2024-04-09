@@ -216,7 +216,7 @@ export default function Navbar() {
                 as="div"
                 className={`hidden md:inline-block relative text-left p-2 h-full  w-full ${
                   router.pathname === "/profile"
-                    ? "border-t-4 md:border-t-0 md:border-b-4"
+                    ? "border-t-4 md:border-t-0 md:border-b-4 pb-1"
                     : ""
                 } `}
                 style={
