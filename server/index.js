@@ -4,6 +4,7 @@ import cors from "cors";
 import passport from "passport";
 import { jwtStrategy } from "./config/passport.js";
 import authRouter from "./routes/authRouter.js";
+import otpRouter from "./routes/otpRouter.js";
 import { apiContent } from "./middlewares/apiContentType.js";
 import { allowCrossDomain } from "./middlewares/allowCrossDomain.js";
 import db from "./config/mongoose.js";
@@ -25,9 +26,17 @@ passport.use(jwtStrategy);
 
 // Auth Router
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/otp", otpRouter);
 
 app.get("/api/v1", (req, res) => {
-  res.send("Hello World");
+  res.send({
+    message: "Welcome to Socioknct API",
+  });
+});
+app.get("/", (req, res) => {
+  res.send({
+    message: "Welcome to Socioknct API",
+  });
 });
 // Listening to the server
 app.listen(process.env.PORT || 5000, (e) => {

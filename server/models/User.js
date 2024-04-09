@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema(
       required: [true, "Username is required"],
       min: [3, "Username must be at least 3 characters long"],
     },
+    avatar: {
+      type: String,
+      default: "https://ui-avatars.com/api/?name=John+Doe",
+    },
     email: {
       type: String,
       unique: [true, "Email already exists"],
@@ -35,12 +39,6 @@ const userSchema = new mongoose.Schema(
     },
     dob: {
       type: Date,
-    },
-    foodPreferences: {
-      type: Object,
-    },
-    recipes: {
-      type: Array,
     },
   },
   {

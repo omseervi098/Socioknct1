@@ -37,15 +37,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
   // Login Function
-  const login = async (email, password) => {
+  const login = async (form) => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/auth/login";
-      const response = await axios.post(url, { email, password });
+      const response = await axios.post(url, { ...form });
       const { token, user } = response.data;
       console.log(user);
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: SET_USER, payload: user });
+      dispatch({ type: SET_AUTH, payload: true });
+      dispatch({ type: SET_TOKEN, payload: token });
     } catch (err) {
       if (err.response) {
         throw new Error(err.response.data.message);
@@ -59,10 +61,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/auth/register";
       console.log(form, url);
-
       const response = await axios.post(url, { ...form });
       const { token, user } = response.data;
-      console.log(user);
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: SET_USER, payload: user });
@@ -71,12 +71,32 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       if (err.response) {
         console.log(err.response.data.message);
+        throw new Error(err.response.data.message);
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  };
+  //otp verification
+  const sendOtp = async (user) => {
+    try {
+      console.log(user.email, user);
+      const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/otp/send-otp";
+      const response = await axios.post(url, {
+        email: user.email,
+        name: user.name,
+      });
+      const { otp } = response.data;
+      console.log(otp);
+      return otp;
+    } catch (err) {
+      if (err.response) {
+        console.log(err.response.data.message);
       } else {
         console.log(err);
       }
     }
   };
-
   // Logout Function
   const logout = () => {
     localStorage.removeItem("token");
@@ -102,7 +122,7 @@ export const AuthProvider = ({ children }) => {
   };
   return (
     <AuthContext.Provider
-      value={{ ...state, login, logout, signup, googleLogin }}
+      value={{ ...state, login, logout, signup, googleLogin, sendOtp }}
     >
       {children}
     </AuthContext.Provider>

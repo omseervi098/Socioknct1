@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import env from "../config/environment.js";
 import { OAuth2Client } from "google-auth-library";
+import Otp from "../models/Otp.js";
 const client = new OAuth2Client(env.googleClientId);
 export const googleAuth = async (req, res, next) => {
   const { credential, client_id } = req.body;
@@ -17,7 +18,8 @@ export const googleAuth = async (req, res, next) => {
     audience: client_id,
   });
   const payload = ticket.getPayload();
-  const { email } = payload;
+  console.log(payload);
+  const { email, name, picture } = payload;
   const user = await getUserByEmail(email);
   if (user) {
     const loginToken = jwt.sign(
@@ -42,7 +44,10 @@ export const googleAuth = async (req, res, next) => {
   } else {
     const username = email.split("@")[0];
     const password = bcrypt.hashSync(email, 10);
+
     const newUser = new User({
+      avatar: picture,
+      name,
       username,
       email,
       password,
@@ -71,19 +76,41 @@ export const googleAuth = async (req, res, next) => {
 };
 export const creatingUser = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { name, email, password, otp } = req.body;
+    if (!name || !email || !password || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+    console.log(name, email, password, otp);
     const emailExists = await getUserByEmail(email);
     if (emailExists) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
     }
-    const userNameExists = await getUserByUsername(username);
-    if (userNameExists) {
-      return res.status(400).json({ message: "Username already exists" });
+    // Find the most recent OTP for the email
+    const response = await Otp.find({ email }).sort({ createdAt: -1 }).limit(1);
+    console.log(response);
+    if (response.length === 0 || otp !== response[0].otp) {
+      return res.status(400).json({
+        success: false,
+        message: "The OTP is not valid",
+      });
     }
+    //write username from email
+    const username = email.split("@")[0];
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+    const avatar = `https://ui-avatars.com/api/?name=${name
+      .split(" ")
+      .join("+")}`;
     const user = new User({
+      avatar,
       username,
+      name,
       email,
       password: hashedPassword,
     });
@@ -103,8 +130,10 @@ export const creatingUser = async (req, res, next) => {
       token: loginToken,
       user: {
         id: user._id,
+        name: user.name,
         username: user.username,
         email: user.email,
+        avatar: user.avatar,
       },
     });
     //
@@ -116,7 +145,8 @@ export const creatingUser = async (req, res, next) => {
 
 export const loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
+    console.log(email, password, rememberMe);
     const user = await getUserByEmail(email);
     if (user) {
       const validPassword = await bcrypt.compare(password, user.password);
@@ -125,6 +155,8 @@ export const loginUser = async (req, res, next) => {
           res.status(400).json({ message: "Invalid email or password" })
         );
       }
+      //if remember me is checked, set token expiry to 30 days
+      const expiry = rememberMe ? "30d" : "1d";
       const loginToken = jwt.sign(
         {
           id: user._id,
@@ -132,7 +164,7 @@ export const loginUser = async (req, res, next) => {
         },
         env.jwtSecret,
         {
-          expiresIn: "1d",
+          expiresIn: expiry,
         }
       );
       // dont send password in response
@@ -148,83 +180,6 @@ export const loginUser = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
   } catch (e) {
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-export const getAllUsers = async (req, res, next) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const updateUser = async (req, res, next) => {
-  try {
-    const { newUserData, userid } = req.body;
-    const user = await getUserById(userid);
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-    const email = newUserData.email;
-    const emailExists = await getUserByEmail(email);
-    if (emailExists && email !== user.email) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-    const username = newUserData.username;
-    const userNameExists = await getUserByUsername(username);
-    if (userNameExists && username !== user.username) {
-      return res.status(400).json({ message: "Username already exists" });
-    }
-
-    if (user) {
-      const updatedUser = await User.findByIdAndUpdate(
-        userid,
-        {
-          $set: newUserData,
-        },
-        { new: true }
-      );
-      // dont send password in response
-      updatedUser.password = undefined;
-      return res.status(200).json({
-        user: updatedUser,
-      });
-    } else {
-      return res.status(400).json({ message: "User not found" });
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-export const updateFoodPreferences = async (req, res, next) => {
-  try {
-    const { newFoodPreferences, userid } = req.body;
-    console.log(newFoodPreferences, userid);
-    const user = await getUserById(userid);
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-    if (user) {
-      const updatedUser = await User.findByIdAndUpdate(
-        userid,
-        {
-          $set: { foodPreferences: newFoodPreferences },
-        },
-        { new: true }
-      );
-      // dont send password in response
-      updatedUser.password = undefined;
-      return res.status(200).json({
-        user: updatedUser,
-      });
-    } else {
-      return res.status(400).json({ message: "User not found" });
-    }
-  } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
