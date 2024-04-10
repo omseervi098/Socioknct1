@@ -2,7 +2,6 @@ import { useAuthContext } from "@/context/authcontext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 export default function Home() {
   const { auth } = useAuthContext();

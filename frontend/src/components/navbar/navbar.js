@@ -38,9 +38,16 @@ export default function Navbar() {
       className={`h-auto flex justify-between items-center text-black shadow-sm ${styles.navbar}  md:px-5`}
     >
       <div
-        className={`hidden md:block flex items-center text-xl ${styles.logo} `}
+        className={`hidden md:block flex items-center text-xl ${styles.logo} mr-5`}
       >
         <Link href="/">Socioknct {"</>"}</Link>
+      </div>
+      <div className="flex-grow hidden md:flex justify-center items-center md:justify-start">
+        <input
+          type="text"
+          placeholder="Search"
+          className="bg-gray-200 h-[35px] text-sm px-2 py-1 w-[220px] lg:w-[300px] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+        />
       </div>
       <div className="w-full md:w-auto flex  justify-evenly md:justify-end">
         {auth === false ? (
@@ -104,7 +111,7 @@ export default function Navbar() {
           <>
             <Link
               href="/feed"
-              className="flex-grow flex justify-center md:flex-grow-0 min-w-[80px]"
+              className="flex-grow flex justify-center md:flex-grow-0  min-w-[80px] max-w-[100px]"
             >
               <button
                 className={`p-2 w-full  ${
@@ -131,7 +138,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/chat"
-              className="flex-grow flex justify-center md:flex-grow-0 min-w-[80px]"
+              className="flex-grow flex justify-center md:flex-grow-0  min-w-[80px] max-w-[100px]"
             >
               <button
                 className={`p-2 w-full  ${
@@ -159,7 +166,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/notification"
-              className=" flex-grow flex justify-center md:flex-grow-0 min-w-[80px]"
+              className=" flex-grow flex justify-center md:flex-grow-0 min-w-[80px] max-w-[100px]"
             >
               <button
                 className={`p-2 w-full ${
@@ -185,16 +192,18 @@ export default function Navbar() {
                 {/* <div>Profile</div> */}
               </button>
             </Link>
-            <div className="flex-grow flex justify-center md:flex-grow-0 min-w-[80px]">
+            <div className="flex-grow flex justify-center md:flex-grow-0  min-w-[80px] max-w-[100px]">
               <button
                 onClick={() => setOpenDialog(true)}
                 className={`p-2 w-full md:hidden ${
-                  router.pathname === "/message"
+                  router.pathname === "/profile" ||
+                  router.pathname === "/settings"
                     ? "border-t-4 md:border-t-0 md:border-b-4"
                     : ""
                 } `}
                 style={
-                  router.pathname === "/message"
+                  router.pathname === "/profile" ||
+                  router.pathname === "/settings"
                     ? {
                         background: themes.secondaryColorHover,
                         color: themes.primaryText,
@@ -209,22 +218,24 @@ export default function Navbar() {
                 <Image
                   src={user.avatar}
                   alt="avatar"
-                  width={23}
-                  height={23}
+                  width={22}
+                  height={22}
                   className="rounded-full mx-auto"
                 />
-                <div className="text-xs">Message</div>
+                <div className="text-xs mt-1">Profile</div>
               </button>
 
               <Menu
                 as="div"
                 className={`hidden md:inline-block relative text-left p-2 h-full  w-full ${
-                  router.pathname === "/profile"
+                  router.pathname === "/profile" ||
+                  router.pathname === "/settings"
                     ? "border-t-4 md:border-t-0 md:border-b-4 pb-1"
                     : ""
                 } `}
                 style={
-                  router.pathname === "/profile"
+                  router.pathname === "/profile" ||
+                  router.pathname === "/settings"
                     ? {
                         background: themes.secondaryColorHover,
                         color: themes.primaryText,
@@ -239,8 +250,8 @@ export default function Navbar() {
                 <Image
                   src={user.avatar}
                   alt="avatar"
-                  width={23}
-                  height={23}
+                  width={22}
+                  height={22}
                   className="rounded-full mx-auto"
                 />
                 <Menu.Button className="w-full justify-center text-xs">
@@ -401,7 +412,7 @@ export default function Navbar() {
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >
-                  <Dialog.Panel className="pointer-events-auto relative w-screen max-w-[220px]">
+                  <Dialog.Panel className="pointer-events-auto relative w-screen ">
                     <Transition.Child
                       as={Fragment}
                       enter="ease-in-out duration-500"
@@ -433,10 +444,10 @@ export default function Navbar() {
                               alt="avatar"
                               width={200}
                               height={100}
-                              className="w-full object-cover h-24 "
+                              className="w-full object-cover h-36 "
                             />
                             <div
-                              className="w-20 p-1 rounded-full absolute top-16 left-1"
+                              className="w-20 p-1 rounded-full absolute top-28 left-1"
                               style={{ background: themes.primaryColor }}
                             >
                               <Image
@@ -447,10 +458,18 @@ export default function Navbar() {
                                 className="w-full rounded-full mx-auto object-cover"
                               />
                             </div>
-                            <div className="px-4 sm:px-6 absolute top-24 left-20">
+                            <div className="px-4 sm:px-6 absolute top-36 left-20">
                               {user ? (
                                 <Dialog.Title className="text-md font-semibold leading-6 ">
-                                  {user.name}
+                                  <div style={{ color: themes.primaryColor }}>
+                                    {user.name}
+                                  </div>
+                                  <div
+                                    className="text-sm"
+                                    style={{ color: themes.secondaryText }}
+                                  >
+                                    @{user.username}
+                                  </div>
                                 </Dialog.Title>
                               ) : (
                                 <Dialog.Title className="text-base font-semibold leading-6">
@@ -464,7 +483,7 @@ export default function Navbar() {
                           href="/profile"
                           onClick={() => setOpenDialog(false)}
                           className={classNames(
-                            "block px-4  text-sm border rounded-full mx-3 text-center mb-2 mt-14"
+                            "block px-4 py-1 text-sm border font-semibold rounded-full mx-3 text-center mb-2 mt-14 hover:bg-blue-100"
                           )}
                           style={{
                             borderColor: themes.primaryColor,
@@ -478,7 +497,7 @@ export default function Navbar() {
                           <Link
                             href="/settings"
                             onClick={() => setOpenDialog(false)}
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
                           >
                             <FontAwesomeIcon icon={faGear} className="me-2" />
                             Settings
@@ -489,7 +508,7 @@ export default function Navbar() {
                               googleLogout();
                               setOpenDialog(false);
                             }}
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
                           >
                             <FontAwesomeIcon
                               icon={faArrowRightFromBracket}
@@ -500,17 +519,17 @@ export default function Navbar() {
                         </div>
                       </div>
 
-                      <div className="flex items-center w-full px-4 py-2 text-left text-sm">
-                        <div className="me-2">
+                      <div className="flex w-full px-4 py-2 text-left items-center">
+                        <span className="mb-1 me-2">
                           {theme === "dark" ? "Light" : "Dark"} Mode
-                        </div>
+                        </span>
                         <Switch
                           checked={theme === "dark" ? true : false}
                           onChange={toggleTheme}
                           className={`${
                             theme === "dark" ? "bg-black" : "bg-gray-200"
                           }
-          relative inline-flex h-[26px] w-[50px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
+          relative inline-flex h-[24px] w-[50px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
                         >
                           <span className="sr-only">Use setting</span>
                           <span
@@ -520,7 +539,7 @@ export default function Navbar() {
                                 ? "translate-x-6"
                                 : "translate-x-0"
                             }
-            pointer-events-none inline-block h-[22px] w-[22px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+            pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                           />
                         </Switch>
                       </div>

@@ -7,7 +7,9 @@ export default function Feed() {
   const { auth } = useAuthContext();
   const router = useRouter();
   useEffect(() => {
-    if (!auth) {
+    //check if user is authenticated
+    const token = localStorage.getItem("token");
+    if (!token) {
       router.push("/login");
     }
   }, []);

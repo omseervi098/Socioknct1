@@ -16,13 +16,21 @@ export default function Navbar1() {
   const router = useRouter();
   return (
     <div
-      className={`h-auto flex justify-between items-center text-black shadow-sm ${styles.navbar}  px-5 py-2`}
+      className={`h-auto w-full flex justify-between items-center text-black shadow-sm ${styles.navbar} gap-2  px-2 py-2`}
     >
-      <div className={`flex items-center space-x-4 ${styles.logo}`}>
-        <Link href="/">Socioknct {"</>"}</Link>
+      <div className={`flex-none items-center  ${styles.logo}`}>
+        <Link href="/" className="text-lg">
+          {"</>"}
+        </Link>
       </div>
-      <div className="flex ">
-        <div className="flex items-center ms-2">
+      <div className="">
+        <input
+          type="text"
+          placeholder="Search"
+          className="bg-gray-200 px-2 py-1 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+        />
+
+        {/* <div className="flex items-center ms-2">
           <Switch
             checked={theme === "dark" ? true : false}
             onChange={toggleTheme}
@@ -39,6 +47,7 @@ export default function Navbar1() {
             />
           </Switch>
         </div>
+      </div> */}
       </div>
     </div>
   );

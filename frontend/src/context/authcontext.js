@@ -1,23 +1,29 @@
 import React from "react";
 import { googleLogout } from "@react-oauth/google";
 import axios from "axios";
+import { useRouter } from "next/router";
 const SET_USER = "SET_USER";
-const SET_TOKEN = "SET_TOKEN";
-const SET_AUTH = "SET_AUTH";
+const LOGOUT = "LOGOUT";
 export const AuthContext = React.createContext();
+
 const initialState = {
   user: null,
-  token: null,
   auth: false,
 };
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_USER:
-      return { ...state, user: action.payload };
-    case SET_TOKEN:
-      return { ...state, token: action.payload };
-    case SET_AUTH:
-      return { ...state, auth: action.payload };
+      return {
+        ...state,
+        user: action.payload,
+        auth: true,
+      };
+    case LOGOUT:
+      return {
+        ...state,
+        user: null,
+        auth: false,
+      };
     default:
       return state;
   }
@@ -28,12 +34,11 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      // Decode and verify token if necessary
-      // For simplicity, we assume the token is valid here
       const user = JSON.parse(localStorage.getItem("user"));
       dispatch({ type: SET_USER, payload: user });
-      dispatch({ type: SET_TOKEN, payload: token });
-      dispatch({ type: SET_AUTH, payload: true });
+    } else {
+      window.localStorage.removeItem("user");
+      return dispatch({ type: LOGOUT });
     }
   }, []);
   // Login Function
@@ -46,8 +51,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: SET_USER, payload: user });
-      dispatch({ type: SET_AUTH, payload: true });
-      dispatch({ type: SET_TOKEN, payload: token });
     } catch (err) {
       if (err.response) {
         throw new Error(err.response.data.message);
@@ -66,8 +69,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: SET_USER, payload: user });
-      dispatch({ type: SET_AUTH, payload: true });
-      dispatch({ type: SET_TOKEN, payload: token });
     } catch (err) {
       if (err.response) {
         throw new Error(err.response.data.message);
@@ -101,9 +102,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     googleLogout();
-    dispatch({ type: SET_USER, payload: null });
-    dispatch({ type: SET_TOKEN, payload: null });
-    dispatch({ type: SET_AUTH, payload: false });
+    dispatch({ type: LOGOUT });
   };
   //google login
   const googleLogin = async (props) => {
