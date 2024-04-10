@@ -70,7 +70,6 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: SET_TOKEN, payload: token });
     } catch (err) {
       if (err.response) {
-        console.log(err.response.data.message);
         throw new Error(err.response.data.message);
       } else {
         throw new Error("Network Error");
@@ -91,9 +90,9 @@ export const AuthProvider = ({ children }) => {
       return otp;
     } catch (err) {
       if (err.response) {
-        console.log(err.response.data.message);
+        throw new Error(err.response.data.message);
       } else {
-        console.log(err);
+        throw new Error("Network Error");
       }
     }
   };

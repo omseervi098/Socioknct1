@@ -9,42 +9,36 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
 export default function VerifyForm() {
   const { state, toggleTheme } = useGeneralContext();
-  const { signup } = useAuthContext();
-  const { theme, themes } = state;
+  const { signup, sendOtp } = useAuthContext();
+  const { theme, themes, signupform } = state;
   const [form, setForm] = React.useState({
-    name: "",
-    email: "",
-    password: "",
+    name: signupform.name,
+    email: signupform.email,
+    password: signupform.password,
     otp: "",
   });
   const router = useRouter();
   useEffect(() => {
-    const check = localStorage.getItem("signup");
-    if (check) {
-      const data = JSON.parse(check);
-      setForm({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        otp: "",
-      });
+    if (!signupform.email) {
+      router.push("/signup");
     }
   }, []);
   const handleVerify = async (e) => {
     e.preventDefault();
-    console.log(form);
-    try {
-      const check = form.otp.length === 6;
-      if (!check) {
-        return toast.error("Invalid OTP");
-      }
-      const resp = await signup(form);
-      router.push("/feed");
-      console.log(resp);
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to verify OTP");
+    const check = form.otp.length === 6;
+    if (!check) {
+      return toast.error("Invalid OTP");
     }
+    toast
+      .promise(signup(form), {
+        loading: "Verifying OTP...",
+        success: "Account Verified",
+        error: "Invalid OTP",
+      })
+      .then(() => router.push("/feed"))
+      .catch((err) => {
+        console.log(err);
+      });
   };
   function Slot(props) {
     return (
@@ -78,7 +72,7 @@ export default function VerifyForm() {
         style={{ maxWidth: "fit-content", color: themes.primaryColor }}
         className=" text-md ml-3 sm:ml-0 hover:cursor-pointer"
         onClick={() => {
-          router.push("/signup");
+          router.back();
         }}
       >
         <FontAwesomeIcon icon={faArrowLeft} /> Back
@@ -117,8 +111,31 @@ export default function VerifyForm() {
             </>
           )}
         />
+        <div className="text-center">
+          <span className="text-sm" style={{ color: themes.secondaryText }}>
+            Didn't receive the OTP?{" "}
+          </span>
+          <button
+            className="text-sm"
+            style={{ color: themes.primaryColor }}
+            onClick={(e) => {
+              e.preventDefault();
+              toast
+                .promise(sendOtp(form), {
+                  loading: "Resending OTP...",
+                  success: "OTP sent",
+                  error: "wait before sending OTP",
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }}
+          >
+            Resend OTP
+          </button>
+        </div>
         <button
-          className="text-white p-2 rounded max-w-max mx-auto"
+          className="text-white p-2 rounded max-w-max mx-auto px-5"
           style={{
             background: themes.primaryColor,
           }}

@@ -3,11 +3,17 @@ import { themes } from "@/theme";
 const SET_THEME = "SET_THEME";
 const SET_WIDTH = "SET_WIDTH";
 const SET_THEMES = "SET_THEMES";
+const SET_SIGNUP = "SET_SIGNUP";
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
   width: 0,
   themes: themes["light"],
+  signupform: {
+    name: "",
+    email: "",
+    password: "",
+  },
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -17,6 +23,8 @@ const reducer = (state, action) => {
       return { ...state, width: action.payload };
     case SET_THEMES:
       return { ...state, themes: action.payload };
+    case SET_SIGNUP:
+      return { ...state, signupform: action.payload };
     default:
       return state;
   }
@@ -50,8 +58,11 @@ export const GeneralProvider = ({ children }) => {
       dispatch({ type: SET_WIDTH, payload: window.innerWidth })
     );
   }, []);
+  const setSignup = (data) => {
+    dispatch({ type: SET_SIGNUP, payload: data });
+  };
   return (
-    <GeneralContext.Provider value={{ state, toggleTheme }}>
+    <GeneralContext.Provider value={{ state, toggleTheme, setSignup }}>
       {children}
     </GeneralContext.Provider>
   );

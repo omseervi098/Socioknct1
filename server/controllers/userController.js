@@ -18,7 +18,6 @@ export const googleAuth = async (req, res, next) => {
     audience: client_id,
   });
   const payload = ticket.getPayload();
-  console.log(payload);
   const { email, name, picture } = payload;
   const user = await getUserByEmail(email);
   if (user) {
@@ -83,7 +82,6 @@ export const creatingUser = async (req, res, next) => {
         message: "All fields are required",
       });
     }
-    console.log(name, email, password, otp);
     const emailExists = await getUserByEmail(email);
     if (emailExists) {
       return res.status(400).json({
@@ -93,7 +91,8 @@ export const creatingUser = async (req, res, next) => {
     }
     // Find the most recent OTP for the email
     const response = await Otp.find({ email }).sort({ createdAt: -1 }).limit(1);
-    console.log(response);
+    //check date of otp and compare with expiry
+
     if (response.length === 0 || otp !== response[0].otp) {
       return res.status(400).json({
         success: false,
@@ -146,7 +145,6 @@ export const creatingUser = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password, rememberMe } = req.body;
-    console.log(email, password, rememberMe);
     const user = await getUserByEmail(email);
     if (user) {
       const validPassword = await bcrypt.compare(password, user.password);

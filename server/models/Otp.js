@@ -13,6 +13,11 @@ const otpSchema = new mongoose.Schema(
       type: String,
       required: [true, "OTP is required"],
     },
+    expireAt: {
+      type: Date,
+      default: Date.now,
+      index: { expires: "10min" },
+    },
   },
   {
     timestamps: true,

@@ -37,7 +37,9 @@ export default function Navbar() {
     <div
       className={`h-auto flex justify-between items-center text-black shadow-sm ${styles.navbar}  md:px-5`}
     >
-      <div className={`hidden md:block flex items-center ${styles.logo} `}>
+      <div
+        className={`hidden md:block flex items-center text-xl ${styles.logo} `}
+      >
         <Link href="/">Socioknct {"</>"}</Link>
       </div>
       <div className="w-full md:w-auto flex  justify-evenly md:justify-end">
@@ -66,7 +68,8 @@ export default function Navbar() {
                       }
                 }
               >
-                <FontAwesomeIcon icon={faRightToBracket} /> <div>Login</div>
+                <FontAwesomeIcon icon={faRightToBracket} className="h-[20px]" />{" "}
+                <div className="text-sm">Login</div>
               </button>
             </Link>
             <Link
@@ -92,7 +95,8 @@ export default function Navbar() {
                       }
                 }
               >
-                <FontAwesomeIcon icon={faUserPlus} /> <div>Join Now</div>
+                <FontAwesomeIcon icon={faUserPlus} className="h-[20px]" />{" "}
+                <div className="text-sm">Join Now</div>
               </button>
             </Link>
           </>
@@ -319,6 +323,7 @@ export default function Navbar() {
                             onClick={(e) => {
                               logout();
                               googleLogout();
+                              router.push("/login");
                             }}
                             className={classNames(
                               active

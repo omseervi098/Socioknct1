@@ -12,50 +12,63 @@ import {
 import { useRouter } from "next/router";
 import { redirect } from "next/dist/server/api-utils";
 export default function SignupForm() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { state, toggleTheme, setSignup } = useGeneralContext();
   const { signup, googleLogin, sendOtp } = useAuthContext();
-  const { theme, themes } = state;
+  const { signupform, themes } = state;
   const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [error, setError] = React.useState(null);
   const [form, setForm] = React.useState({
-    name: "",
-    email: "",
-    password: "",
+    name: signupform.name,
+    email: signupform.email,
+    password: signupform.password,
   });
-  useEffect(() => {
-    const check = localStorage.getItem("signup");
-    if (check) {
-      const data = JSON.parse(check);
-      setForm({
-        name: data.name,
-        email: data.email,
-      });
-    }
-  }, []);
-  const router = useRouter();
 
+  const router = useRouter();
+  useEffect(() => {
+    setTimeout(() => {
+      setError(null);
+    }, 5000);
+  }, [error]);
   const handleSignup = async (e) => {
     e.preventDefault();
-    const check = await validateEmail(form.email);
-    // const check1 = await validatePassword(form.password);
+    if (!form.name.trim()) {
+      setError({ message: "Name is required" });
+      return;
+    }
     const check2 = await validateName(form.name);
-    if (!check) {
-      return toast.error("Invalid email");
-    }
-    // if (!check1) {
-    //   return toast.error("Invalid password");
-    // }
-
     if (!check2) {
-      return toast.error("Invalid name");
+      setError({ message: "Invalid name" });
+      return;
     }
-    localStorage.setItem("signup", JSON.stringify(form));
-    toast.promise(sendOtp(form), {
-      loading: "Sending OTP...",
-      success: "OTP sent",
-      error: "Failed to send OTP",
-    });
+    if (!form.email.trim()) {
+      setError({ message: "Email is required" });
+      return;
+    }
+    const check = await validateEmail(form.email);
+    if (!check) {
+      setError({ message: "Invalid email" });
+      return;
+    }
+    if (!form.password.trim() || form.password.length < 6) {
+      setError({
+        message: "Password is required and must be at least 6 characters",
+      });
+      return;
+    }
 
-    router.push("/verify");
+    setSignup(form);
+    // localStorage.setItem("signup", JSON.stringify(form));
+    toast
+      .promise(sendOtp(form), {
+        loading: "Sending OTP...",
+        success: "OTP sent",
+        error: "Failed to sign up",
+      })
+      .then(() => router.push("/verify"))
+      .catch((err) => {
+        console.log(err);
+        setError(err);
+      });
   };
   const handleGoogleLogin = (response) => {
     toast
@@ -66,6 +79,7 @@ export default function SignupForm() {
       })
       .then(() => router.push("/feed"));
   };
+
   return (
     <div className=" flex flex-col items-center justify-center gap-2">
       <div className="text-center">
@@ -195,6 +209,7 @@ export default function SignupForm() {
             Password
           </label>
         </div>
+        {error && <p className="text-red-500 text-xs ">{error.message}</p>}
         <p className="text-xs" style={{ color: themes.secondaryText }}>
           By signing up you agree to our{" "}
           <span style={{ color: themes.primaryColor }}>Terms of Service</span>{" "}

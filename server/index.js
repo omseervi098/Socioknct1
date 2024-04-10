@@ -6,6 +6,7 @@ import { jwtStrategy } from "./config/passport.js";
 import authRouter from "./routes/authRouter.js";
 import otpRouter from "./routes/otpRouter.js";
 import { apiContent } from "./middlewares/apiContentType.js";
+import { rateLimitMiddleware } from "./middlewares/ratelimit.js";
 import { allowCrossDomain } from "./middlewares/allowCrossDomain.js";
 import db from "./config/mongoose.js";
 dotenv.config({ path: ".env" });
@@ -15,6 +16,7 @@ const app = express();
 app.use(cors());
 app.options("*", cors());
 // Use middleware
+app.use(rateLimitMiddleware);
 app.use(apiContent);
 
 // Use common 3rd-party middlewares

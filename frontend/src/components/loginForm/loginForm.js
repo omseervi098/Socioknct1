@@ -13,30 +13,44 @@ export default function LoginForm() {
   const { theme, themes } = state;
   const router = useRouter();
   const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [error, setError] = React.useState(null);
   const [form, setForm] = React.useState({
     email: "",
     password: "",
     rememberMe: false,
   });
+  useEffect(() => {
+    setTimeout(() => {
+      setError(null);
+    }, 5000);
+  }, [error]);
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      console.log(form);
-      const check = validateEmail(form.email);
-      if (!check) {
-        return toast.error("Email is required");
-      }
-      if (!form.password.trim()) {
-        return toast.error("Password is required");
-      }
-      const resp = await login(form);
-      console.log(resp);
-      await toast.success("Logged in successfully");
-      await router.push("/feed");
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to login");
+    if (!form.email.trim()) {
+      setError({ message: "Email is required" });
+      return;
     }
+    const check = await validateEmail(form.email);
+    if (!check) {
+      setError({ message: "Invalid email" });
+      return;
+    }
+    if (!form.password.trim()) {
+      setError({ message: "Password is required" });
+      return;
+    }
+
+    toast
+      .promise(login(form), {
+        loading: "Logging in...",
+        success: "Login successful",
+        error: "Failed to login",
+      })
+      .then(() => router.push("/feed"))
+      .catch((err) => {
+        console.log(err);
+        setError(err);
+      });
   };
   const handleGoogleLogin = async (response) => {
     toast
@@ -158,6 +172,7 @@ export default function LoginForm() {
             Password
           </label>
         </div>
+        {error && <div className="text-red-500 text-xs">{error.message}</div>}
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Switch
