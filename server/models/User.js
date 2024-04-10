@@ -12,6 +12,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "https://ui-avatars.com/api/?name=John+Doe",
     },
+    background: {
+      type: String,
+      default: "https://source.unsplash.com/random",
+    },
+    bio: {
+      type: String,
+      default: "This is a bio",
+    },
     email: {
       type: String,
       unique: [true, "Email already exists"],
