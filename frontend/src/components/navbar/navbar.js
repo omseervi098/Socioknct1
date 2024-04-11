@@ -42,13 +42,15 @@ export default function Navbar() {
       >
         <Link href="/">Socioknct {"</>"}</Link>
       </div>
-      <div className="flex-grow hidden md:flex justify-center items-center md:justify-start">
-        <input
-          type="text"
-          placeholder="Search"
-          className="bg-gray-200 h-[35px] text-sm px-2 py-1 w-[220px] lg:w-[300px] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-        />
-      </div>
+      {auth && (
+        <div className="flex-grow hidden md:flex justify-center items-center md:justify-start">
+          <input
+            type="text"
+            placeholder="Search"
+            className="bg-gray-200 h-[35px] text-sm px-2 py-1 w-[220px] lg:w-[300px] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+          />
+        </div>
+      )}
       <div className="w-full md:w-auto flex  justify-evenly md:justify-end">
         {auth === false ? (
           <>

@@ -48,6 +48,9 @@ const userSchema = new mongoose.Schema(
     dob: {
       type: Date,
     },
+    location: {
+      type: Object,
+    },
   },
   {
     timestamps: true,

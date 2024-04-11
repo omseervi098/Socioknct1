@@ -17,6 +17,8 @@ const development = {
       pass: process.env.GOOGLE_MAILER_PASSWORD,
     },
   },
+  weatherApiKey: process.env.WEATHER_APIKEY,
+  newsApiKey: process.env.NEWS_APIKEY,
 };
 const production = {
   name: "Production",
@@ -34,6 +36,8 @@ const production = {
       pass: process.env.GOOGLE_MAILER_PASSWORD,
     },
   },
+  weatherApiKey: process.env.WEATHER_APIKEY,
+  newsApiKey: process.env.NEWS_APIKEY,
 };
 export default process.env.NODE_ENV === "development"
   ? development

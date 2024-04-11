@@ -6,7 +6,9 @@ import { useRouter } from "next/router";
 export default function Home() {
   const { auth } = useAuthContext();
   const router = useRouter();
-
+  if (auth) {
+    router.push("/feed");
+  }
   return (
     <div className="flex justify-center items-center h-screen">
       {auth === false && (

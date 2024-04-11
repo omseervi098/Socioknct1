@@ -5,6 +5,8 @@ import passport from "passport";
 import { jwtStrategy } from "./config/passport.js";
 import authRouter from "./routes/authRouter.js";
 import otpRouter from "./routes/otpRouter.js";
+import newsRouter from "./routes/newsRouter.js";
+import weatherRouter from "./routes/weatherRouter.js";
 import { apiContent } from "./middlewares/apiContentType.js";
 import { rateLimitMiddleware } from "./middlewares/ratelimit.js";
 import { allowCrossDomain } from "./middlewares/allowCrossDomain.js";
@@ -29,6 +31,8 @@ passport.use(jwtStrategy);
 // Auth Router
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/otp", otpRouter);
+app.use("/api/v1/weather", weatherRouter);
+app.use("/api/v1/news", newsRouter);
 
 app.get("/api/v1", (req, res) => {
   res.send({

@@ -10,8 +10,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import { Switch } from "@headlessui/react";
+import { useAuthContext } from "@/context/authcontext";
 export default function Navbar1() {
   const { state, toggleTheme } = useGeneralContext();
+  const { auth } = useAuthContext();
   const { theme, themes } = state;
   const router = useRouter();
   return (
@@ -20,15 +22,18 @@ export default function Navbar1() {
     >
       <div className={`flex-none items-center  ${styles.logo}`}>
         <Link href="/" className="text-lg">
+          {!auth && "Socioknct "}
           {"</>"}
         </Link>
       </div>
       <div className="">
-        <input
-          type="text"
-          placeholder="Search"
-          className="bg-gray-200 px-2 py-1 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-        />
+        {auth && (
+          <input
+            type="text"
+            placeholder="Search"
+            className="bg-gray-200 px-2 py-1 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+          />
+        )}
 
         {/* <div className="flex items-center ms-2">
           <Switch

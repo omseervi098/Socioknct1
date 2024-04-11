@@ -12,6 +12,12 @@ const nextConfig = {
       {
         hostname: "lh3.googleusercontent.com",
       },
+      {
+        hostname: "unsplash.com",
+      },
+      {
+        hostname: "openweathermap.org",
+      },
     ],
   },
 };
