@@ -1,6 +1,7 @@
 import { getUserByEmail } from "../services/userServices.js";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import env from "./environment.js";
+import passport from "passport";
 export const jwtStrategy = new JwtStrategy(
   {
     secretOrKey: env.jwtSecret,

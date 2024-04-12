@@ -23,9 +23,74 @@
   --warning-color: #d93f21;
   --success-color: #4caf50;
   --secondary-color-hover: #cfcfcf68;
+  --epr-emoji-size: 10px !important;
 }
 
 body {
   background-color: var(--body-color);
-  /* color: var(--primary-text); */
+}
+code {
+  background-color: black;
+  color: white;
+  border-radius: 4px;
+  padding: 0.2rem;
+  line-height: 1.5;
+  max-width: 100%;
+  font-size: small;
+  display: block;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 13px;
+}
+ol {
+  list-style-type: decimal;
+  margin-left: 13px;
+}
+blockquote {
+  display: flex;
+  position: relative;
+}
+blockquote:before {
+  content: open-quote;
+  padding-right: 2px;
+}
+blockquote:after {
+  content: close-quote;
+  padding-left: 2px;
+}
+.tiptap hr {
+  border-color: var(--secondary-text);
+}
+
+.tiptap {
+  font-size: 0.9rem;
+}
+.EmojiPickerReact {
+  /* oVER Ride variable` */
+  --epr-emoji-size: 20px !important;
+  --epr-category-icon-active-color: none !important;
+  --epr-bg-color: #f5faff !important;
+  --epr-category-label-bg-color: #e1efff !important;
+  --epr-text-color: black !important;
+  --epr-hover-bg-color: #b8dbff !important;
+}
+
+.tiptap img {
+  display: inline;
+}
+/* .epr-btn {
+  width: 30px !important;
+  height: 30px !important;
+  max-width: 30px !important;
+  max-height: 30px !important;
+} */
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 10px;
 }

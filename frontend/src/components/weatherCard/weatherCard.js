@@ -8,7 +8,7 @@ export default function WeatherCard() {
   const { weather } = state;
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full bg-white p-3 rounded-lg">
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white p-3 rounded-lg shadow-lg">
       <div className="flex justify-between w-full ">
         <div className="font-semibold">Weather</div>
         <FontAwesomeIcon icon={faCloudSunRain} className="h-[20px]" />

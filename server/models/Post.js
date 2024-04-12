@@ -4,8 +4,8 @@ const postSchema = new mongoose.Schema(
     text: {
       type: String,
     },
-    image: {
-      type: String,
+    images: {
+      type: Array,
     },
     video: {
       type: String,

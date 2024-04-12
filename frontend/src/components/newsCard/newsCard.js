@@ -14,13 +14,13 @@ export default function NewsCard() {
   const { news } = state;
   console.log(news);
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg p-3">
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg p-3 shadow-lg">
       <div className="flex justify-between w-full">
         <div className="font-semibold">News</div>
         <FontAwesomeIcon icon={faNewspaper} />
       </div>
       <div className="flex flex-col items-center justify-center w-full h-full pt-3 gap-2 px-2">
-        {news ? (
+        {news &&
           news.map((article, index) => (
             <div
               key={index}
@@ -38,14 +38,14 @@ export default function NewsCard() {
                   href={article.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="max-h-[56px] text-xs overflow-hidden font-semibold"
+                  className="max-h-[51px] text-xs overflow-hidden font-semibold"
                 >
                   {article.title}
                 </Link>
               </div>
             </div>
-          ))
-        ) : (
+          ))}
+        {!news && (
           <div class="rounded-md max-w-sm w-full mx-auto p-1">
             <div class="animate-pulse flex space-x-4 pb-2 border-b-2 border-slate-300">
               <div class="flex-1 space-y-6 py-1">

@@ -7,6 +7,9 @@ import authRouter from "./routes/authRouter.js";
 import otpRouter from "./routes/otpRouter.js";
 import newsRouter from "./routes/newsRouter.js";
 import weatherRouter from "./routes/weatherRouter.js";
+import postRouter from "./routes/postRouter.js";
+import commentRouter from "./routes/commentRouter.js";
+import replyRouter from "./routes/replyRouter.js";
 import { apiContent } from "./middlewares/apiContentType.js";
 import { rateLimitMiddleware } from "./middlewares/ratelimit.js";
 import { allowCrossDomain } from "./middlewares/allowCrossDomain.js";
@@ -33,6 +36,9 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/otp", otpRouter);
 app.use("/api/v1/weather", weatherRouter);
 app.use("/api/v1/news", newsRouter);
+app.use("/api/v1/post", postRouter);
+app.use("/api/v1/comment", commentRouter);
+app.use("/api/v1/reply", replyRouter);
 
 app.get("/api/v1", (req, res) => {
   res.send({
