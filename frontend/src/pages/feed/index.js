@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthContext } from "@/context/authcontext";
@@ -7,15 +7,27 @@ import InfoCard from "@/components/infoCard/infoCard";
 import AddPost from "@/components/addPost/addPost";
 import WeatherCard from "@/components/weatherCard/weatherCard";
 import NewsCard from "@/components/newsCard/newsCard";
+import { useGeneralContext } from "@/context/generalcontext";
+import axios from "axios";
 export default function Feed() {
-  const { auth } = useAuthContext();
+  const { auth, user } = useAuthContext();
+  const { location, getWeather, getNews } = useGeneralContext();
   const router = useRouter();
+  const getWeatherAndNewsOnce = useCallback(() => {
+    if (user && user.location) {
+      getWeather(user.location);
+    } else {
+      getWeather(location);
+    }
+    getNews();
+  }, []);
   useEffect(() => {
-    //check if user is authenticated
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
     }
+    // make request in every 1 hour
+    getWeatherAndNewsOnce();
   }, []);
   if (!auth) {
     return <div>Loading...</div>;

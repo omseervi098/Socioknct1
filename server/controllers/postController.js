@@ -1,6 +1,7 @@
 import { Post } from "../models/Post.js";
 export const createPost = async (req, res) => {
   try {
+    console.log(req.body);
     const { type } = req.body;
     if (type == "text") {
       const { user, content } = req.body;
@@ -101,6 +102,18 @@ export const getPosts = async (req, res) => {
   try {
     const posts = await Post.find();
     return res.status(200).json({ posts });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+export const getPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    return res.status(200).json({ post });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
   }

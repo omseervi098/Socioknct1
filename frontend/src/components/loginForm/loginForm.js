@@ -8,9 +8,8 @@ import { toast } from "react-hot-toast";
 import { validateEmail, validatePassword } from "@/validations/validations";
 import { useRouter } from "next/router";
 export default function LoginForm() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { theme, themes, toggleTheme } = useGeneralContext();
   const { login, googleLogin } = useAuthContext();
-  const { theme, themes } = state;
   const router = useRouter();
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [error, setError] = React.useState(null);

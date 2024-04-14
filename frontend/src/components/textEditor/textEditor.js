@@ -10,6 +10,7 @@ import { Poppins } from "next/font/google";
 import Image from "@tiptap/extension-image";
 import EmojiPicker from "emoji-picker-react";
 import { Selection } from "@tiptap/pm/state";
+import Link from "@tiptap/extension-link";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -17,8 +18,7 @@ const poppins = Poppins({
   display: "swap",
 });
 export default function TextEditor({ content, setContent }) {
-  const { state } = useGeneralContext();
-  const { themes } = state;
+  const { themes } = useGeneralContext();
   const [showEmoji, setShowEmoji] = useState(false);
   const showEmojiPicker = () => {
     setShowEmoji(!showEmoji);
@@ -36,6 +36,10 @@ export default function TextEditor({ content, setContent }) {
           keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
         },
       }),
+      Link.configure({
+        autolink: true,
+        openOnClick: false,
+      }),
       Image.configure({
         inline: true,
         HTMLAttributes: {
@@ -52,7 +56,6 @@ export default function TextEditor({ content, setContent }) {
     },
     onUpdate({ editor }) {
       setContent(editor.getHTML());
-      console.log(editor.getHTML());
     },
   });
   return (

@@ -5,7 +5,7 @@ import { useGeneralContext } from "@/context/generalcontext";
 import SignupForm from "@/components/signupForm/signupForm";
 
 export default function Signup() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { toggleTheme } = useGeneralContext();
 
   return (
     <div className="flex flex-col items-center justify-center sm:p-10 md:px-20 p-5">

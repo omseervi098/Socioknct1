@@ -12,8 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faRocketchat } from "@fortawesome/free-brands-svg-icons";
 export default function InfoCard() {
-  const { state } = useGeneralContext();
-  const { themes } = state;
+  const { themes } = useGeneralContext();
   const { user } = useAuthContext();
 
   return (

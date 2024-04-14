@@ -12,8 +12,7 @@ import PhotoModal from "../modals/photoModal";
 import AudioModal from "../modals/audioModal";
 import DocumentModal from "../modals/documentModal";
 export default function AddPost() {
-  const { state } = useGeneralContext();
-  const { themes } = state;
+  const { themes } = useGeneralContext();
   const { auth, user } = useAuthContext();
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -67,7 +66,12 @@ export default function AddPost() {
                 }}
                 onClick={() => setOpen({ ...open, photo: !open.photo })}
               >
-                <Image src="/icons/photo.png" width={20} height={20} />
+                <Image
+                  src="/icons/photo.png"
+                  width={20}
+                  height={20}
+                  alt="photo-icon"
+                />
                 <span>Photo</span>
               </button>
               <button
@@ -78,7 +82,12 @@ export default function AddPost() {
                 }}
                 onClick={() => setOpen({ ...open, video: !open.video })}
               >
-                <Image src="/icons/video.png" width={20} height={20} />
+                <Image
+                  src="/icons/video.png"
+                  width={20}
+                  height={20}
+                  alt="video-icon"
+                />
                 <span>Video</span>
               </button>
               <button
@@ -89,7 +98,12 @@ export default function AddPost() {
                 }}
                 onClick={() => setOpen({ ...open, document: !open.document })}
               >
-                <Image src="/icons/document.png" width={20} height={20} />
+                <Image
+                  src="/icons/document.png"
+                  width={20}
+                  height={20}
+                  alt="document-icon"
+                />
                 <span>Document</span>
               </button>
             </div>
@@ -129,7 +143,12 @@ export default function AddPost() {
                           )}
                           onClick={() => setOpen({ ...open, poll: !open.poll })}
                         >
-                          <Image src="/icons/poll.png" width={20} height={20} />
+                          <Image
+                            src="/icons/poll.png"
+                            width={20}
+                            height={20}
+                            alt="poll-icon"
+                          />
                           Create a Poll
                         </button>
                       )}
@@ -151,6 +170,7 @@ export default function AddPost() {
                             src="/icons/music.png"
                             width={20}
                             height={20}
+                            alt="audio-icon"
                           />
                           Upload a Audio
                         </button>

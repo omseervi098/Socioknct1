@@ -12,9 +12,8 @@ import { useRouter } from "next/router";
 import { Switch } from "@headlessui/react";
 import { useAuthContext } from "@/context/authcontext";
 export default function Navbar1() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { theme, themes, toggleTheme } = useGeneralContext();
   const { auth } = useAuthContext();
-  const { theme, themes } = state;
   const router = useRouter();
   return (
     <div

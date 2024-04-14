@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
+  // experimental: {
+  //   // appDocumentPreloading: true,
+
+  // },
+
   reactStrictMode: true,
   images: {
     remotePatterns: [

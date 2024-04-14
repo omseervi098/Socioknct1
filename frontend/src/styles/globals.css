@@ -80,6 +80,13 @@ blockquote:after {
 .tiptap img {
   display: inline;
 }
+.tiptap a {
+  color: var(--primary-color);
+  /* cursor: pointer; */
+}
+.tiptap a:hover {
+  color: blue;
+}
 /* .epr-btn {
   width: 30px !important;
   height: 30px !important;
@@ -93,4 +100,24 @@ blockquote:after {
 ::-webkit-scrollbar-thumb {
   background-color: var(--primary-color);
   border-radius: 10px;
+}
+
+.react-pdf__Page {
+  /* width: 100% !important; */
+
+  min-width: none !important;
+  max-width: none !important;
+  min-height: none !important;
+  max-height: none !important;
+  --scale-factor: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0px !important;
+}
+.react-pdf__Page__canvas {
+  margin-bottom: 0px !important;
+  border: 1px solid var(--secondary-text);
+  border-radius: 5px;
+  width: 100% !important;
+  height: 100% !important;
 }

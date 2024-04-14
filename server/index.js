@@ -11,7 +11,6 @@ import postRouter from "./routes/postRouter.js";
 import commentRouter from "./routes/commentRouter.js";
 import replyRouter from "./routes/replyRouter.js";
 import { apiContent } from "./middlewares/apiContentType.js";
-import { rateLimitMiddleware } from "./middlewares/ratelimit.js";
 import { allowCrossDomain } from "./middlewares/allowCrossDomain.js";
 import db from "./config/mongoose.js";
 dotenv.config({ path: ".env" });
@@ -20,8 +19,6 @@ const app = express();
 //Allow CORS
 app.use(cors());
 app.options("*", cors());
-// Use middleware
-app.use(rateLimitMiddleware);
 app.use(apiContent);
 
 // Use common 3rd-party middlewares

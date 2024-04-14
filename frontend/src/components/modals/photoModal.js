@@ -1,28 +1,16 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faExclamationTriangle,
-  faList,
-  faX,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faList, faX } from "@fortawesome/free-solid-svg-icons";
 import { useAuthContext } from "@/context/authcontext";
 import { useGeneralContext } from "@/context/generalcontext";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
-import {
-  Dropzone,
-  FileMosaic,
-  FullScreen,
-  ImagePreview,
-  VideoPreview,
-  FileCard,
-  FileInputButton,
-} from "@files-ui/react";
+import { Dropzone, FileMosaic, FileInputButton } from "@files-ui/react";
 import imageCompression from "browser-image-compression";
-import axios from "axios";
 import TextEditor from "../textEditor/textEditor";
+import { usePostContext } from "@/context/postcontext";
+import toast from "react-hot-toast";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -32,20 +20,21 @@ const poppins = Poppins({
 export default function PhotoModal(props) {
   const cancelButtonRef = useRef(null);
   const { user } = useAuthContext();
-  const { state } = useGeneralContext();
-  const { themes } = state;
+  const { themes } = useGeneralContext();
+  const { createPost } = usePostContext();
   const [files, setFiles] = useState([]);
   const [base64Files, setBase64Files] = useState([]);
   const [imageSrc, setImageSrc] = useState(undefined);
   const [viewall, setViewAll] = useState(false);
   const [content, setContent] = useState("<p>Write something here...</p>");
+  const [loading, setLoading] = useState(false);
   const compressFiles = async (files) => {
     try {
       const compressedFiles = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i].file;
         const compressedFile = await imageCompression(file, {
-          maxSizeMB: 0.1,
+          maxSizeMB: 0.3,
           maxWidthOrHeight: 1024,
           useWebWorker: true,
         });
@@ -57,32 +46,30 @@ export default function PhotoModal(props) {
           type: files[i].type,
           size: compressedFile.size,
         });
+        console.log(
+          "compressed",
+          files[i].name,
+          compressedFile.size / (1024 * 1024)
+        );
       }
+
       return compressedFiles;
     } catch (e) {
       console.log(e);
     }
   };
   const updateFiles = async (incommingFiles) => {
-    //do something with the files
-    console.log("incomming files", incommingFiles);
-    //change id of file
+    //set the id of the files
     for (let i = 0; i < incommingFiles.length; i++) {
       incommingFiles[i].id = i + 1;
     }
-    //get all valid files
-    const validFiles = incommingFiles.filter((file) => file.valid);
-    // now select the first 5
-    incommingFiles = validFiles.slice(0, 5);
-    ///set the image src
+    const validFiles = incommingFiles.filter((file) => file.valid); //get all valid files
+    incommingFiles = validFiles.slice(0, 5); // now select the first 5
     if (validFiles.length > 0)
-      setImageSrc(URL.createObjectURL(validFiles[0].file));
+      setImageSrc(URL.createObjectURL(validFiles[0].file)); ///set the image src
     setFiles(validFiles);
-    // append the files to the existing files
-    //even your own upload implementation
   };
   const onAdd = (file) => {
-    //check if the files is valid or not
     if (!file[0].valid) {
       alert("Invalid file");
       return;
@@ -92,37 +79,27 @@ export default function PhotoModal(props) {
       return;
     }
     console.log("file", files);
-    file[0].id = files.length + 1;
+    // give id that is not in the files
+    let id = 1;
+    while (files.find((x) => x.id === id)) {
+      id++;
+    }
+    file[0].id = id;
     console.log("file", file[0]);
     setFiles([...files, file[0]]);
   };
   const onDelete = (id) => {
+    console.log("delete", id);
     setFiles(files.filter((x) => x.id !== id));
+    setImageSrc(undefined);
   };
   const handleSee = (imageSource) => {
     setImageSrc(imageSource);
   };
-  const handleStart = (filesToUpload) => {
-    console.log("advanced demo start upload", filesToUpload);
-  };
-  const handleFinish = (uploadedFiles) => {
-    console.log("advanced demo finish upload", uploadedFiles);
-  };
-  const handleAbort = (id) => {
-    setFiles(
-      files.map((ef) => {
-        if (ef.id === id) {
-          return { ...ef, uploadStatus: "aborted" };
-        } else return { ...ef };
-      })
-    );
-  };
+
   const handleUpload = async () => {
-    //Compress Files and then convert to base64
+    await setLoading(true);
     const compressedFiles = await compressFiles(files);
-    for (let i = 0; i < compressedFiles.length; i++) {
-      console.log("compressed file", compressedFiles[i]);
-    }
     //convert to base64
     const base64Files = await Promise.all(
       compressedFiles.map(async (file) => {
@@ -135,32 +112,30 @@ export default function PhotoModal(props) {
       })
     );
     await setBase64Files(base64Files);
+    await setLoading(false);
   };
-  const hanleSubmit = async () => {
-    //send the base64 files with content to the server
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/v1/post/create",
-        {
-          user,
+  const handleSubmit = async () => {
+    toast
+      .promise(
+        createPost({
+          content: content,
+          type: "image",
           images: base64Files,
-          content,
+        }),
+        {
+          loading: "Posting...",
+          success: "Posted successfully",
+          error: "Failed to post",
         }
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+      )
+      .then(() => {
+        props.handleOpen("photo");
+        setFiles([]);
+        setBase64Files([]);
+        setContent("<p>Write something here...</p>");
+      });
   };
-  const handleCancel = (id) => {
-    setFiles(
-      files.map((ef) => {
-        if (ef.id === id) {
-          return { ...ef, uploadStatus: undefined };
-        } else return { ...ef };
-      })
-    );
-  };
+
   return (
     <Transition.Root show={props.open} as={Fragment}>
       <Dialog
@@ -170,7 +145,6 @@ export default function PhotoModal(props) {
         onClose={() => {
           // props.handleOpen("photo");
         }}
-        // data-dialog-backdrop="false"
       >
         <Transition.Child
           as={Fragment}
@@ -201,30 +175,44 @@ export default function PhotoModal(props) {
                     <Image
                       src={user.avatar}
                       width={50}
+                      alt="avatar"
                       height={50}
                       className="rounded-full"
                     />
                     <div className="flex flex-col">
                       <span className="text-md font-semibold">{user.name}</span>
                       <span className="text-xs text-gray-500">
-                        Add a new Photo
+                        Add a new Photo Post
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon
-                      icon={faX}
-                      className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
-                      onClick={() => {
-                        props.handleOpen("photo");
-                        setFiles([]);
-                        setBase64Files([]);
-                      }}
-                    />
-                  </div>
+                  {!loading && (
+                    <div className="flex items-center gap-2">
+                      <FontAwesomeIcon
+                        icon={faX}
+                        className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
+                        onClick={() => {
+                          props.handleOpen("photo");
+                          setFiles([]);
+                          setBase64Files([]);
+                          setImageSrc(undefined);
+                          setContent("<p>Write something here...</p>");
+                          setLoading(false);
+                          setViewAll(false);
+                          compressFiles;
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
+
                 <div className="bg-white px-4 pb-4 pt-0 w-full">
-                  {base64Files.length == 0 ? (
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2 w-full h-[300px]">
+                      <div className="w-10 h-10 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+                      <span>Compressing images...</span>
+                    </div>
+                  ) : base64Files.length == 0 ? (
                     <div className="flex items-center flex-col sm:flex-row gap-4 w-full ">
                       {files.length == 0 ? (
                         <Dropzone
@@ -236,8 +224,6 @@ export default function PhotoModal(props) {
                           maxFiles={5}
                           maxFileSize={10 * 1024 * 1024}
                           label="Drag'n drop files here or click to browse"
-                          onUploadStart={handleStart}
-                          onUploadFinish={handleFinish}
                         ></Dropzone>
                       ) : (
                         <>
@@ -251,7 +237,11 @@ export default function PhotoModal(props) {
                           >
                             <div className="flex flex gap-2 justify-center items-center">
                               <Image
-                                src={imageSrc}
+                                src={
+                                  imageSrc === undefined
+                                    ? URL.createObjectURL(files[0].file)
+                                    : imageSrc
+                                }
                                 width={500}
                                 height={500}
                                 className="rounded-lg object-cover h-[270px] mt-2"
@@ -293,9 +283,6 @@ export default function PhotoModal(props) {
                                   onDelete={onDelete}
                                   className="w-20"
                                   onSee={handleSee}
-                                  // onWatch={handleWatch}
-                                  onAbort={handleAbort}
-                                  onCancel={handleCancel}
                                   resultOnTooltip
                                   alwaysActive
                                   preview
@@ -333,39 +320,67 @@ export default function PhotoModal(props) {
                     </div>
                   )}
                 </div>
-                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  {base64Files.length == 0 ? (
+                {!loading && (
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    {base64Files.length == 0 ? (
+                      <button
+                        type="button"
+                        className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto
+                      ${
+                        files.length == 0
+                          ? "cursor-not-allowed bg-blue-100"
+                          : "cursor-pointer bg-blue-500 hover:bg-blue-400 transition-all"
+                      }
+                      `}
+                        onClick={() => handleUpload()}
+                        disabled={files.length == 0}
+                        // style={{ backgroundColor: themes.primaryColor }}
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto
+                          ${
+                            content.substring(3, content.length - 4).trim() ===
+                              "Write something here..." ||
+                            content.substring(3, content.length - 4).trim() ===
+                              ""
+                              ? "cursor-not-allowed bg-blue-100"
+                              : "cursor-pointer bg-blue-500 hover:bg-blue-400 transition-all"
+                          }
+                          `}
+                        onClick={() => handleSubmit()}
+                        disabled={
+                          content.substring(3, content.length - 4).trim() ===
+                            "Write something here..." ||
+                          content.substring(3, content.length - 4).trim() === ""
+                            ? true
+                            : false
+                        }
+                      >
+                        Submit
+                      </button>
+                    )}
                     <button
                       type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                      onClick={() => handleUpload()}
-                      style={{ backgroundColor: themes.primaryColor }}
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => {
+                        props.handleOpen("photo");
+                        setFiles([]);
+                        setBase64Files([]);
+                        setImageSrc(undefined);
+                        setContent("<p>Write something here...</p>");
+                        setLoading(false);
+                        setViewAll(false);
+                      }}
+                      ref={cancelButtonRef}
                     >
-                      Next
+                      Cancel
                     </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
-                      onClick={() => hanleSubmit()}
-                      style={{ backgroundColor: themes.warningColor }}
-                    >
-                      Submit
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => {
-                      props.handleOpen("photo");
-                      setFiles([]);
-                      setBase64Files([]);
-                    }}
-                    ref={cancelButtonRef}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                  </div>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>

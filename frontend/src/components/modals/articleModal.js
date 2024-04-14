@@ -7,6 +7,8 @@ import { Poppins } from "next/font/google";
 import { useAuthContext } from "@/context/authcontext";
 import { useGeneralContext } from "@/context/generalcontext";
 import Image from "next/image";
+import { usePostContext } from "@/context/postcontext";
+import toast from "react-hot-toast";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -16,9 +18,40 @@ const poppins = Poppins({
 export default function ArticleModal(props) {
   const cancelButtonRef = useRef(null);
   const { user } = useAuthContext();
-  const { state } = useGeneralContext();
-  const { themes } = state;
+  const { themes } = useGeneralContext();
+  const { createPost } = usePostContext();
   const [content, setContent] = useState("<p>Write something here...</p>");
+  const [bool, setBool] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("from submit", content.substring(3, content.length - 4).trim());
+    if (
+      content.substring(3, content.length - 4).trim() ===
+        "Write something here..." ||
+      content.substring(3, content.length - 4).trim() === ""
+    ) {
+      setBool(false);
+      return toast.error("Empty content not allowed");
+    }
+    //disable the button
+    await setBool(true);
+    await toast
+      .promise(createPost({ content: content, type: "text" }), {
+        loading: "Posting...",
+        success: "Posted successfully",
+        error: "Failed to post",
+      })
+      .then(() => {
+        setBool(false);
+        setContent("<p>Write something here...</p>");
+        props.handleOpen("article");
+      })
+      .catch((err) => {
+        console.log(err);
+        setBool(false);
+        setContent("<p>Write something here...</p>");
+      });
+  };
   return (
     <Transition.Root show={props.open} as={Fragment}>
       <Dialog
@@ -27,6 +60,7 @@ export default function ArticleModal(props) {
         initialFocus={cancelButtonRef}
         onClose={() => {
           props.handleOpen("article");
+          setContent("<p>Write something here...</p>");
         }}
       >
         <Transition.Child
@@ -59,6 +93,7 @@ export default function ArticleModal(props) {
                       src={user.avatar}
                       width={50}
                       height={50}
+                      alt="avatar"
                       className="rounded-full"
                     />
                     <div className="flex flex-col">
@@ -72,7 +107,10 @@ export default function ArticleModal(props) {
                     <FontAwesomeIcon
                       icon={faX}
                       className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
-                      onClick={() => props.handleOpen("article")}
+                      onClick={() => {
+                        props.handleOpen("article");
+                        setContent("<p>Write something here...</p>");
+                      }}
                     />
                   </div>
                 </div>
@@ -82,15 +120,31 @@ export default function ArticleModal(props) {
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto bg-blue-500 hover:bg-blue-400 transition-all"
-                    onClick={() => setOpen(false)}
+                    className={`inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto  hover:bg-blue-400 transition-all ${
+                      content.substring(3, content.length - 4).trim() ===
+                        "Write something here..." ||
+                      content.substring(3, content.length - 4).trim() === ""
+                        ? "cursor-not-allowed bg-blue-100"
+                        : "cursor-pointer bg-blue-500"
+                    }`}
+                    onClick={handleSubmit}
+                    disabled={
+                      content.substring(3, content.length - 4).trim() ===
+                        "Write something here..." ||
+                      content.substring(3, content.length - 4).trim() === ""
+                        ? true
+                        : bool
+                    }
                   >
                     Post
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 sm:mt-0 sm:w-auto"
-                    onClick={() => props.handleOpen("article")}
+                    onClick={() => {
+                      props.handleOpen("article");
+                      setContent("<p>Write something here...</p>");
+                    }}
                     ref={cancelButtonRef}
                   >
                     Cancel

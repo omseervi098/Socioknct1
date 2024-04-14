@@ -8,6 +8,7 @@ const SET_SIGNUP = "SET_SIGNUP";
 const SET_LOCATION = "SET_LOCATION";
 const SET_WEATHER = "SET_WEATHER";
 const SET_NEWS = "SET_NEWS";
+const SET_LOADING = "SET_LOADING";
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
@@ -24,6 +25,7 @@ const initialState = {
     lat: 0,
     lon: 0,
   },
+  loading: false,
   weather: null,
   news: null,
 };
@@ -43,6 +45,8 @@ const reducer = (state, action) => {
       return { ...state, weather: action.payload };
     case SET_NEWS:
       return { ...state, news: action.payload };
+    case SET_LOADING:
+      return { ...state, loading: action.payload };
     default:
       return state;
   }
@@ -58,25 +62,30 @@ export const GeneralProvider = ({ children }) => {
     dispatch({ type: SET_THEME, payload: newTheme });
     dispatch({ type: SET_THEMES, payload: themes[newTheme] });
   };
+  const toggleLoading = () => {
+    dispatch({ type: SET_LOADING, payload: !state.loading });
+  };
   const setLocation = (data) => {
-    if (data.lat && data.lon) {
-      getWeatherByCoords(data.lat, data.lon);
-    } else {
-      getWeatherByCity(data.city);
-    }
+    getWeather(data);
     dispatch({ type: SET_LOCATION, payload: data });
   };
   const getWeatherByCoords = async (lat, lon) => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/weather/get";
-      const res = await axios.post(url, {
-        lat,
-        lon,
-      });
+      const res = await axios.post(
+        url,
+        {
+          lat,
+          lon,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       const data = res.data;
-      localStorage.setItem("weather", JSON.stringify(data));
       dispatch({ type: SET_WEATHER, payload: data });
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -84,29 +93,43 @@ export const GeneralProvider = ({ children }) => {
   const getWeatherByCity = async (city) => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/weather/get";
-      const res = await axios.post(url, {
-        city,
-      });
+      const res = await axios.post(
+        url,
+        {
+          city,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       const data = res.data;
-      localStorage.setItem("weather", JSON.stringify(data));
       dispatch({ type: SET_WEATHER, payload: data });
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
   };
+  const getWeather = async (data) => {
+    if (data.lat == 0 && data.lon == 0) getWeatherByCity(data.city);
+    else getWeatherByCoords(data.lat, data.lon);
+  };
   const getNews = async () => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/news";
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const data = res.data;
-      console.log(data);
       dispatch({ type: SET_NEWS, payload: data });
     } catch (error) {
       console.error(error);
     }
   };
   React.useEffect(() => {
+    // Get the theme from local storage
     if (localStorage.getItem("theme")) {
       dispatch({ type: SET_THEME, payload: localStorage.getItem("theme") });
       document.documentElement.setAttribute(
@@ -118,25 +141,11 @@ export const GeneralProvider = ({ children }) => {
         payload: themes[localStorage.getItem("theme")],
       });
     }
-    console.log(state.location);
+    // Get the width of the window
     dispatch({ type: SET_WIDTH, payload: window.innerWidth });
     window.addEventListener("resize", () =>
       dispatch({ type: SET_WIDTH, payload: window.innerWidth })
     );
-    if (localStorage.getItem("weather")) {
-      console.log("getting weather from local storage");
-      dispatch({
-        type: SET_WEATHER,
-        payload: JSON.parse(localStorage.getItem("weather")),
-      });
-    } else {
-      console.log("sending request to get weather");
-      if (state.location.lat == 0 && state.location.lon == 0)
-        getWeatherByCity(state.location.city);
-      else getWeatherByCoords(state.location.lat, state.location.lon);
-    }
-
-    getNews();
   }, []);
   const setSignup = (data) => {
     dispatch({ type: SET_SIGNUP, payload: data });
@@ -144,13 +153,15 @@ export const GeneralProvider = ({ children }) => {
   return (
     <GeneralContext.Provider
       value={{
-        state,
+        ...state,
         toggleTheme,
         setSignup,
         setLocation,
         getWeatherByCity,
         getWeatherByCoords,
         getNews,
+        getWeather,
+        toggleLoading,
       }}
     >
       {children}

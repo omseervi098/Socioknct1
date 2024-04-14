@@ -10,9 +10,7 @@ import {
   faNewspaper,
 } from "@fortawesome/free-solid-svg-icons";
 export default function NewsCard() {
-  const { state } = useGeneralContext();
-  const { news } = state;
-  console.log(news);
+  const { news } = useGeneralContext();
   return (
     <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg p-3 shadow-lg">
       <div className="flex justify-between w-full">
@@ -46,52 +44,52 @@ export default function NewsCard() {
             </div>
           ))}
         {!news && (
-          <div class="rounded-md max-w-sm w-full mx-auto p-1">
-            <div class="animate-pulse flex space-x-4 pb-2 border-b-2 border-slate-300">
-              <div class="flex-1 space-y-6 py-1">
-                <div class="space-y-3">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="h-2 bg-slate-700 rounded col-span-2"></div>
-                    <div class="h-2 bg-slate-700 rounded col-span-1"></div>
+          <div className="rounded-md max-w-sm w-full mx-auto p-1">
+            <div className="animate-pulse flex space-x-4 pb-2 border-b-2 border-slate-300">
+              <div className="flex-1 space-y-6 py-1">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-slate-700 rounded col-span-2"></div>
+                    <div className="h-2 bg-slate-700 rounded col-span-1"></div>
                   </div>
-                  <div class="h-2 bg-slate-700 rounded"></div>
+                  <div className="h-2 bg-slate-700 rounded"></div>
                 </div>
               </div>
             </div>
-            <div class="animate-pulse flex space-x-4 py-2 border-b-2 border-slate-300">
-              <div class="flex-1 space-y-6 py-1 ">
-                <div class="space-y-3">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="h-2 bg-slate-700 rounded col-span-2"></div>
-                    <div class="h-2 bg-slate-700 rounded col-span-1"></div>
+            <div className="animate-pulse flex space-x-4 py-2 border-b-2 border-slate-300">
+              <div className="flex-1 space-y-6 py-1 ">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-slate-700 rounded col-span-2"></div>
+                    <div className="h-2 bg-slate-700 rounded col-span-1"></div>
                   </div>
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="h-2 bg-slate-700 rounded col-span-1"></div>
-                    <div class="h-2 bg-slate-700 rounded col-span-2"></div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-slate-700 rounded col-span-1"></div>
+                    <div className="h-2 bg-slate-700 rounded col-span-2"></div>
                   </div>
-                  <div class="h-2 bg-slate-700 rounded"></div>
+                  <div className="h-2 bg-slate-700 rounded"></div>
                 </div>
               </div>
             </div>
-            <div class="animate-pulse flex space-x-4 py-2 border-b-2 border-slate-300">
-              <div class="flex-1 space-y-6 py-1">
-                <div class="space-y-3">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="h-2 bg-slate-700 rounded col-span-1"></div>
-                    <div class="h-2 bg-slate-700 rounded col-span-2"></div>
+            <div className="animate-pulse flex space-x-4 py-2 border-b-2 border-slate-300">
+              <div className="flex-1 space-y-6 py-1">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-slate-700 rounded col-span-1"></div>
+                    <div className="h-2 bg-slate-700 rounded col-span-2"></div>
                   </div>
-                  <div class="h-2 bg-slate-700 rounded"></div>
+                  <div className="h-2 bg-slate-700 rounded"></div>
                 </div>
               </div>
             </div>
-            <div class="animate-pulse flex space-x-4 py-2 border-b-2 border-slate-300">
-              <div class="flex-1 space-y-6 py-1">
-                <div class="space-y-3">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="h-2 bg-slate-700 rounded col-span-2"></div>
-                    <div class="h-2 bg-slate-700 rounded col-span-1"></div>
+            <div className="animate-pulse flex space-x-4 py-2 border-b-2 border-slate-300">
+              <div className="flex-1 space-y-6 py-1">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-slate-700 rounded col-span-2"></div>
+                    <div className="h-2 bg-slate-700 rounded col-span-1"></div>
                   </div>
-                  <div class="h-2 bg-slate-700 rounded"></div>
+                  <div className="h-2 bg-slate-700 rounded"></div>
                 </div>
               </div>
             </div>

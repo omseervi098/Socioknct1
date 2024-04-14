@@ -12,9 +12,8 @@ import {
 import { useRouter } from "next/router";
 import { redirect } from "next/dist/server/api-utils";
 export default function SignupForm() {
-  const { state, toggleTheme, setSignup } = useGeneralContext();
+  const { signupform, themes, toggleTheme, setSignup } = useGeneralContext();
   const { signup, googleLogin, sendOtp } = useAuthContext();
-  const { signupform, themes } = state;
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [form, setForm] = React.useState({

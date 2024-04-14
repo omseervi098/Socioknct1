@@ -24,9 +24,8 @@ import { useAuthContext } from "@/context/authcontext";
 import { faRocketchat } from "@fortawesome/free-brands-svg-icons";
 import { googleLogout } from "@react-oauth/google";
 export default function Navbar() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { theme, themes, toggleTheme } = useGeneralContext();
   const { auth, user, logout } = useAuthContext();
-  const { theme, themes } = state;
   const [openDialog, setOpenDialog] = React.useState(false);
   const router = useRouter();
   function classNames(...classes) {

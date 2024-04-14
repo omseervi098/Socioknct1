@@ -7,7 +7,7 @@ import Navbar from "@/components/navbar/navbar";
 import LoginForm from "@/components/loginForm/loginForm";
 
 export default function Login() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { toggleTheme } = useGeneralContext();
 
   return (
     <div className="flex flex-col items-center justify-center sm:p-10 md:px-20 p-5">

@@ -19,6 +19,8 @@ const development = {
   },
   weatherApiKey: process.env.WEATHER_APIKEY,
   newsApiKey: process.env.NEWS_APIKEY,
+  rateLimit1: process.env.RATELIMIT1,
+  rateLimit2: process.env.RATELIMIT2,
 };
 const production = {
   name: "Production",
@@ -38,6 +40,8 @@ const production = {
   },
   weatherApiKey: process.env.WEATHER_APIKEY,
   newsApiKey: process.env.NEWS_APIKEY,
+  rateLimit1: process.env.RATELIMIT1,
+  rateLimit2: process.env.RATELIMIT2,
 };
 export default process.env.NODE_ENV === "development"
   ? development

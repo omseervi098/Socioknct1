@@ -6,7 +6,7 @@ import { useGeneralContext } from "@/context/generalcontext";
 import VerifyForm from "@/components/verifyForm/verifyForm";
 
 export default function Verify() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { toggleTheme } = useGeneralContext();
 
   return (
     <div className="flex flex-col items-center justify-center sm:p-10 md:px-20 p-5">

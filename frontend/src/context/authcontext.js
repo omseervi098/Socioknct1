@@ -2,6 +2,7 @@ import React from "react";
 import { googleLogout } from "@react-oauth/google";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useGeneralContext } from "./generalcontext";
 const SET_USER = "SET_USER";
 const LOGOUT = "LOGOUT";
 export const AuthContext = React.createContext();
@@ -30,6 +31,7 @@ const reducer = (state, action) => {
 };
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
+
   React.useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: SET_USER, payload: user });
     } else {
       window.localStorage.removeItem("user");
-      return dispatch({ type: LOGOUT });
+      dispatch({ type: LOGOUT });
     }
   }, []);
   // Login Function

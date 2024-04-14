@@ -8,9 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-hot-toast";
 export default function VerifyForm() {
-  const { state, toggleTheme } = useGeneralContext();
+  const { theme, themes, signupform, toggleTheme } = useGeneralContext();
   const { signup, sendOtp } = useAuthContext();
-  const { theme, themes, signupform } = state;
   const [form, setForm] = React.useState({
     name: signupform.name,
     email: signupform.email,
