@@ -1,4 +1,5 @@
 "use client";
+import "react-h5-audio-player/lib/styles.css";
 import "@/styles/globals.css";
 import React, { useEffect } from "react";
 import { Poppins } from "next/font/google";

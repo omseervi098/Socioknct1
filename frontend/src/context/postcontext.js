@@ -52,8 +52,8 @@ export const PostProvider = ({ children }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log(" Posts from getPosts", response.data);
-      dispatch({ type: SET_POSTS, payload: response.data });
+      console.log(" Posts from getPosts", response.data.posts);
+      dispatch({ type: SET_POSTS, payload: response.data.posts });
     } catch (err) {
       console.log(err);
     }
@@ -88,7 +88,7 @@ export const PostProvider = ({ children }) => {
         }
       );
       console.log("Post from createPost", response.data);
-      getPosts();
+      //getPosts();
     } catch (err) {
       console.log(err);
       if (err.response.message) {

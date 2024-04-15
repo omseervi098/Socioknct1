@@ -9,9 +9,13 @@ import WeatherCard from "@/components/weatherCard/weatherCard";
 import NewsCard from "@/components/newsCard/newsCard";
 import { useGeneralContext } from "@/context/generalcontext";
 import axios from "axios";
+import Post from "@/components/post/Post";
+import { usePostContext } from "@/context/postcontext";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
+  const { posts, getPosts } = usePostContext();
+
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -20,6 +24,8 @@ export default function Feed() {
       getWeather(location);
     }
     getNews();
+    getPosts();
+    console.log("Posts from Feed", posts);
   }, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,7 +44,14 @@ export default function Feed() {
         <InfoCard />
       </div>
       <div className="flex-grow px-2">
-        <AddPost />
+        <div className="mb-2">
+          <AddPost />
+        </div>
+        <div className="flex flex-col gap-5">
+          {posts.map((post, index) => {
+            return <Post key={index} post={post} />;
+          })}
+        </div>
       </div>
       <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">
         <div className="">

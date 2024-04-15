@@ -5,15 +5,7 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import { useAuthContext } from "@/context/authcontext";
 import { useGeneralContext } from "@/context/generalcontext";
 import { Poppins } from "next/font/google";
-import {
-  Dropzone,
-  FileMosaic,
-  FullScreen,
-  ImagePreview,
-  VideoPreview,
-  FileCard,
-  FileInputButton,
-} from "@files-ui/react";
+import { Dropzone, VideoPreview, FileInputButton } from "@files-ui/react";
 import TextEditor from "../textEditor/textEditor";
 import { usePostContext } from "@/context/postcontext";
 import toast from "react-hot-toast";
@@ -215,6 +207,7 @@ export default function VideoModal(props) {
                                 accept="video/*"
                                 multiple={false}
                                 maxFiles={1}
+                                maxFileSize={1024 * 1024 * 50}
                                 value={files}
                               >
                                 Replace

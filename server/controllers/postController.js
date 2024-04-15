@@ -1,3 +1,4 @@
+import { Poll } from "../models/Poll.js";
 import { Post } from "../models/Post.js";
 export const createPost = async (req, res) => {
   try {
@@ -57,6 +58,22 @@ export const createPost = async (req, res) => {
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
+    } else if (type == "poll") {
+      const { user, question, options, content } = req.body;
+      const newPoll = new Poll({
+        question,
+        options: options.map((option) => ({ text: option })),
+      });
+      await newPoll.save();
+      const newPost = new Post({
+        user,
+        poll: newPoll._id,
+        text: content,
+      });
+      await newPost.save();
+      return res
+        .status(201)
+        .json({ message: "Post created successfully", newPost });
     } else {
       return res.status(400).json({ message: "Invalid post type" });
     }
@@ -100,7 +117,7 @@ export const deletePost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find();
+    const posts = await Post.find().populate("user").populate("poll");
     return res.status(200).json({ posts });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
