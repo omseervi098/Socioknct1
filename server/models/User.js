@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
-      default: "This is a bio",
+      default: "SDE at Google | 4x Intern | ML Enthusiast ",
     },
     email: {
       type: String,

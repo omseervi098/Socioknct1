@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema(
       type: String,
     },
     document: {
-      type: String,
+      type: Object,
     },
     poll: {
       type: mongoose.Schema.Types.ObjectId,

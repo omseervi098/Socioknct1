@@ -35,9 +35,11 @@ code {
   border-radius: 4px;
   padding: 0.2rem;
   line-height: 1.5;
-  max-width: 100%;
-  font-size: small;
+  font-size: smaller;
   display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
 }
 
 ul {

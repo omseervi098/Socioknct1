@@ -65,7 +65,11 @@ export default function DocumentModal(props) {
       createPost({
         content: content,
         type: "document",
-        document: documentURL,
+        document: {
+          url: documentURL,
+          name: files[0].name,
+          size: files[0].size,
+        },
       }),
       {
         loading: "Posting...",

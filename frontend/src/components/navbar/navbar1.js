@@ -17,7 +17,7 @@ export default function Navbar1() {
   const router = useRouter();
   return (
     <div
-      className={`h-auto w-full flex justify-between items-center text-black shadow-sm ${styles.navbar} gap-2  px-2 py-2`}
+      className={` h-auto w-full flex justify-between items-center text-black shadow-sm ${styles.navbar} gap-2  px-2 py-2`}
     >
       <div className={`flex-none items-center  ${styles.logo}`}>
         <Link href="/" className="text-lg">

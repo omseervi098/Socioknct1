@@ -117,7 +117,10 @@ export const deletePost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("user").populate("poll");
+    const posts = await Post.find()
+      .populate("user")
+      .populate("poll")
+      .sort({ createdAt: -1 });
     return res.status(200).json({ posts });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });

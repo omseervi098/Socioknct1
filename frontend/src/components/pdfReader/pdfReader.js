@@ -26,8 +26,6 @@ export default function PdfReader({ file, height, info }) {
       pdfContainer.style.height = `${height}px`;
     }
   }, [height]);
-  //render it when page number changes
-  //   useEffect(() => {}, [pageNumber]);
   return (
     <>
       <div
@@ -52,7 +50,7 @@ export default function PdfReader({ file, height, info }) {
           <div className="text-white">
             {pageNumber}/{numPages}
           </div>
-          <div class="flex-grow mx-auto">
+          <div className="flex-grow mx-auto">
             <input
               id="range"
               type="range"
@@ -63,7 +61,7 @@ export default function PdfReader({ file, height, info }) {
               onChange={(e) => {
                 setPageNumber(parseInt(e.target.value));
               }}
-              class="block w-full  bg-white border rounded-md focus:border-blue-500 focus:outline-none focus:ring"
+              className="block w-full  bg-white border rounded-md focus:border-blue-500 focus:outline-none focus:ring"
             />
           </div>
           <button
@@ -155,7 +153,7 @@ export default function PdfReader({ file, height, info }) {
                     <div className="text-white">
                       {pageNumber}/{numPages}
                     </div>
-                    <div class="flex-grow mx-auto">
+                    <div className="flex-grow mx-auto">
                       <input
                         id="range"
                         type="range"
@@ -166,7 +164,7 @@ export default function PdfReader({ file, height, info }) {
                         onChange={(e) => {
                           setPageNumber(parseInt(e.target.value));
                         }}
-                        class="block w-full  bg-white border rounded-md focus:border-blue-500 focus:outline-none focus:ring"
+                        className="block w-full  bg-white border rounded-md focus:border-blue-500 focus:outline-none focus:ring"
                       />
                     </div>
                     <button

@@ -43,7 +43,7 @@ export default function Feed() {
       <div className="hidden md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5">
         <InfoCard />
       </div>
-      <div className="flex-grow max-w-full px-2">
+      <div className=" w-full md:w-2/3 lg:w-1/2 px-2">
         <div className="mb-2">
           <AddPost />
         </div>

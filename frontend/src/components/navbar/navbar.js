@@ -34,7 +34,7 @@ export default function Navbar() {
 
   return (
     <div
-      className={`h-auto flex justify-between items-center text-black shadow-sm ${styles.navbar}  md:px-5`}
+      className={`h-auto  flex justify-between items-center text-black shadow-sm ${styles.navbar}  md:px-5`}
     >
       <div
         className={`hidden md:block flex items-center text-xl ${styles.logo} mr-5`}
