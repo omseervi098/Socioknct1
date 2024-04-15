@@ -43,11 +43,11 @@ export default function Feed() {
       <div className="hidden md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5">
         <InfoCard />
       </div>
-      <div className="flex-grow px-2">
+      <div className="flex-grow max-w-full px-2">
         <div className="mb-2">
           <AddPost />
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 w-full">
           {posts.map((post, index) => {
             return <Post key={index} post={post} />;
           })}

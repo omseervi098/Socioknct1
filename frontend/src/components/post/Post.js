@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Post(props) {
   const { post } = props;
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full px-1 lg:px-4">
+    <div className="flex flex-col items-center justify-center w-full overflow-hidden h-full px-1 lg:px-4">
       <div className="bg-white rounded-lg shadow-lg w-full">
         <div
           dangerouslySetInnerHTML={{ __html: post.text }}
