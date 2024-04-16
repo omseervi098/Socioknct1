@@ -146,7 +146,7 @@ export default function PdfReader({ file, height, info }) {
                 <Page
                   key={i + 1}
                   pageNumber={i + 1}
-                  className={`rounded-lg`}
+                  className={`rounded-lg h-[${parseInt(height - 50)}px]`}
                   height={height - 50}
                   loading="<h1>Loading...</h1>"
                   onClick={() => {
