@@ -136,7 +136,7 @@ export default function PdfReader({ file, height, info }) {
             <Document
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              className={`h-[250px] w-max px-3 flex justify-center items-center gap-3`}
+              className={`h-[250px] w-max mx-auto px-3 flex justify-center items-center gap-3`}
               loading="Loading..."
             >
               {/* repeat page numPages times */}
