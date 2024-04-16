@@ -1,18 +1,82 @@
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment, createRef, use, useEffect, useRef, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useGeneralContext } from "@/context/generalcontext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import AudioPlayer from "react-h5-audio-player";
 import PdfReader from "../pdfReader/pdfReader";
+import { usePostContext } from "@/context/postcontext";
+
 export default function Post(props) {
   const { post } = props;
   const { themes } = useGeneralContext();
   const [seeMore, setSeeMore] = useState(false);
+  const [played, setPlayed] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [audioVisible, setAudioVisible] = useState(false);
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    const audioElement = audioRef.current;
+    const observer1 = new IntersectionObserver(
+      ([entry]) => {
+        setVisible(entry.isIntersecting);
+      },
+      {
+        rootMargin: "50px 0px",
+        threshold: 0.5,
+      }
+    );
+    const observer2 = new IntersectionObserver(
+      ([entry]) => {
+        setAudioVisible(entry.isIntersecting);
+      },
+      {
+        rootMargin: "0px 0px",
+        threshold: 0.5,
+      }
+    );
+
+    if (videoElement) {
+      observer1.observe(videoElement);
+    }
+    if (audioElement) {
+      observer2.observe(audioElement);
+    }
+    return () => {
+      if (videoElement) {
+        observer1.unobserve(videoElement);
+      }
+      if (audioElement) {
+        observer2.unobserve(audioElement);
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (videoRef.current) {
+      if (visible) {
+        videoRef.current.play();
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [visible]);
+  useEffect(() => {
+    if (!audioVisible) {
+      const audios = document.querySelectorAll("audio");
+      audios.forEach((audio) => {
+        //if audio is playing then pause it
+        if (audio && !audio.paused) {
+          audio.pause();
+        }
+      });
+    }
+  }, [audioVisible]);
   return (
     <div className="flex flex-col items-center justify-center w-full overflow-hidden h-full px-0 sm:px-1 lg:px-4">
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
@@ -185,26 +249,28 @@ export default function Post(props) {
           <div className="my-2 flex flex gap-2 justify-center items-center w-full rounded-xl overflow-hidden ">
             <video
               muted={true}
-              controls={["fullscreen"]}
+              controls
+              ref={videoRef}
+              autoPlay={played}
               className="w-full h-full"
               src={post.video}
               disablePictureInPicture={true}
               controlsList="nodownload"
               playsInline={true}
               disableRemotePlayback={true}
-              onMouseEnter={(e) => e.target.play()}
-              onMouseLeave={(e) => e.target.pause()}
-              onPointerEnter={(e) => e.target.play()}
-              onPointerLeave={(e) => e.target.pause()}
             ></video>
           </div>
         )}
         {post.audio && (
-          <div className="my-2 flex flex-row items-center justify-center gap-2 sm:px-2">
+          <div
+            ref={audioRef}
+            className="my-2 flex flex-row items-center justify-center gap-2 sm:px-2"
+          >
             <AudioPlayer
               src={post.audio}
               onPlay={(e) => console.log("onPlay")}
               // other props here
+              // ref={audioRef}
               autoPlayAfterSrcChange={false}
               autoPlay={false}
               showJumpControls={false}
