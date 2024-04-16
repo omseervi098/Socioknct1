@@ -9,6 +9,7 @@ const SET_LOCATION = "SET_LOCATION";
 const SET_WEATHER = "SET_WEATHER";
 const SET_NEWS = "SET_NEWS";
 const SET_LOADING = "SET_LOADING";
+const SET_TOUCH = "SET_TOUCH";
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
@@ -28,6 +29,7 @@ const initialState = {
   loading: false,
   weather: null,
   news: null,
+  touch: false,
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -47,6 +49,8 @@ const reducer = (state, action) => {
       return { ...state, news: action.payload };
     case SET_LOADING:
       return { ...state, loading: action.payload };
+    case SET_TOUCH:
+      return { ...state, touch: action.payload };
     default:
       return state;
   }
@@ -128,6 +132,9 @@ export const GeneralProvider = ({ children }) => {
       console.error(error);
     }
   };
+  function isTouchDevice() {
+    return window.matchMedia("(pointer: coarse)").matches;
+  }
   React.useEffect(() => {
     // Get the theme from local storage
     if (localStorage.getItem("theme")) {
@@ -146,6 +153,12 @@ export const GeneralProvider = ({ children }) => {
     window.addEventListener("resize", () =>
       dispatch({ type: SET_WIDTH, payload: window.innerWidth })
     );
+    //check if the user is using a touch device
+    if (isTouchDevice()) {
+      dispatch({ type: SET_TOUCH, payload: true });
+    } else {
+      dispatch({ type: SET_TOUCH, payload: false });
+    }
   }, []);
   const setSignup = (data) => {
     dispatch({ type: SET_SIGNUP, payload: data });

@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }) {
                 <Component {...pageProps} />
               </div>
               <div className="md:hidden">
-                <div className="fixed bottom-0 w-full">
+                <div className="fixed bottom-0 w-full z-50">
                   <Navbar />
                 </div>
               </div>

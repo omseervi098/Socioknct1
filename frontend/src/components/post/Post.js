@@ -10,9 +10,8 @@ import { usePostContext } from "@/context/postcontext";
 
 export default function Post(props) {
   const { post } = props;
-  const { themes } = useGeneralContext();
+  const { themes, touch } = useGeneralContext();
   const [seeMore, setSeeMore] = useState(false);
-  const [played, setPlayed] = useState(false);
   const [visible, setVisible] = useState(false);
   const [audioVisible, setAudioVisible] = useState(false);
   function classNames(...classes) {
@@ -59,10 +58,10 @@ export default function Post(props) {
   }, []);
   useEffect(() => {
     if (videoRef.current) {
-      if (visible) {
-        videoRef.current.play();
-      } else {
+      if (!visible) {
         videoRef.current.pause();
+      } else {
+        videoRef.current.play();
       }
     }
   }, [visible]);
@@ -251,7 +250,7 @@ export default function Post(props) {
               muted={true}
               controls
               ref={videoRef}
-              autoPlay={played}
+              autoPlay={true}
               className="w-full h-full"
               src={post.video}
               disablePictureInPicture={true}

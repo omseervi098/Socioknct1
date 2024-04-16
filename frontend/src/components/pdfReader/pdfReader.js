@@ -15,6 +15,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import { Poppins } from "next/font/google";
+import { useGeneralContext } from "@/context/generalcontext";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -23,7 +24,8 @@ const poppins = Poppins({
 });
 
 export default function PdfReader({ file, height, info }) {
-  console.log(height);
+  const { themes, touch } = useGeneralContext();
+  console.log(touch, height);
   const [numPages, setNumPages] = useState();
   const [pageNumber, setPageNumber] = useState(1);
   const [fullScreen, setFullScreen] = useState(false);
@@ -35,9 +37,9 @@ export default function PdfReader({ file, height, info }) {
     //render the pdf in the height of the container
     const pdfContainer = document.querySelector(".react-pdf__Page__canvas");
     if (pdfContainer) {
-      pdfContainer.style.height = `${height}px`;
+      pdfContainer.style.height = `${height}px `;
     }
-  }, []);
+  }, [height]);
   const handleNext = () => {
     if (pageNumber < numPages) {
       setPageNumber(pageNumber + 1);
@@ -50,70 +52,113 @@ export default function PdfReader({ file, height, info }) {
   };
   return (
     <>
-      <div
-        className={`w-full flex flex-col  bg-gray-200 relative p-0 justify-center items-center transition-all duration-300 group rounded-lg overflow-hidden`}
-      >
-        <div className="w-full px-2 text-xs sm:text-sm  hidden group-hover:flex absolute w-full h-10 bg-gray-500 bg-opacity-70 z-30 top-0 flex justify-start items-center">
-          <div className="max-w-4/5 truncate text-white">
-            {info.name.split(".pdf")[0]}&nbsp;
-          </div>
-          <div className="w-[180px] flex items-center">
-            <FontAwesomeIcon icon={faCircle} className="text-white h-[5px]" />
-            <div className=" text-white">&nbsp;{numPages} pages</div>
-          </div>
-        </div>
+      {!touch ? (
         <div
-          className="absolute left-2 hidden group-hover:flex p-2 bg-gray-500 bg-opacity-70 z-30 rounded-full"
-          onClick={handlePrev}
+          className={`w-full flex flex-col  bg-gray-200 relative p-0 justify-center items-center transition-all duration-300 group rounded-lg overflow-hidden`}
         >
-          <FontAwesomeIcon icon={faChevronLeft} className="text-white" />
-        </div>
-        <div
-          className="absolute right-2 hidden group-hover:flex p-2 bg-gray-500 bg-opacity-70 z-30 rounded-full"
-          onClick={handleNext}
-        >
-          <FontAwesomeIcon icon={faChevronRight} className="text-white" />
-        </div>
-        <div className="max-w-max py-3 ">
-          <Document
-            file={file}
-            onLoadSuccess={onDocumentLoadSuccess}
-            className={`h-[${height}px] w-auto`}
-            loading="Loading..."
-          >
-            <Page
-              pageNumber={pageNumber}
-              //height={height}
-              loading="Loading Page..."
-            />
-          </Document>
-        </div>
-        <div className="absolute text-xs w-full hidden group-hover:flex h-10 bg-gray-500 bg-opacity-50 z-30 bottom-0 flex justify-center items-center gap-2 px-2">
-          <div className="text-white">
-            {pageNumber}/{numPages}
+          <div className="w-full px-2 text-xs sm:text-sm  flex absolute w-full h-10 bg-gray-700 bg-opacity-70 z-10 top-0 flex justify-start items-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
+            <div className="max-w-4/5 truncate text-white">
+              {info.name.split(".pdf")[0]}&nbsp;
+            </div>
+            <div className="w-[180px] flex items-center">
+              <FontAwesomeIcon icon={faCircle} className="text-white h-[5px]" />
+              <div className=" text-white">&nbsp;{numPages} pages</div>
+            </div>
           </div>
-          <div className="flex-grow mx-auto">
-            <input
-              id="range"
-              type="range"
-              maxLength={numPages}
-              min="1"
-              max={numPages}
-              value={pageNumber}
-              onChange={(e) => {
-                setPageNumber(parseInt(e.target.value));
-              }}
-              className="block w-full  bg-white border rounded-md  focus:outline-none"
-            />
+          {pageNumber > 1 && (
+            <div
+              className="absolute left-2 hidden group-hover:flex p-2 bg-gray-700 bg-opacity-70 z-10 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"
+              onClick={handlePrev}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} className="text-white" />
+            </div>
+          )}
+          {pageNumber < numPages && (
+            <div
+              className="absolute right-2 hidden group-hover:flex p-2 bg-gray-700 bg-opacity-70 z-10 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"
+              onClick={handleNext}
+            >
+              <FontAwesomeIcon icon={faChevronRight} className="text-white" />
+            </div>
+          )}
+          <div className="max-w-max py-3 ">
+            <Document
+              file={file}
+              onLoadSuccess={onDocumentLoadSuccess}
+              className={`h-[${height}px] w-auto`}
+              loading="Loading..."
+            >
+              <Page
+                pageNumber={pageNumber}
+                //height={height}
+                loading="Loading Page..."
+              />
+            </Document>
           </div>
-          <button
-            className="text-white"
-            onClick={() => setFullScreen(!fullScreen)}
-          >
-            <FontAwesomeIcon icon={faExpand} className="h-[20px]" />
-          </button>
+          <div className="absolute text-xs w-full hidden group-hover:flex h-10 bg-gray-700 bg-opacity-50 z-10 bottom-0 flex justify-center items-center gap-2 px-2 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
+            <div className="text-white">
+              {pageNumber}/{numPages}
+            </div>
+            <div className="flex-grow mx-auto">
+              <input
+                id="range"
+                type="range"
+                maxLength={numPages}
+                min="1"
+                max={numPages}
+                value={pageNumber}
+                onChange={(e) => {
+                  setPageNumber(parseInt(e.target.value));
+                }}
+                className="block w-full  bg-white border rounded-md  focus:outline-none"
+              />
+            </div>
+            <button
+              className="text-white"
+              onClick={() => setFullScreen(!fullScreen)}
+            >
+              <FontAwesomeIcon icon={faExpand} className="h-[20px]" />
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="w-full bg-gray-100 rounded-lg py-3  ">
+          <div className="w-full px-3 pb-2 text-xs sm:text-sm  flex justify-start items-center">
+            <div className="w-auto truncate text-blue-500">
+              {info.name.split(".pdf")[0]}&nbsp;
+            </div>
+            <div className="w-[180px] text-blue-500 flex items-center">
+              <FontAwesomeIcon icon={faCircle} className=" h-[5px]" />
+              <div className=" ">&nbsp;{numPages} pages</div>
+            </div>
+          </div>
+          <div className="w-full   py-2 overflow-auto ">
+            <Document
+              file={file}
+              onLoadSuccess={onDocumentLoadSuccess}
+              className={`h-[${parseInt(
+                height - 50
+              )}px] w-max px-3 flex justify-center items-center gap-3`}
+              loading="Loading..."
+            >
+              {/* repeat page numPages times */}
+              {[...Array(numPages)].map((e, i) => (
+                <Page
+                  key={i + 1}
+                  pageNumber={i + 1}
+                  className={`rounded-lg`}
+                  height={height - 50}
+                  loading="<h1>Loading...</h1>"
+                  onClick={() => {
+                    setFullScreen(true);
+                    setPageNumber(i + 1);
+                  }}
+                />
+              ))}
+            </Document>
+          </div>
+        </div>
+      )}
       {fullScreen && (
         <Transition appear show={fullScreen} as={Fragment}>
           <Dialog
@@ -151,7 +196,7 @@ export default function PdfReader({ file, height, info }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <div className=" bg-gray-200 inline-block w-full h-full relative overflow-hidden  transition-all transform shadow-xl ">
-                  <div className="px-2 absolute w-full py-2 bg-gray-500 bg-opacity-70 z-50 top-0 flex justify-between items-center">
+                  <div className="px-2 absolute w-full py-2 bg-gray-700 bg-opacity-70 z-50 top-0 flex justify-between items-center">
                     <div className="w-4/5 flex items-center">
                       <div className="max-w-4/5 text-white text-left truncate">
                         {info.name.split(".pdf")[0]}&nbsp;
@@ -168,7 +213,7 @@ export default function PdfReader({ file, height, info }) {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        className="text-white border border-white p-1 flex items-center hover:bg-gray-300"
+                        className="text-white border border-white p-1 rounded-lg flex items-center hover:bg-gray-300"
                         onClick={() => window.open(file)}
                       >
                         <FontAwesomeIcon
@@ -177,8 +222,7 @@ export default function PdfReader({ file, height, info }) {
                         />
 
                         <span className="text-xs hidden sm:block">
-                          {" "}
-                          Download
+                          &nbsp; Download
                         </span>
                       </button>
                       <button
@@ -189,24 +233,28 @@ export default function PdfReader({ file, height, info }) {
                       </button>
                     </div>
                   </div>
-                  <div
-                    className="absolute left-2 top-1/2 p-2 bg-gray-500 bg-opacity-70 z-50 rounded-full"
-                    onClick={handlePrev}
-                  >
-                    <FontAwesomeIcon
-                      icon={faChevronLeft}
-                      className="text-white"
-                    />
-                  </div>
-                  <div
-                    className="absolute right-2 top-1/2 p-2 bg-gray-500 bg-opacity-70 z-50 rounded-full"
-                    onClick={handleNext}
-                  >
-                    <FontAwesomeIcon
-                      icon={faChevronRight}
-                      className="text-white"
-                    />
-                  </div>
+                  {pageNumber > 1 && (
+                    <div
+                      className="absolute left-2 top-1/2 p-2 bg-gray-700 bg-opacity-70 z-50 rounded-full cursor-pointer"
+                      onClick={handlePrev}
+                    >
+                      <FontAwesomeIcon
+                        icon={faChevronLeft}
+                        className="text-white"
+                      />
+                    </div>
+                  )}
+                  {pageNumber < numPages && (
+                    <div
+                      className="absolute right-2 top-1/2 p-2 bg-gray-700 bg-opacity-70 z-50 rounded-full cursor-pointer"
+                      onClick={handleNext}
+                    >
+                      <FontAwesomeIcon
+                        icon={faChevronRight}
+                        className="text-white"
+                      />
+                    </div>
+                  )}
                   <div className="h-full max-w-max flex justify-center items-center  py-3 mx-auto">
                     <Document
                       file={file}
@@ -217,7 +265,7 @@ export default function PdfReader({ file, height, info }) {
                       <Page pageNumber={pageNumber} loading="Loading Page..." />
                     </Document>
                   </div>
-                  <div className="absolute w-full h-10 bg-gray-500 bg-opacity-50 z-50 bottom-0 flex justify-center items-center gap-2 px-2">
+                  <div className="absolute w-full h-10 bg-gray-700 bg-opacity-50 z-50 bottom-0 flex justify-center items-center gap-2 px-2">
                     <div className="text-white">
                       {pageNumber}/{numPages}
                     </div>
