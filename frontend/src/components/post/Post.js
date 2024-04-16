@@ -51,7 +51,7 @@ export default function Post(props) {
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button
-                  className="inline-flex w-full justify-center rounded-md p-1 text-sm font-semibold  shadow-sm ring-1 ring-inset ring-gray-300"
+                  className="inline-flex w-full justify-center rounded-md px-1 text-sm font-semibold  shadow-sm ring-1 ring-inset ring-gray-300"
                   style={{
                     backgroundColor: themes.body,
                     color: themes.primaryText,
@@ -165,27 +165,42 @@ export default function Post(props) {
           ></div>
           {post.text.length > 200 && (
             <div
-              className=" absolute  bottom-0 right-0"
+              className=" absolute  bottom-0 right-0 text-blue-500 cursor-pointer hover:underline"
               onClick={() => {
                 setSeeMore(!seeMore);
               }}
             >
-              {seeMore ? "See Less" : "See More"}
+              {seeMore ? "See Less" : "..See More"}
             </div>
           )}
         </div>
         {post.images && post.images.length > 0 && (
-          <div className="flex flex-row flex-wrap justify-center items-center w-full h-full space-x-2">
+          <div className="my-2 flex flex-row flex-wrap justify-center items-center w-full h-full space-x-2">
             <Image src={post.images[0]} alt="post" width={200} height={200} />
             <Image src={post.images[1]} alt="post" width={200} height={200} />
             <Image src={post.images[2]} alt="post" width={200} height={200} />
           </div>
         )}
         {post.video && (
-          <video src={post.video} controls className="w-full h-full"></video>
+          <div className="my-2 flex flex gap-2 justify-center items-center w-full rounded-xl overflow-hidden ">
+            <video
+              muted={true}
+              controls={["fullscreen"]}
+              className="w-full h-full"
+              src={post.video}
+              disablePictureInPicture={true}
+              controlsList="nodownload"
+              playsInline={true}
+              disableRemotePlayback={true}
+              onMouseEnter={(e) => e.target.play()}
+              onMouseLeave={(e) => e.target.pause()}
+              onPointerEnter={(e) => e.target.play()}
+              onPointerLeave={(e) => e.target.pause()}
+            ></video>
+          </div>
         )}
         {post.audio && (
-          <div className="flex flex-row items-center justify-center gap-2 sm:px-2">
+          <div className="my-2 flex flex-row items-center justify-center gap-2 sm:px-2">
             <AudioPlayer
               src={post.audio}
               onPlay={(e) => console.log("onPlay")}
@@ -199,7 +214,7 @@ export default function Post(props) {
           </div>
         )}
         {post.document && (
-          <div className="flex flex-row items-center justify-center gap-2 sm:px-2">
+          <div className="my-2 flex flex-row items-center justify-center gap-2 sm:px-2 ">
             <PdfReader
               file={post.document.url}
               info={{ name: post.document.name, size: post.document.size }}
@@ -208,7 +223,7 @@ export default function Post(props) {
           </div>
         )}
         {post.poll && (
-          <div className="flex flex-col gap-2">
+          <div className="my-2 flex flex-col gap-2">
             <h1 className="text-lg font-semibold">{post.poll.question}</h1>
             <div className="flex flex-col gap-1">
               {post.poll.options.map((option, index) => {
