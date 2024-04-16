@@ -132,13 +132,11 @@ export default function PdfReader({ file, height, info }) {
               <div className=" ">&nbsp;{numPages} pages</div>
             </div>
           </div>
-          <div className="w-full   py-2 overflow-auto ">
+          <div className="w-full h-max  py-2 overflow-auto ">
             <Document
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              className={`h-[${parseInt(
-                height - 50
-              )}px] w-max px-3 flex justify-center items-center gap-3`}
+              className={`h-[250px] w-max px-3 flex justify-center items-center gap-3`}
               loading="Loading..."
             >
               {/* repeat page numPages times */}
@@ -146,8 +144,8 @@ export default function PdfReader({ file, height, info }) {
                 <Page
                   key={i + 1}
                   pageNumber={i + 1}
-                  className={`rounded-lg h-[${parseInt(height - 50)}px]`}
-                  height={height - 50}
+                  className={`rounded-lg h-[250px]`}
+                  height={250}
                   loading="<h1>Loading...</h1>"
                   onClick={() => {
                     setFullScreen(true);
