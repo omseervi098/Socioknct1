@@ -50,7 +50,10 @@ export default function DocumentModal(props) {
   const handleUpload = async () => {
     await setLoading(true);
     try {
-      const resp = await uploadToCloud({ file: files[0].file, type: "raw" });
+      const resp = await uploadToCloud({
+        file: files[0].file,
+        type: { general: "raw", type: "document" },
+      });
       console.log(resp);
       await setDocumentURL(resp);
       await setLoading(false);

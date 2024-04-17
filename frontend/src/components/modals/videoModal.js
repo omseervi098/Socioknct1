@@ -41,7 +41,10 @@ export default function VideoModal(props) {
   const handleUpload = async () => {
     await setLoading(true);
     try {
-      const resp = await uploadToCloud({ file: files[0].file, type: "video" });
+      const resp = await uploadToCloud({
+        file: files[0].file,
+        type: { general: "video", type: "video" },
+      });
       console.log(resp);
       await setVideoURL(resp);
       await setLoading(false);

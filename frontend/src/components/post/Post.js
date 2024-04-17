@@ -27,7 +27,7 @@ export default function Post(props) {
         setVisible(entry.isIntersecting);
       },
       {
-        rootMargin: "50px 0px",
+        rootMargin: "0px 0px",
         threshold: 0.5,
       }
     );
@@ -61,7 +61,8 @@ export default function Post(props) {
       if (!visible) {
         videoRef.current.pause();
       } else {
-        videoRef.current.play();
+        // if playable then play
+        if (videoRef.current.readyState === 4) videoRef.current.play();
       }
     }
   }, [visible]);
@@ -220,11 +221,11 @@ export default function Post(props) {
             </Menu>
           </div>
         </div>
-        <div className="relative text-xs sm:text-sm flex items-center pt-2 pb-4 px-2  ">
+        <div className="relative w-full text-xs sm:text-sm flex items-center pt-2 pb-4 px-2  ">
           <div
             dangerouslySetInnerHTML={{ __html: post.text }}
-            className={` transition-all  ease-in-out duration-300
-                        ${seeMore ? "block" : "line-clamp-3"}`}
+            className={` transition-all w-full ease-in-out duration-300
+                        ${seeMore ? "block" : "max-h-[80px] overflow-hidden"}`}
           ></div>
           {post.text.length > 200 && (
             <div
@@ -238,10 +239,69 @@ export default function Post(props) {
           )}
         </div>
         {post.images && post.images.length > 0 && (
-          <div className="my-2 flex flex-row flex-wrap justify-center items-center w-full h-full space-x-2">
-            <Image src={post.images[0]} alt="post" width={200} height={200} />
-            <Image src={post.images[1]} alt="post" width={200} height={200} />
-            <Image src={post.images[2]} alt="post" width={200} height={200} />
+          <div className="my-2 flex   bg-gray-300 rounded-lg justify-center items-center w-full h-full ">
+            {post.images.length === 1 && (
+              <div className="w-full h-full">
+                <Image
+                  src={post.images[0]}
+                  alt="post-image"
+                  width={500}
+                  height={500}
+                  className="w-full h-full rounded-xl"
+                />
+              </div>
+            )}
+            {post.images.length === 2 && (
+              <>
+                <div className="w-1/2 h-full">
+                  <Image
+                    src={post.images[0]}
+                    alt="post-image"
+                    width={500}
+                    height={500}
+                    className="w-full h-full rounded-xl"
+                  />
+                </div>
+                <div className="w-1/2 h-full">
+                  <Image
+                    src={post.images[1]}
+                    alt="post-image"
+                    width={500}
+                    height={500}
+                    className="w-full h-full rounded-xl"
+                  />
+                </div>
+              </>
+            )}
+            {post.images.length > 2 && (
+              <>
+                <div className="w-2/3 ">
+                  <Image
+                    src={post.images[0]}
+                    alt="post-image"
+                    width={500}
+                    height={300}
+                    className="h-[300px] object-contain rounded-xl bg-opacity-50 bg-contain bg-center backdrop-opacity-50"
+                  />
+                </div>
+                <div className="w-1/3 h-full flex flex-col ">
+                  <Image
+                    src={post.images[1]}
+                    alt="post-image"
+                    width={500}
+                    height={500}
+                    className="w-full h-1/2 "
+                  />
+                  <Image
+                    src={post.images[2]}
+                    alt="post-image"
+                    width={500}
+                    height={500}
+                    className="w-full h-1/2"
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
         {post.video && (
@@ -267,7 +327,6 @@ export default function Post(props) {
           >
             <AudioPlayer
               src={post.audio}
-              onPlay={(e) => console.log("onPlay")}
               // other props here
               // ref={audioRef}
               autoPlayAfterSrcChange={false}
@@ -275,6 +334,7 @@ export default function Post(props) {
               showJumpControls={false}
               className="rounded-xl "
               loop={false}
+              preload="auto"
             />
           </div>
         )}

@@ -42,7 +42,10 @@ export default function AudioModal(props) {
   const handleUpload = async () => {
     await setLoading(true);
     try {
-      const resp = await uploadToCloud({ file: files[0].file, type: "raw" });
+      const resp = await uploadToCloud({
+        file: files[0].file,
+        type: { general: "raw", type: "audio" },
+      });
       console.log(resp);
       await setAudioURL(resp);
       await setLoading(false);

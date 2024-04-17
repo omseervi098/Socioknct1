@@ -133,7 +133,9 @@ export const GeneralProvider = ({ children }) => {
     }
   };
   function isTouchDevice() {
-    return window.matchMedia("(pointer: coarse)").matches;
+    return (
+      window.matchMedia("(pointer: coarse)").matches && "ontouchstart" in window
+    );
   }
   React.useEffect(() => {
     // Get the theme from local storage

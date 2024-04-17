@@ -137,23 +137,26 @@ export const PostProvider = ({ children }) => {
   };
   //Upload to Cloud
   const uploadToCloud = async ({ file, type }) => {
-    if (type == "video") {
+    if (type.general == "video") {
       const data = new FormData();
       data.append("file", file);
+      data.append("folder", type.type);
       data.append("upload_preset", "upload");
       const url = process.env.NEXT_PUBLIC_CLOUDINARY_URL + "/video/upload";
       const response = await axios.post(url, data);
       return response.data.secure_url;
-    } else if (type == "image") {
+    } else if (type.general == "image") {
       const data = new FormData();
       data.append("file", file);
+      data.append("folder", type.type);
       data.append("upload_preset", "upload");
       const url = process.env.NEXT_PUBLIC_CLOUDINARY_URL + "/image/upload";
       const response = await axios.post(url, data);
       return response.data.secure_url;
-    } else {
+    } else if (type.general == "raw") {
       const data = new FormData();
       data.append("file", file);
+      data.append("folder", type.type);
       data.append("upload_preset", "upload");
       const url = process.env.NEXT_PUBLIC_CLOUDINARY_URL + "/raw/upload";
       const response = await axios.post(url, data);
