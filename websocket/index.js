@@ -30,8 +30,9 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // route for emiting votes
 app.post("/api/v1/vote", (req, res) => {
-  const { vote } = req.body;
-  io.emit("poll", vote);
+  const { post } = req.body;
+
+  io.emit("poll", post);
   res.send({ message: "Vote emitted" });
 });
 app.get("/", (req, res) => {

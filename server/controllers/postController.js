@@ -195,17 +195,9 @@ export const votePost = async (req, res) => {
     await post.populate("user");
     try {
       // send request to websocket server
-      const response = await axios.post(
-        `${environment.webSocketUrl}/api/v1/vote`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ vote: poll }),
-        }
-      );
-      console.log(response.data);
+      const url = `${environment.webSocketUrl}/api/v1/vote`;
+
+      const response = await axios.post(url, { post });
     } catch (error) {
       console.log(error);
     }
