@@ -2,6 +2,7 @@ import React from "react";
 import { googleLogout } from "@react-oauth/google";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { socket } from "@/utils/socket";
 import { useGeneralContext } from "./generalcontext";
 const SET_USER = "SET_USER";
 const LOGOUT = "LOGOUT";
@@ -31,18 +32,42 @@ const reducer = (state, action) => {
 };
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-
+  const [notificationRoom, setNotificationRoom] = React.useState([]);
   React.useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
       const user = JSON.parse(localStorage.getItem("user"));
+      //wait for the socket to connect
+      setTimeout(() => {
+          joinRoom(`Notification-${user._id}`);
+      }, 4000);
       dispatch({ type: SET_USER, payload: user });
     } else {
       window.localStorage.removeItem("user");
       dispatch({ type: LOGOUT });
     }
   }, []);
+  // join Room
+  const joinRoom = (room) => {
+    //send api request to join room
+    const url=process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/notification/join-room";
+    axios.post(url,{roomName:room},{headers:{
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    }})
+    .then(res=>{
+      //so now 
+      console.log(res.data.data);
+      if(!notificationRoom.includes(res.data.data.name)){
+        socket.emit("join_room", res.data.data.name);
+
+        setNotificationRoom([...notificationRoom,res.data.data]);
+      }
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+  }
   // Login Function
   const login = async (form) => {
     try {
@@ -53,6 +78,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: SET_USER, payload: user });
+      joinRoom(`Notification-${user._id}`);
     } catch (err) {
       if (err.response) {
         throw new Error(err.response.data.message);

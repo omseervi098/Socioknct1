@@ -24,9 +24,8 @@ export default function Feed() {
       getWeather(location);
     }
     getNews();
-    getPosts();
-    console.log("Posts from Feed", posts);
   }, []);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -34,7 +33,9 @@ export default function Feed() {
     }
     // make request in every 1 hour
     getWeatherAndNewsOnce();
+    getPosts();
   }, []);
+
   if (!auth) {
     return <div>Loading...</div>;
   }
@@ -48,9 +49,10 @@ export default function Feed() {
           <AddPost />
         </div>
         <div className="flex flex-col gap-5 w-full">
-          {posts.map((post, index) => {
-            return <Post key={index} post={post} />;
-          })}
+          {posts &&
+            posts.map((post, index) => {
+              return <Post key={index} post={post} />;
+            })}
         </div>
       </div>
       <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">

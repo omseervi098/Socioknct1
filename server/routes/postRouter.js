@@ -5,6 +5,7 @@ import {
   updatePost,
   deletePost,
   getPost,
+  votePost,
 } from "../controllers/postController.js";
 import passport from "passport";
 import { rateLimit1, rateLimit2 } from "../middlewares/ratelimit.js";
@@ -38,5 +39,11 @@ router.get(
   rateLimit1,
   passport.authenticate("jwt", { session: false }),
   getPosts
+);
+router.put(
+  "/vote/:id",
+  rateLimit2,
+  passport.authenticate("jwt", { session: false }),
+  votePost
 );
 export default router;

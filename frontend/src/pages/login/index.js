@@ -16,7 +16,7 @@ export default function Login() {
           <LoginForm />
         </div>
         <div className="flex-none relative w-2/3 md:block hidden">
-          <Image src="/login.jpg" layout="fill" objectFit="cover" />
+          <Image src="/login.jpg" width={500} height={500} className="object-cover w-full h-full"   alt="login" />
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { themes } from "@/theme";
+import { socket } from "@/utils/socket";
 import axios from "axios";
 const SET_THEME = "SET_THEME";
 const SET_WIDTH = "SET_WIDTH";
@@ -10,6 +11,7 @@ const SET_WEATHER = "SET_WEATHER";
 const SET_NEWS = "SET_NEWS";
 const SET_LOADING = "SET_LOADING";
 const SET_TOUCH = "SET_TOUCH";
+
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
@@ -30,6 +32,7 @@ const initialState = {
   weather: null,
   news: null,
   touch: false,
+  socket: null,
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -161,6 +164,11 @@ export const GeneralProvider = ({ children }) => {
     } else {
       dispatch({ type: SET_TOUCH, payload: false });
     }
+    return () => {
+      window.removeEventListener("resize", () =>
+        dispatch({ type: SET_WIDTH, payload: window.innerWidth })
+      );
+    };
   }, []);
   const setSignup = (data) => {
     dispatch({ type: SET_SIGNUP, payload: data });

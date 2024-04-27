@@ -19,6 +19,10 @@ const pollSchema = new mongoose.Schema(
         ],
       },
     ],
+    totalVotes: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

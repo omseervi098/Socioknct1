@@ -1,8 +1,8 @@
 import { Poll } from "../models/Poll.js";
 import { Post } from "../models/Post.js";
+import { getIO } from "../config/socket.js";
 export const createPost = async (req, res) => {
   try {
-    console.log(req.body);
     const { type } = req.body;
     if (type == "text") {
       const { user, content } = req.body;
@@ -10,7 +10,9 @@ export const createPost = async (req, res) => {
         user,
         text: content,
       });
+
       await newPost.save();
+      await newPost.populate("user");
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
@@ -22,6 +24,7 @@ export const createPost = async (req, res) => {
         text: content,
       });
       await newPost.save();
+      await newPost.populate("user");
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
@@ -33,6 +36,7 @@ export const createPost = async (req, res) => {
         text: content,
       });
       await newPost.save();
+      await newPost.populate("user");
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
@@ -44,6 +48,7 @@ export const createPost = async (req, res) => {
         text: content,
       });
       await newPost.save();
+      await newPost.populate("user");
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
@@ -55,6 +60,7 @@ export const createPost = async (req, res) => {
         text: content,
       });
       await newPost.save();
+      await newPost.populate("user");
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
@@ -71,6 +77,8 @@ export const createPost = async (req, res) => {
         text: content,
       });
       await newPost.save();
+      await newPost.populate("user");
+      await newPost.populate("poll");
       return res
         .status(201)
         .json({ message: "Post created successfully", newPost });
@@ -78,6 +86,7 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ message: "Invalid post type" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -104,13 +113,26 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
+
     const post = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    await post.remove();
+    //check if user is the owner of the post
+    if (post.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await Post.findByIdAndDelete(id);
+    // delete poll if it exists
+    if (post.poll) {
+      await Poll.findByIdAndDelete(post.poll._id);
+    }
+    //delete posts id from user's posts array
+
     return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -135,6 +157,51 @@ export const getPost = async (req, res) => {
     }
     return res.status(200).json({ post });
   } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const votePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { optionId } = req.body;
+    console.log("Vote Post", id, optionId);
+    const post = await Post.findById(id).populate("poll");
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (!post.poll) {
+      return res.status(400).json({ message: "Post is not a poll" });
+    }
+    // check if user has already voted
+    const voted = post.poll.options.some((opt) =>
+      opt.votes.includes(req.user._id)
+    );
+    if (voted) {
+      return res.status(400).json({ message: "You have already voted" });
+    }
+    const poll = post.poll;
+    const optionIndex = poll.options.findIndex(
+      (opt) => opt._id.toString() === optionId.toString()
+    );
+    if (optionIndex === -1) {
+      return res.status(400).json({ message: "Invalid option" });
+    }
+    poll.options[optionIndex].votes.push(req.user._id);
+    poll.totalVotes += 1;
+    await poll.save();
+    await post.populate("user");
+    try {
+      const io = getIO();
+      console.log("Emitting poll");
+      io.emit("poll", post);
+    } catch (error) {
+      console.log(error);
+    }
+    return res.status(200).json({ message: "Voted successfully", poll });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };

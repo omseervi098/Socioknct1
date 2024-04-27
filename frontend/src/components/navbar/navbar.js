@@ -388,7 +388,7 @@ export default function Navbar() {
         )}
       </div>
       <Transition.Root show={openDialog} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={setOpenDialog}>
+        <Dialog as="div" className="relative z-50" onClose={setOpenDialog}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"

@@ -38,7 +38,9 @@
     "react-dom": "^18",
     "react-h5-audio-player": "^3.9.1",
     "react-hot-toast": "^2.4.1",
-    "react-pdf": "^7.7.1"
+    "react-pdf": "^7.7.1",
+    "react-responsive-carousel": "^3.2.23",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

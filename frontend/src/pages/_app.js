@@ -14,10 +14,10 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
-  display: "swap",
+  display: "auto",
 });
 import { pdfjs } from "react-pdf";
-
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 export default function App({ Component, pageProps }) {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(

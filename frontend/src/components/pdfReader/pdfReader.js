@@ -25,7 +25,6 @@ const poppins = Poppins({
 
 export default function PdfReader({ file, height, info }) {
   const { themes, touch } = useGeneralContext();
-  console.log(touch, height);
   const [numPages, setNumPages] = useState();
   const [pageNumber, setPageNumber] = useState(1);
   const [fullScreen, setFullScreen] = useState(false);

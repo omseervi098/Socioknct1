@@ -6,6 +6,7 @@ const SET_POSTS = "SET_POSTS";
 const SET_POST = "SET_POST";
 const DELETE_POST = "DELETE_POST";
 const UPDATE_POST = "UPDATE_POST";
+const ADD_POST = "ADD_POST";
 export const PostContext = React.createContext();
 const initialState = {
   posts: [],
@@ -34,6 +35,11 @@ const reducer = (state, action) => {
         posts: state.posts.map((post) =>
           post._id === action.payload._id ? action.payload : post
         ),
+      };
+    case ADD_POST:
+      return {
+        ...state,
+        posts: [action.payload, ...state.posts],
       };
     default:
       return state;
@@ -76,7 +82,6 @@ export const PostProvider = ({ children }) => {
   // Create Post
   const createPost = async (form) => {
     try {
-      console.log("Form from createPost", form);
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/post/create";
       const response = await axios.post(
         url,
@@ -87,8 +92,12 @@ export const PostProvider = ({ children }) => {
           },
         }
       );
-      console.log("Post from createPost", response.data);
+      console.log("Post from createPost", state.posts, response.data.newPost);
       //getPosts();
+      //set posts
+
+      dispatch({ type: ADD_POST, payload: response.data.newPost });
+      return response.data.newPost;
     } catch (err) {
       console.log(err);
       if (err.response.message) {
@@ -133,7 +142,36 @@ export const PostProvider = ({ children }) => {
       dispatch({ type: DELETE_POST, payload: id });
     } catch (err) {
       console.log(err);
+      throw new Error("Something went wrong! Please try again.");
     }
+  };
+  // poll
+  const votePoll = async ({ postId, optionId }) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/post/vote/${postId}`;
+      const response = await axios.put(
+        url,
+        { optionId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Post from vote", response.data);
+    } catch (err) {
+      console.log(err);
+      if (err.response.message) {
+        throw new Error(err.response.message);
+      } else throw new Error("Something went wrong! Please try again.");
+    }
+  };
+
+  //update poll post
+  const updatePollPost = async (data) => {
+    console.log("Update Poll Post", data);
+    dispatch({ type: UPDATE_POST, payload: data });
   };
   //Upload to Cloud
   const uploadToCloud = async ({ file, type }) => {
@@ -173,6 +211,8 @@ export const PostProvider = ({ children }) => {
         updatePost,
         deletePost,
         uploadToCloud,
+        votePoll,
+        updatePollPost,
       }}
     >
       {children}

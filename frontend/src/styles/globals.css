@@ -28,6 +28,7 @@
 
 body {
   background-color: var(--body-color);
+  font-family: var(--font-poppins) !important;
 }
 code {
   background-color: black;
@@ -44,11 +45,11 @@ code {
 
 ul {
   list-style-type: disc;
-  margin-left: 13px;
+  margin-left: 15px;
 }
 ol {
   list-style-type: decimal;
-  margin-left: 13px;
+  margin-left: 15px;
 }
 blockquote {
   display: flex;
@@ -98,6 +99,7 @@ blockquote:after {
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-thumb {
   background-color: var(--primary-color);
@@ -111,7 +113,7 @@ blockquote:after {
   max-width: none !important;
   min-height: none !important;
   max-height: none !important;
-  --scale-factor: 0 !important;
+  /* --scale-factor: 0 !important; */
   width: 100% !important;
   height: 100% !important;
   padding: 0px !important;
