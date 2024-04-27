@@ -3,8 +3,8 @@ let io;
 export default function setupSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
+      origin: "https://socioknct.vercel.app",
+      methods: ["GET", "POST", "PUT", "DELETE"],
     },
   });
   console.log("Socket setup");
