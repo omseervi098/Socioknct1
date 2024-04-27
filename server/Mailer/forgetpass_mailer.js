@@ -7,7 +7,7 @@ async function forgetpass(user, link) {
     let info = await transporter.sendMail({
       from: env.smtp.auth.user,
       to: user.email,
-      subject: "Socioknct </> | Reset Password",
+      subject: "Socioknct | Reset Password",
       html: htmlString,
     });
     console.log("Message sent: %s", info);

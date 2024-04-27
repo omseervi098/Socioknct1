@@ -7,7 +7,7 @@ async function verifyemail(user, otp) {
     let info = await transporter.sendMail({
       from: env.smtp.auth.user,
       to: user.email,
-      subject: "Socioknct </> | Verify your email",
+      subject: "Socioknct | Verify your email",
       html: htmlString,
     });
     console.log("Message sent: %s", info);

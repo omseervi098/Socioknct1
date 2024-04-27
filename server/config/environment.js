@@ -21,6 +21,7 @@ const development = {
   newsApiKey: process.env.NEWS_APIKEY,
   rateLimit1: process.env.RATELIMIT1,
   rateLimit2: process.env.RATELIMIT2,
+  webSocketUrl: process.env.WEBSOCKET_URI,
 };
 const production = {
   name: "Production",
@@ -42,6 +43,7 @@ const production = {
   newsApiKey: process.env.NEWS_APIKEY,
   rateLimit1: process.env.RATELIMIT1,
   rateLimit2: process.env.RATELIMIT2,
+  webSocketUrl: process.env.WEBSOCKET_URI,
 };
 export default process.env.NODE_ENV === "development"
   ? development

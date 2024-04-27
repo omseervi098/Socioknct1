@@ -1,6 +1,7 @@
 import { Poll } from "../models/Poll.js";
 import { Post } from "../models/Post.js";
-import { getIO } from "../config/socket.js";
+import environment from "../config/environment.js";
+import axios from "axios";
 export const createPost = async (req, res) => {
   try {
     const { type } = req.body;
@@ -193,9 +194,18 @@ export const votePost = async (req, res) => {
     await poll.save();
     await post.populate("user");
     try {
-      const io = getIO();
-      console.log("Emitting poll");
-      io.emit("poll", post);
+      // send request to websocket server
+      const response = await axios.post(
+        `${environment.webSocketUrl}/api/v1/vote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ vote: poll }),
+        }
+      );
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
