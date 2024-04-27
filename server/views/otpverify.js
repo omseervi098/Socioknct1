@@ -13,8 +13,8 @@ export const verifyemailhtml = async (user, otp) => {
   <body style="">
     <div  style="background-color:#efefef;gap:10px;font-family:'poppins';">
       <div  style="background-color:#1B8DFF;padding: 10px;">
-        <div style="color:white;font-size: 1.5rem;">
-          Socioknct &lt;/&gt;
+        <div style="color:white;font-size: 1.5rem;display:flex;align-items:center;">
+          Socioknct <image src="https://socioknct.vercel.app/logo2_bg.png" width="30" height="30" alt="logo">
         </div>
       </div>
       <div style="font-size: 0.9rem;padding:10px;">

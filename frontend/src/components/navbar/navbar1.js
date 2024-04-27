@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/router";
 import { Switch } from "@headlessui/react";
 import { useAuthContext } from "@/context/authcontext";
+import Image from "next/image";
 export default function Navbar1() {
   const { theme, themes, toggleTheme } = useGeneralContext();
   const { auth } = useAuthContext();
@@ -20,9 +21,9 @@ export default function Navbar1() {
       className={` h-auto w-full flex justify-between items-center text-black shadow-sm ${styles.navbar} gap-2  px-2 py-2`}
     >
       <div className={`flex-none items-center  ${styles.logo}`}>
-        <Link href="/" className="text-lg">
-          {!auth && "Socioknct "}
-          {"</>"}
+        <Link href="/" className="text-lg flex items-center">
+          {!auth && "Socioknct"} &nbsp;
+          <Image src="/logo2_bg.png" width={30} height={30} alt="logo" />
         </Link>
       </div>
       <div className="">
