@@ -57,7 +57,7 @@ export default function PostImageModal(props) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all h-screen max-w-xxl md:mx-4 lg:mx-10 xl:mx-20">
                 <div className="grid sm:grid-cols-3 gap-0 h-full max-h-screen">
-                  <div className="sm:col-span-2 flex items-center justify-center bg-gray-800">
+                  <div className="sm:col-span-2 h-[50vh] sm:h-auto flex items-center justify-center bg-gray-800">
                     <Carousel
                       className="h-full w-full flex items-center justify-center"
                       centerMode={true}
@@ -65,6 +65,34 @@ export default function PostImageModal(props) {
                       emulateTouch={true}
                       swipeable={true}
                       showThumbs={false}
+                      showStatus={false}
+                      renderIndicator={(
+                        onClickHandler,
+                        isSelected,
+                        index,
+                        label
+                      ) => {
+                        if (isSelected) {
+                          return (
+                            <li
+                              className="inline-block h-4 w-4 rounded-full bg-black text-white text-xs cursor-pointer mr-1"
+                              onClick={onClickHandler}
+                              title={label}
+                            >
+                              {index + 1}
+                            </li>
+                          );
+                        }
+                        return (
+                          <li
+                            className="inline-block h-4 w-4 rounded-full bg-white text-black text-xs cursor-pointer mr-1"
+                            onClick={onClickHandler}
+                            title={label}
+                          >
+                            {index + 1}
+                          </li>
+                        );
+                      }}
                       renderArrowNext={(onClickHandler, hasNext, label) =>
                         hasNext && (
                           <button
@@ -104,15 +132,24 @@ export default function PostImageModal(props) {
                           <img
                             src={image}
                             alt="post-image"
-                            width={500}
-                            height={500}
-                            className="max-h-[80vh] max-w-[80vw] object-contain"
+                            width={400}
+                            height={400}
+                            className="max-h-[45vh] sm:max-h-[80vh] max-w-[90vw] sm:max-w-[80vw] object-contain"
                           />
                         </div>
                       ))}
                     </Carousel>
+                    <div className="right-1 top-1 absolute p-0 sm:hidden">
+                      <FontAwesomeIcon
+                        icon={faX}
+                        className="text-white cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
+                        onClick={() => {
+                          props.handleOpen();
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-full w-full flex flex-col overflow-y-auto">
+                  <div className="h-[50vh] sm:h-full w-full flex flex-col overflow-y-auto">
                     <div className="w-full pt-3 pb-3 px-4 flex flex-row justify-between ">
                       <div className="flex items-center gap-2">
                         <Image
@@ -129,7 +166,7 @@ export default function PostImageModal(props) {
                           <span className="text-xs text-gray-500"></span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="hidden sm:flex items-center gap-2">
                         <FontAwesomeIcon
                           icon={faX}
                           className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"

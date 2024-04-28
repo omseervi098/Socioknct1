@@ -465,25 +465,29 @@ export default function Post(props) {
           </div>
         )}
         {post.poll && (
-          <div className="flex flex-col gap-2 bg-gray-100 shadow-lg rounded-lg p-2">
+          <div className="flex flex-col gap-2 border border-blue-500 shadow-lg rounded-lg p-2">
             <div className="w-full font-semibold">{post.poll.question}</div>
             {post.poll.options.map((option, index) => (
               <div
                 key={index}
-                className="relative w-full h-full flex flex-row items-center gap-2 p-2 rounded-lg bg-gray-300"
+                className={`relative w-full h-full flex flex-row items-center gap-2 p-2 rounded-lg bg-gray-200 ${
+                  option.votes.includes(user._id)
+                    ? "border-2 border-blue-500"
+                    : ""
+                }`}
               >
                 <div
                   id={`poll-${post._id}-${index}-bar`}
                   className={`absolute w-[${
                     percentage[index] ? percentage[index] : 0
-                  }%] h-full bg-gray-400 opacity-50 z-0 left-0 top-0 rounded-lg  ${
+                  }%] h-full bg-blue-400 opacity-50 z-0 left-0 top-0 rounded-lg  ${
                     voted == false ? "invisible" : "visible"
-                  } transition-all duration-500 ease-in-out`}
+                  } transition-all duration-500 ease-in-out `}
                 ></div>
                 <div
-                  className={`absolute opacity-40 h-full right-1 top-0 z-10 flex items-center  ${
+                  className={`absolute bg-opacity-50 h-full right-1 top-0 z-10 flex items-center  ${
                     voted == false ? "invisible" : "visible"
-                  } transition-all duration-500 ease-in-out`}
+                  } transition-all duration-500 ease-in-out text-blue-400`}
                 >
                   {getPercentage(option.votes.length, post.poll.totalVotes)}%
                 </div>
