@@ -167,7 +167,25 @@ export const PostProvider = ({ children }) => {
       } else throw new Error("Something went wrong! Please try again.");
     }
   };
-
+  //unvote poll
+  const unvotePoll = async ({ postId }) => {
+    console.log("Unvote Poll", postId);
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/post/unvote/${postId}`;
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Response from unvote", response.data);
+    } catch (err) {
+      console.log(err);
+      if (err.response.message) {
+        throw new Error(err.response.message);
+      } else throw new Error("Something went wrong! Please try again.");
+    }
+  };
   //update poll post
   const updatePollPost = async (data) => {
     console.log("Update Poll Post", data);
@@ -213,6 +231,7 @@ export const PostProvider = ({ children }) => {
         uploadToCloud,
         votePoll,
         updatePollPost,
+        unvotePoll,
       }}
     >
       {children}

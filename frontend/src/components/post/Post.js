@@ -30,7 +30,7 @@ export default function Post(props) {
   const [audioVisible, setAudioVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
-  const { deletePost, votePoll, updatePollPost } = usePostContext();
+  const { deletePost, votePoll, updatePollPost, unvotePoll } = usePostContext();
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
@@ -87,12 +87,7 @@ export default function Post(props) {
     if (audioElement) {
       observer2.observe(audioElement);
     }
-    if (post.poll) {
-      const voted = localStorage.getItem("voted-" + post._id);
-      if (voted) {
-        setVoted(true);
-      }
-    }
+
     return () => {
       if (videoElement) {
         observer1.unobserve(videoElement);
@@ -114,6 +109,10 @@ export default function Post(props) {
         document.getElementById(`poll-${post._id}-${index}-bar`).style.width =
           newPercentage + "%";
       });
+      const votedornot = post.poll.options.some((option) =>
+        option.votes.includes(user._id)
+      );
+      setVoted(votedornot);
     }
   }, [post, percentage]);
   function getPercentage(votes, totalVotes) {
@@ -151,13 +150,26 @@ export default function Post(props) {
       })
       .then(() => {
         setVoted(true);
-        localStorage.setItem("voted-" + postId, true);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
+  const handleUnvote = () => {
+    console.log("Unvoting");
+    toast
+      .promise(unvotePoll({ postId: post._id }), {
+        loading: "Unvoting...",
+        success: "Unvoted Successfully",
+        error: "Error Unvoting",
+      })
+      .then(() => {
+        setVoted(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
     <div className="flex flex-col items-center justify-center w-full overflow-hidden h-full px-0 sm:px-1 lg:px-4">
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
@@ -494,10 +506,17 @@ export default function Post(props) {
                 </div>
               </div>
             ))}
-
-            <a className="text-xs text-blue-500 hover:underline cursor-pointer">
-              Unvote
-            </a>
+            <div className="w-full flex flex-row items-center justify-start gap-2">
+              <div className="text-xs text-gray-500">
+                {post.poll.totalVotes} votes
+              </div>
+              <button
+                className="text-xs text-blue-500 hover:underline cursor-pointer"
+                onClick={handleUnvote}
+              >
+                Unvote
+              </button>
+            </div>
           </div>
         )}
       </div>

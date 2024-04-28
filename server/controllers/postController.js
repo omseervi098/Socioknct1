@@ -207,3 +207,45 @@ export const votePost = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const unvotePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(req.params);
+    const userId = req.user._id;
+    console.log("Unvote Post", id, userId);
+    const post = await Post.findById(id).populate("poll");
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (!post.poll) {
+      return res.status(400).json({ message: "Post is not a poll" });
+    }
+    const poll = post.poll;
+    //check if user has voted
+    const voted = poll.options.some((opt) => opt.votes.includes(userId));
+    if (!voted) {
+      return res.status(400).json({ message: "You have not voted" });
+    }
+    //remove user from votes array
+    poll.options.forEach((opt) => {
+      opt.votes = opt.votes.filter(
+        (vote) => vote.toString() !== userId.toString()
+      );
+    });
+    poll.totalVotes -= 1;
+    await poll.save();
+    await post.populate("user");
+    try {
+      //send request to websocket server
+      const url = `${environment.webSocketUrl}/api/v1/vote`;
+      const response = await axios.post(url, { post });
+    } catch (error) {
+      console.log(error);
+    }
+    return res.status(200).json({ message: "Unvoted successfully", poll });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};

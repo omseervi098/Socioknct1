@@ -55,6 +55,6 @@ app.listen(process.env.PORT || 5000, (e) => {
   if (e) {
     console.log(e);
   } else {
-    console.log(`Server is running on port ${process.env.PORT || 5000}`);
+    console.log(`HTTP Server is running on port ${process.env.PORT || 5000}`);
   }
 });

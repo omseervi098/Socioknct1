@@ -1,6 +1,5 @@
 import setRateLimit from "express-rate-limit";
 import environment from "../config/environment.js";
-console.log(environment.rateLimit1, environment.rateLimit2);
 // Rate limit middleware
 export const rateLimit1 = setRateLimit({
   windowMs: 60 * 1000,
