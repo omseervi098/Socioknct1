@@ -16,6 +16,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import { Poppins } from "next/font/google";
 import { useGeneralContext } from "@/context/generalcontext";
+import { useSwipeable } from "react-swipeable";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -32,6 +33,13 @@ export default function PdfReader({ file, height, info }) {
     setNumPages(numPages);
     setPageNumber(1);
   }
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleNext(),
+    onSwipedRight: () => handlePrev(),
+    swipeDuration: 500,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
   useEffect(() => {
     //render the pdf in the height of the container
     const pdfContainer = document.querySelector(".react-pdf__Page__canvas");
@@ -90,6 +98,7 @@ export default function PdfReader({ file, height, info }) {
               <Page
                 pageNumber={pageNumber}
                 //height={height}
+                {...handlers}
                 loading="Loading Page..."
               />
             </Document>
@@ -259,7 +268,11 @@ export default function PdfReader({ file, height, info }) {
                       className={`h-auto w-[95vw] sm:w-auto sm:h-[90vh]`}
                       loading="Loading..."
                     >
-                      <Page pageNumber={pageNumber} loading="Loading Page..." />
+                      <Page
+                        pageNumber={pageNumber}
+                        loading="Loading Page..."
+                        {...handlers}
+                      />
                     </Document>
                   </div>
                   <div className="absolute w-full h-10 bg-gray-700 bg-opacity-50 z-50 bottom-0 flex justify-center items-center gap-2 px-2">
