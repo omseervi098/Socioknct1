@@ -31,15 +31,35 @@ export default function PdfReader({ file, height, info }) {
   const [fullScreen, setFullScreen] = useState(false);
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
-    setPageNumber(1);
+    if (!fullScreen) setPageNumber(1);
   }
   const handlers = useSwipeable({
-    onSwipedLeft: () => handleNext(),
-    onSwipedRight: () => handlePrev(),
+    onSwipedLeft: () => {
+      console.log("swiped left");
+      handleNext();
+    },
+    onSwipedRight: () => {
+      console.log("swiped right");
+      handlePrev();
+    },
     swipeDuration: 500,
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
+  const handler1 = useSwipeable({
+    onSwipedLeft: () => {
+      console.log("swiped left");
+      handleNext();
+    },
+    onSwipedRight: () => {
+      console.log("swiped right");
+      handlePrev();
+    },
+    swipeDuration: 500,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
   useEffect(() => {
     //render the pdf in the height of the container
     const pdfContainer = document.querySelector(".react-pdf__Page__canvas");
@@ -98,7 +118,7 @@ export default function PdfReader({ file, height, info }) {
               <Page
                 pageNumber={pageNumber}
                 //height={height}
-                {...handlers}
+                {...handler1}
                 loading="Loading Page..."
               />
             </Document>
@@ -149,17 +169,21 @@ export default function PdfReader({ file, height, info }) {
             >
               {/* repeat page numPages times */}
               {[...Array(numPages)].map((e, i) => (
-                <Page
-                  key={i + 1}
-                  pageNumber={i + 1}
-                  className={`rounded-lg h-[250px]`}
-                  height={250}
-                  loading="<h1>Loading...</h1>"
+                <button
+                  className="w-[250px] h-[250px] bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-300"
                   onClick={() => {
                     setFullScreen(true);
                     setPageNumber(i + 1);
                   }}
-                />
+                  key={i + 1}
+                >
+                  <Page
+                    pageNumber={i + 1}
+                    className={`rounded-lg h-[250px]`}
+                    height={250}
+                    loading="<h1>Loading...</h1>"
+                  />
+                </button>
               ))}
             </Document>
           </div>
@@ -268,11 +292,12 @@ export default function PdfReader({ file, height, info }) {
                       className={`h-auto w-[95vw] sm:w-auto sm:h-[90vh]`}
                       loading="Loading..."
                     >
-                      <Page
-                        pageNumber={pageNumber}
-                        loading="Loading Page..."
-                        {...handlers}
-                      />
+                      <div {...handlers} className="w-full h-full">
+                        <Page
+                          pageNumber={pageNumber}
+                          loading="Loading Page..."
+                        />
+                      </div>
                     </Document>
                   </div>
                   <div className="absolute w-full h-10 bg-gray-700 bg-opacity-50 z-50 bottom-0 flex justify-center items-center gap-2 px-2">

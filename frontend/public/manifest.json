@@ -1,13 +1,25 @@
 {
-    "id": "1",
-    "name": "Socioknct",
+    "id": "2",
+    "name": "Socioknct - Social Media Platform",
     "short_name": "Socioknct",
     "icons": [
         {
-            "src": "/logo2.png",
+            "src":"/logo128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
+        },{
+            "src": "/logo500.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        
         }
     ],
     "theme_color": "#FFFFFF",

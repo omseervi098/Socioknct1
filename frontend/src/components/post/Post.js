@@ -350,9 +350,13 @@ export default function Post(props) {
           <div
             dangerouslySetInnerHTML={{ __html: post.text }}
             className={`tiptap transition-all w-full ease-in-out duration-300 block
-                        ${seeMore ? "block" : "max-h-[80px] overflow-hidden "}`}
+                        ${
+                          seeMore
+                            ? "block"
+                            : "max-h-[80px] overflow-hidden mb-2 "
+                        }`}
           ></div>
-          {post.text.length > 200 && (
+          {post.text.length > 300 && (
             <div
               className=" absolute  bottom-0 right-0 text-blue-500 cursor-pointer hover:underline"
               onClick={() => {
