@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
     background: {
       type: String,
       default:
-        "https://res.cloudinary.com/djzxjhnz8/image/upload/v1714741190/image/srdffryyvkhguuwzbo87.png",
+        "https://res.cloudinary.com/djzxjhnz8/image/upload/v1714741848/image/dx1pran2jbmxws49matk.png",
     },
     bio: {
       type: String,
