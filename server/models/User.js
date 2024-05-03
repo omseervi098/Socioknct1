@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema(
     },
     background: {
       type: String,
-      default: "https://source.unsplash.com/random",
+      default:
+        "https://res.cloudinary.com/djzxjhnz8/image/upload/v1714741190/image/srdffryyvkhguuwzbo87.png",
     },
     bio: {
       type: String,
