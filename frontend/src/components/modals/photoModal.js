@@ -21,9 +21,9 @@ export default function PhotoModal(props) {
   const cancelButtonRef = useRef(null);
   const { user } = useAuthContext();
   const { themes } = useGeneralContext();
-  const { createPost } = usePostContext();
+  const { createPost, uploadToCloud } = usePostContext();
   const [files, setFiles] = useState([]);
-  const [base64Files, setBase64Files] = useState([]);
+  const [uploadedUrl, setUploadedUrl] = useState([]);
   const [imageSrc, setImageSrc] = useState(undefined);
   const [viewall, setViewAll] = useState(false);
   const [content, setContent] = useState("<p>Write something here...</p>");
@@ -52,7 +52,6 @@ export default function PhotoModal(props) {
           compressedFile.size / (1024 * 1024)
         );
       }
-
       return compressedFiles;
     } catch (e) {
       console.log(e);
@@ -100,18 +99,24 @@ export default function PhotoModal(props) {
   const handleUpload = async () => {
     await setLoading(true);
     const compressedFiles = await compressFiles(files);
-    //convert to base64
-    const base64Files = await Promise.all(
+    //upload the files
+    const urls = await Promise.all(
       compressedFiles.map(async (file) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.file);
-        return new Promise((resolve, reject) => {
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
+        // const reader = new FileReader();
+        // reader.readAsDataURL(file.file);
+        // return new Promise((resolve, reject) => {
+        //   reader.onload = () => resolve(reader.result);
+        //   reader.onerror = reject;
+        // });
+        const resp = await uploadToCloud({
+          file: file.file,
+          type: { general: "image", type: "image" },
         });
+        console.log("resp", resp);
+        return resp;
       })
     );
-    await setBase64Files(base64Files);
+    await setUploadedUrl(urls);
     await setLoading(false);
   };
   const handleSubmit = async () => {
@@ -120,7 +125,7 @@ export default function PhotoModal(props) {
         createPost({
           content: content,
           type: "image",
-          images: base64Files,
+          images: uploadedUrl,
         }),
         {
           loading: "Posting...",
@@ -131,7 +136,7 @@ export default function PhotoModal(props) {
       .then(() => {
         props.handleOpen("photo");
         setFiles([]);
-        setBase64Files([]);
+        setUploadedUrl([]);
         setContent("<p>Write something here...</p>");
       });
   };
@@ -194,7 +199,7 @@ export default function PhotoModal(props) {
                         onClick={() => {
                           props.handleOpen("photo");
                           setFiles([]);
-                          setBase64Files([]);
+                          setUploadedUrl([]);
                           setImageSrc(undefined);
                           setContent("<p>Write something here...</p>");
                           setLoading(false);
@@ -210,9 +215,9 @@ export default function PhotoModal(props) {
                   {loading ? (
                     <div className="flex items-center justify-center gap-2 w-full h-[300px]">
                       <div className="w-10 h-10 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
-                      <span>Compressing images...</span>
+                      <span>Compressing & Uploading images...</span>
                     </div>
-                  ) : base64Files.length == 0 ? (
+                  ) : uploadedUrl.length == 0 ? (
                     <div className="flex items-center flex-col sm:flex-row gap-4 w-full ">
                       {files.length == 0 ? (
                         <Dropzone
@@ -322,7 +327,7 @@ export default function PhotoModal(props) {
                 </div>
                 {!loading && (
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    {base64Files.length == 0 ? (
+                    {uploadedUrl.length == 0 ? (
                       <button
                         type="button"
                         className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto
@@ -369,7 +374,7 @@ export default function PhotoModal(props) {
                       onClick={() => {
                         props.handleOpen("photo");
                         setFiles([]);
-                        setBase64Files([]);
+                        setUploadedUrl([]);
                         setImageSrc(undefined);
                         setContent("<p>Write something here...</p>");
                         setLoading(false);

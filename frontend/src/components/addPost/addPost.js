@@ -30,7 +30,7 @@ export default function AddPost() {
   };
   return (
     <>
-      <div className="flex flex-col items-center justify-center w-full h-full px-1 lg:px-4">
+      <div className="flex flex-col items-center justify-center w-full h-full px-0 sm:px-1 lg:px-4">
         <div className="bg-white rounded-lg shadow-lg w-full">
           <div className="flex w-full p-4 gap-3">
             <div

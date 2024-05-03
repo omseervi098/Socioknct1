@@ -181,3 +181,17 @@ export const loginUser = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+export const suggestUsers = async (req, res, next) => {
+  try {
+    //return 5 users's name, username, avatar, background, id
+    const users = await User.find().select(
+      "name username avatar background _id"
+    );
+    //shuffle users
+    users.sort(() => Math.random() - 0.5);
+    const suggestedUsers = users.slice(0, 4);
+    return res.status(200).json({ suggestedUsers });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

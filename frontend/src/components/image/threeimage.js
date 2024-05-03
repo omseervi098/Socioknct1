@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useGeneralContext } from "@/context/generalcontext";
 export default function ThreeImage(props) {
   return (
-    <div className="grid grid-cols-3 max-h-[500px] w-full min-h-[250px]">
-      <button className="h-full col-span-2">
+    <div className="grid grid-cols-3 max-h-[450px] w-full min-h-[250px]">
+      <button className="max-h-[450px] col-span-2">
         <div className="relative h-full" onClick={props.handleOpen}>
           <Image
             src={props.images[0]}
@@ -16,7 +16,7 @@ export default function ThreeImage(props) {
           />
         </div>
       </button>
-      <div className="grid grid-rows-2 col-span-1 h-full">
+      <div className="grid grid-rows-2 col-span-1 max-h-[450px]">
         <button className="h-full" onClick={props.handleOpen}>
           <div className="relative h-full">
             <Image

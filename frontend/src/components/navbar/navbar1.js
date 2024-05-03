@@ -22,8 +22,9 @@ export default function Navbar1() {
     >
       <div className={`flex-none items-center  ${styles.logo}`}>
         <Link href="/" className="text-lg flex items-center">
-          {!auth && "Socioknct"} &nbsp;
-          <Image src="/logo2_bg.png" width={30} height={30} alt="logo" />
+          <Image src="/favicon.ico" width={30} height={30} alt="logo" />
+          &nbsp;
+          {!auth && "Socioknct"}
         </Link>
       </div>
       <div className="">

@@ -26,6 +26,7 @@ export default function Post(props) {
   const { post } = props;
   const { themes, touch } = useGeneralContext();
   const [seeMore, setSeeMore] = useState(false);
+  const [showSeeMore, setShowSeeMore] = useState(false);
   const [visible, setVisible] = useState(false);
   const [audioVisible, setAudioVisible] = useState(false);
   const [open, setOpen] = useState(false);
@@ -45,6 +46,7 @@ export default function Post(props) {
   const [voted, setVoted] = useState(false);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
+  const textRef = useRef(null);
   const handleOpen = (type) => {
     setOpen(!open);
   };
@@ -56,6 +58,7 @@ export default function Post(props) {
       error: "Error Deleting Post",
     });
   };
+
   useEffect(() => {
     socket.on("poll", (data) => {
       updatePollPost(data);
@@ -87,7 +90,11 @@ export default function Post(props) {
     if (audioElement) {
       observer2.observe(audioElement);
     }
-
+    if (textRef.current) {
+      textRef.current.clientHeight >= 75
+        ? setShowSeeMore(true)
+        : setShowSeeMore(false);
+    }
     return () => {
       if (videoElement) {
         observer1.unobserve(videoElement);
@@ -109,12 +116,19 @@ export default function Post(props) {
         document.getElementById(`poll-${post._id}-${index}-bar`).style.width =
           newPercentage + "%";
       });
+
       const votedornot = post.poll.options.some((option) =>
         option.votes.includes(user._id)
       );
       setVoted(votedornot);
     }
+    if (textRef.current) {
+      textRef.current.clientHeight >= 70
+        ? setShowSeeMore(true)
+        : setShowSeeMore(false);
+    }
   }, [post, percentage]);
+
   function getPercentage(votes, totalVotes) {
     return Math.round((votes / totalVotes) * 100);
   }
@@ -346,8 +360,14 @@ export default function Post(props) {
             </Menu>
           </div>
         </div>
-        <div className="relative w-full text-xs sm:text-sm flex items-center pt-2 pb-2 px-2  ">
+        <div
+          className={`relative w-full text-xs sm:text-sm flex items-center pt-2  px-2  ${
+            showSeeMore ? "pb-2" : "pb-0"
+          } `}
+        >
           <div
+            ref={textRef}
+            id={`post-${post._id}-text`}
             dangerouslySetInnerHTML={{ __html: post.text }}
             className={`tiptap transition-all w-full ease-in-out duration-300 block
                         ${
@@ -356,9 +376,9 @@ export default function Post(props) {
                             : "max-h-[80px] overflow-hidden mb-2 "
                         }`}
           ></div>
-          {post.text.length > 300 && (
+          {showSeeMore && (
             <div
-              className=" absolute  bottom-0 right-0 text-blue-500 cursor-pointer hover:underline"
+              className=" absolute  bottom-0 right-0 text-blue-500 cursor-pointer hover:underline h-3"
               onClick={() => {
                 setSeeMore(!seeMore);
               }}
@@ -371,7 +391,7 @@ export default function Post(props) {
           <>
             <div className="my-2 flex   bg-gray-300 rounded-lg justify-center items-center w-full h-full ">
               {post.images.length === 1 && (
-                <div className="grid w-full max-h-[500px] min-h-[250px]">
+                <div className="grid w-full max-h-[450px] min-h-[250px]">
                   <button className="h-full" onClick={handleOpen}>
                     <div className="relative h-full">
                       <Image
@@ -387,7 +407,7 @@ export default function Post(props) {
               )}
               {post.images.length === 2 && (
                 <>
-                  <div className="grid grid-cols-2 max-h-[500px] w-full min-h-[250px]">
+                  <div className="grid grid-cols-2 max-h-[450px] w-full min-h-[250px]">
                     <button className="h-full" onClick={handleOpen}>
                       <div className="relative h-full">
                         <Image

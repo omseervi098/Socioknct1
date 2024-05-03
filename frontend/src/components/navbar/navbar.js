@@ -40,8 +40,8 @@ export default function Navbar() {
         className={`hidden md:block flex items-center text-xl ${styles.logo} mr-5`}
       >
         <Link href="/" className="flex items-center">
-          Socioknct&nbsp;
-          <Image src="/logo2_bg.png" alt="logo" width={30} height={30} />
+          <Image src="/favicon.ico" alt="logo" width={30} height={30} />
+          &nbsp;Socioknct
         </Link>
       </div>
       {auth && (
