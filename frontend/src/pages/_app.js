@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }) {
       import.meta.url
     ).toString();
   }, []);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
