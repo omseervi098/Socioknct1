@@ -27,11 +27,11 @@ export default function SuggestionsCard() {
       </div>
       <div className="flex flex-col items-center justify-center w-full h-full gap-3">
         {suggestions.map((suggestion) => (
-          <div className="relative flex items-center justify-between w-full">
+          <div className="relative  flex items-center justify-between w-full">
             <img
               src={suggestion.background}
               alt="background"
-              className="w-full rounded-lg h-14 object-cover"
+              className="rounded-lg h-14 object-cover filter blur-xs w-full brightness-75"
             />
             <div className="absolute w-full flex items-center justify-between gap-2 p-2">
               <div className="flex items-center gap-2 justify-start">

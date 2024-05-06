@@ -15,11 +15,12 @@ import SuggestionsCard from "@/components/suggestionsCard/suggestionsCard";
 import Footer from "@/components/footer/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Loader1 from "@/components/loader/loader1";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
   const { posts, getPosts } = usePostContext();
-
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -38,11 +39,19 @@ export default function Feed() {
     // make request in every 1 hour
     getWeatherAndNewsOnce();
     getPosts();
+    setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    // }, 1000);
+    return () => {
+      setLoading(false);
+    };
   }, []);
 
   if (!auth) {
-    return <div>Loading...</div>;
+    return null;
   }
+
   return (
     <div className="relative flex flex-row justify-between items-start w-full h-full md:space-x-4 mt-6 md:px-10 xl:px-16">
       <div className="hidden md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5">

@@ -18,6 +18,7 @@ const poppins = Poppins({
 });
 import { pdfjs } from "react-pdf";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import Loader1 from "@/components/loader/loader1";
 export default function App({ Component, pageProps }) {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -25,6 +26,19 @@ export default function App({ Component, pageProps }) {
       import.meta.url
     ).toString();
   }, []);
+  const [loading, setLoading] = React.useState(false);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => {
+      setLoading(false);
+    };
+  }, []);
+  if (loading) {
+    return <Loader1 />;
+  }
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENTID}>
       <GeneralProvider>
