@@ -10,27 +10,25 @@ const poppins = Poppins({
 export default function Loader1() {
   return (
     <div
-      className={`h-screen flex gap-2 flex-col items-center justify-center ${poppins.className}`}
+      className={`h-screen flex gap-2 flex-col items-center justify-between ${poppins.className}`}
     >
-      <div class="flex items-center justify-center">
-        <div class="relative">
-          <div class="h-20 w-20 flex items-center justify-center rounded-full border-t-8 border-b-8 border-gray-200">
-            <Image
-              src="/logo2.png"
-              alt="logo"
-              width={50}
-              height={50}
-              className="rounded-full animate-pulse"
-            />
+      <div className="flex flex-col items-center justify-center flex-grow">
+        <Image
+          src="/logo2.png"
+          alt="logo"
+          width={30}
+          height={30}
+          className="rounded-full animate-pulse animate-ping "
+        />{" "}
+        <div className="logo mt-7 flex items-center justify-center duration-1000">
+          <div className="text-2xl  font-semibold text-blue-600 flex items-center justify-center">
+            Socioknct
           </div>
-
-          <div class="absolute top-0 left-0 h-20 w-20 rounded-full border-t-4 border-b-4 border-blue-500 animate-spin"></div>
         </div>
       </div>
-      <div className="logo flex items-center justify-center animate-pulse duration-1000">
-        <div className="text-2xl  text-blue-600 flex items-center justify-center">
-          &nbsp;Socioknct
-        </div>
+
+      <div className="text-sm pb-2 text-blue-600 ">
+        Made with ❤️ by Omprakash
       </div>
     </div>
   );

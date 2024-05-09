@@ -114,7 +114,6 @@ export default function PdfReader({ file, height, info }) {
               onLoadSuccess={onDocumentLoadSuccess}
               className={`h-[${height}px] w-auto`}
               loading="Loading..."
-              options={{ isEvalSupported: false }}
             >
               <Page
                 pageNumber={pageNumber}
@@ -167,7 +166,6 @@ export default function PdfReader({ file, height, info }) {
               onLoadSuccess={onDocumentLoadSuccess}
               className={`h-[250px] w-max mx-auto px-3 flex justify-center items-center gap-3`}
               loading="Loading..."
-              options={{ isEvalSupported: false }}
             >
               {/* repeat page numPages times */}
               {[...Array(numPages)].map((e, i) => (
@@ -293,7 +291,6 @@ export default function PdfReader({ file, height, info }) {
                       onLoadSuccess={onDocumentLoadSuccess}
                       className={`h-auto w-[95vw] sm:w-auto sm:h-[90vh]`}
                       loading="Loading..."
-                      options={{ isEvalSupported: false }}
                     >
                       <div {...handlers} className="w-full h-full">
                         <Page

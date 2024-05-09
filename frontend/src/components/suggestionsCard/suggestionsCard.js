@@ -26,8 +26,11 @@ export default function SuggestionsCard() {
         <FontAwesomeIcon icon={faUserFriends} />
       </div>
       <div className="flex flex-col items-center justify-center w-full h-full gap-3">
-        {suggestions.map((suggestion) => (
-          <div className="relative  flex items-center justify-between w-full">
+        {suggestions.map((suggestion, index) => (
+          <div
+            className="relative  flex items-center justify-between w-full"
+            key={index}
+          >
             <img
               src={suggestion.background}
               alt="background"

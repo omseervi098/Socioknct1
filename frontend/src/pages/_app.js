@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 2500);
     return () => {
       setLoading(false);
     };
@@ -53,7 +53,7 @@ export default function App({ Component, pageProps }) {
                   <Navbar1 />
                 </div>
               </div>
-              <div className="pt-[60px] md:pb-0 pb-[60px]">
+              <div className="pt-[60px] md:pb-10 pb-[80px]">
                 <Component {...pageProps} />
               </div>
               <div className="md:hidden">

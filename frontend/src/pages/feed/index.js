@@ -16,6 +16,7 @@ import Footer from "@/components/footer/footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Loader1 from "@/components/loader/loader1";
+import PostSkeleton from "@/components/post/PostSkeleton";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
@@ -35,7 +36,6 @@ export default function Feed() {
     if (!token) {
       router.push("/login");
     }
-    // make request in every 1 hour
     getWeatherAndNewsOnce();
     getPosts();
   }, []);
@@ -45,9 +45,14 @@ export default function Feed() {
   }
 
   return (
-    <div className="relative flex flex-row justify-between items-start w-full h-full md:space-x-4 mt-6 md:px-10 xl:px-16">
-      <div className="hidden md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5">
-        <div className="mb-3">
+    <div className="relative flex flex-row justify-between items-start w-full h-full md:space-x-4 mt-5 md:px-10 xl:px-16">
+      {/* <div className="fixed left-0 w-full z-10 flex items-center justify-center top-20 transform -translate-y-1/2">
+        <button className="bg-blue-500 text-sm text-white p-1 px-4 rounded-full shadow-lg">
+          New Posts
+        </button>
+      </div> */}
+      <div className="hidden m-0 p-0 md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5">
+        <div className="mb-3 m-0 p-0">
           <InfoCard />
         </div>
         <div className="">
@@ -58,11 +63,13 @@ export default function Feed() {
         <div className="mb-5">
           <AddPost />
         </div>
-        <div className="flex flex-col gap-5 w-full">
+        <hr className="border-1 border-gray-400 mx-3" />
+        <div className="flex flex-col gap-5 w-full  pt-6">
           {posts &&
             posts.map((post, index) => {
               return <Post key={index} post={post} />;
             })}
+          {posts.length === 0 && <PostSkeleton />}
         </div>
       </div>
       <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">
