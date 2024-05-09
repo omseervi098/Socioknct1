@@ -18,7 +18,7 @@ export default function Loader1() {
           alt="logo"
           width={30}
           height={30}
-          className="rounded-full animate-pulse animate-ping "
+          className="rounded-full  animate-ping "
         />{" "}
         <div className="logo mt-7 flex items-center justify-center duration-1000">
           <div className="text-2xl  font-semibold text-blue-600 flex items-center justify-center">
