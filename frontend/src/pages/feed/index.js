@@ -20,7 +20,6 @@ export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
   const { posts, getPosts } = usePostContext();
-  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -39,13 +38,6 @@ export default function Feed() {
     // make request in every 1 hour
     getWeatherAndNewsOnce();
     getPosts();
-    setLoading(true);
-    // setTimeout(() => {
-    //   setLoading(false);
-    // }, 1000);
-    return () => {
-      setLoading(false);
-    };
   }, []);
 
   if (!auth) {
