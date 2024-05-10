@@ -17,10 +17,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Loader1 from "@/components/loader/loader1";
 import PostSkeleton from "@/components/post/PostSkeleton";
+import Loader2 from "@/components/loader/loader2";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
-  const { posts, getPosts } = usePostContext();
+  const { loading, posts, getPosts } = usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -30,16 +31,38 @@ export default function Feed() {
     }
     getNews();
   }, []);
-
+  //for Infinite Scroll of Posts
+  const handleScroll = useCallback(() => {
+    console.log(
+      "scrolling",
+      document.documentElement.scrollTop + window.innerHeight,
+      document.documentElement.scrollHeight,
+      posts.length
+    );
+    //Check if user has scrolled to the bottom of the page
+    if (
+      Math.ceil(document.documentElement.scrollTop + window.innerHeight) ==
+      document.documentElement.scrollHeight
+    ) {
+      if (posts.length != 0) {
+        getPosts(posts.length);
+      }
+    }
+  }, [posts.length]);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
     }
     getWeatherAndNewsOnce();
-    getPosts();
+    getPosts(0);
   }, []);
-
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
   if (!auth) {
     return null;
   }
@@ -64,12 +87,16 @@ export default function Feed() {
           <AddPost />
         </div>
         <hr className="border-1 border-gray-400 mx-3" />
-        <div className="flex flex-col gap-5 w-full  pt-6">
+        <div
+          className="flex flex-col gap-5 w-full  pt-6"
+          onScroll={handleScroll}
+        >
           {posts &&
             posts.map((post, index) => {
               return <Post key={index} post={post} />;
             })}
           {posts.length === 0 && <PostSkeleton />}
+          {loading && posts.length != 0 && <Loader2 />}
         </div>
       </div>
       <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">

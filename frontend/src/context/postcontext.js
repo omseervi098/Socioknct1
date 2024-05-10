@@ -3,21 +3,31 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useAuthContext } from "./authcontext";
 const SET_POSTS = "SET_POSTS";
+const ADD_POSTS = "ADD_POSTS";
+const SET_LOADING = "SET_LOADING";
 const SET_POST = "SET_POST";
 const DELETE_POST = "DELETE_POST";
 const UPDATE_POST = "UPDATE_POST";
 const ADD_POST = "ADD_POST";
+
 export const PostContext = React.createContext();
 const initialState = {
   posts: [],
   post: null,
+  loading: true,
 };
+
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_POSTS:
       return {
         ...state,
         posts: action.payload,
+      };
+    case ADD_POSTS:
+      return {
+        ...state,
+        posts: [...state.posts, ...action.payload],
       };
     case SET_POST:
       return {
@@ -41,6 +51,11 @@ const reducer = (state, action) => {
         ...state,
         posts: [action.payload, ...state.posts],
       };
+    case SET_LOADING:
+      return {
+        ...state,
+        loading: action.payload,
+      };
     default:
       return state;
   }
@@ -50,16 +65,25 @@ export const PostProvider = ({ children }) => {
   const { user } = useAuthContext();
   // Get All Posts
 
-  const getPosts = async () => {
+  const getPosts = async (offset) => {
     try {
-      const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/post";
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        "/api/v1/post/?offset=" +
+        offset +
+        "&limit=3";
+      if (parseInt(offset) != 0) dispatch({ type: SET_LOADING, payload: true });
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log(" Posts from getPosts", response.data.posts);
-      dispatch({ type: SET_POSTS, payload: response.data.posts });
+      console.log("Offset from getPosts", offset, response.data.posts, url);
+      dispatch({ type: SET_LOADING, payload: false });
+      if (parseInt(offset) == 0)
+        dispatch({ type: SET_POSTS, payload: response.data.posts });
+      else if (parseInt(offset) >= 3)
+        dispatch({ type: ADD_POSTS, payload: response.data.posts });
     } catch (err) {
       console.log(err);
     }
