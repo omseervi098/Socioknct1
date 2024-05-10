@@ -82,8 +82,7 @@ export const PostProvider = ({ children }) => {
       dispatch({ type: SET_LOADING, payload: false });
       if (parseInt(offset) == 0)
         dispatch({ type: SET_POSTS, payload: response.data.posts });
-      else if (parseInt(offset) >= 3)
-        dispatch({ type: ADD_POSTS, payload: response.data.posts });
+      else dispatch({ type: ADD_POSTS, payload: response.data.posts });
     } catch (err) {
       console.log(err);
     }

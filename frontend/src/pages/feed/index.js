@@ -48,7 +48,13 @@ export default function Feed() {
         getPosts(posts.length);
       }
     }
-  }, [posts.length]);
+  }, [getPosts, posts.length]);
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -57,12 +63,7 @@ export default function Feed() {
     getWeatherAndNewsOnce();
     getPosts(0);
   }, []);
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
+
   if (!auth) {
     return null;
   }
