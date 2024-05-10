@@ -21,7 +21,7 @@ import Loader2 from "@/components/loader/loader2";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
-  const { loading, posts, getPosts } = usePostContext();
+  const { loading, posts, getPosts, addPosts } = usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -41,14 +41,12 @@ export default function Feed() {
     );
     //Check if user has scrolled to the bottom of the page
     if (
-      Math.ceil(document.documentElement.scrollTop + window.innerHeight) ==
+      Math.round(document.documentElement.scrollTop + window.innerHeight) ==
       document.documentElement.scrollHeight
     ) {
-      if (posts.length != 0) {
-        getPosts(posts.length);
-      }
+      addPosts(posts.length);
     }
-  }, [getPosts, posts.length]);
+  }, [posts.length]);
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -61,7 +59,7 @@ export default function Feed() {
       router.push("/login");
     }
     getWeatherAndNewsOnce();
-    getPosts(0);
+    getPosts();
   }, []);
 
   if (!auth) {
@@ -97,8 +95,9 @@ export default function Feed() {
               return <Post key={index} post={post} />;
             })}
           {posts.length === 0 && <PostSkeleton />}
-          {loading && posts.length != 0 && <Loader2 />}
+          {/*  */}
         </div>
+        {loading && posts.length != 0 && <Loader2 />}
       </div>
       <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">
         <div className="">

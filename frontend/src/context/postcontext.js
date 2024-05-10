@@ -64,8 +64,25 @@ export const PostProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const { user } = useAuthContext();
   // Get All Posts
-
-  const getPosts = async (offset) => {
+  const getPosts = async () => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        "/api/v1/post/?offset=" +
+        0 +
+        "&limit=3";
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      dispatch({ type: SET_POSTS, payload: response.data.posts });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  //add posts
+  const addPosts = async (offset) => {
     try {
       const url =
         process.env.NEXT_PUBLIC_BACKEND_URL +
@@ -78,11 +95,9 @@ export const PostProvider = ({ children }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log("Offset from getPosts", offset, response.data.posts, url);
+      console.log("Offset from addPosts", offset, response.data.posts, url);
       dispatch({ type: SET_LOADING, payload: false });
-      if (parseInt(offset) == 0)
-        dispatch({ type: SET_POSTS, payload: response.data.posts });
-      else dispatch({ type: ADD_POSTS, payload: response.data.posts });
+      dispatch({ type: ADD_POSTS, payload: response.data.posts });
     } catch (err) {
       console.log(err);
     }
@@ -247,6 +262,7 @@ export const PostProvider = ({ children }) => {
       value={{
         ...state,
         getPosts,
+        addPosts,
         getPost,
         createPost,
         updatePost,
