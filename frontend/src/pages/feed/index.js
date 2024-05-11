@@ -75,7 +75,7 @@ export default function Feed() {
           dataLength={posts.length}
           next={addPosts}
           hasMore={hasMore}
-          loader={<PostSkeleton />}
+          loader={posts.length === 0 ? <PostSkeleton /> : <Loader2 />}
           endMessage={
             <p className="text-center text-xs">
               <b>Yay! You have seen it all</b>
