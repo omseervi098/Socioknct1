@@ -18,10 +18,12 @@ import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Loader1 from "@/components/loader/loader1";
 import PostSkeleton from "@/components/post/PostSkeleton";
 import Loader2 from "@/components/loader/loader2";
+import InfiniteScroll from "react-infinite-scroll-component";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
-  const { loading, posts, getPosts, addPosts } = usePostContext();
+  const { getTotalPosts, totalPosts, hasMore, posts, getPosts, addPosts } =
+    usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -31,35 +33,18 @@ export default function Feed() {
     }
     getNews();
   }, []);
-  //for Infinite Scroll of Posts
-  const handleScroll = useCallback(() => {
-    console.log(
-      "scrolling",
-      document.documentElement.scrollTop + window.innerHeight,
-      document.documentElement.scrollHeight,
-      posts.length
-    );
-    //Check if user has scrolled to the bottom of the page
-    if (
-      Math.round(document.documentElement.scrollTop + window.innerHeight) ==
-      document.documentElement.scrollHeight
-    ) {
-      addPosts(posts.length);
-    }
-  }, [posts.length]);
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
     }
     getWeatherAndNewsOnce();
-    getPosts();
+    async function handleFetch() {
+      await getTotalPosts();
+      await getPosts();
+    }
+    handleFetch();
   }, []);
 
   if (!auth) {
@@ -86,18 +71,25 @@ export default function Feed() {
           <AddPost />
         </div>
         <hr className="border-1 border-gray-400 mx-3" />
-        <div
-          className="flex flex-col gap-5 w-full  pt-6"
-          onScroll={handleScroll}
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={addPosts}
+          hasMore={hasMore}
+          loader={<PostSkeleton />}
+          endMessage={
+            <p className="text-center text-xs">
+              <b>Yay! You have seen it all</b>
+            </p>
+          }
+          style={{ overflow: "hidden" }}
         >
-          {posts &&
-            posts.map((post, index) => {
-              return <Post key={index} post={post} />;
-            })}
-          {posts.length === 0 && <PostSkeleton />}
-          {/*  */}
-        </div>
-        {loading && posts.length != 0 && <Loader2 />}
+          <div className="flex flex-col gap-5 w-full pt-6">
+            {posts &&
+              posts.map((post, index) => {
+                return <Post key={index} post={post} />;
+              })}
+          </div>
+        </InfiniteScroll>
       </div>
       <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">
         <div className="">

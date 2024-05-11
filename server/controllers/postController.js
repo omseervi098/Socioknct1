@@ -141,7 +141,6 @@ export const deletePost = async (req, res) => {
 export const getPosts = async (req, res) => {
   try {
     const { offset, limit } = req.query;
-    //sort posts by createdAt in descending order and populate user and poll fields
     const posts = await Post.find()
       .populate("user")
       .populate("poll")
@@ -149,6 +148,14 @@ export const getPosts = async (req, res) => {
       .skip(parseInt(offset))
       .limit(parseInt(limit));
     return res.status(200).json({ posts });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+export const getTotalPosts = async (req, res) => {
+  try {
+    const length = await Post.find().countDocuments();
+    return res.status(200).json({ length });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
   }

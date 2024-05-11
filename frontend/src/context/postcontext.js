@@ -4,7 +4,9 @@ import { useRouter } from "next/router";
 import { useAuthContext } from "./authcontext";
 const SET_POSTS = "SET_POSTS";
 const ADD_POSTS = "ADD_POSTS";
-const SET_LOADING = "SET_LOADING";
+const SET_TOTAL_POSTS = "SET_TOTAL_POSTS";
+const SET_HAS_MORE = "SET_HAS_MORE";
+const SET_OFFSET = "SET_OFFSET";
 const SET_POST = "SET_POST";
 const DELETE_POST = "DELETE_POST";
 const UPDATE_POST = "UPDATE_POST";
@@ -14,7 +16,9 @@ export const PostContext = React.createContext();
 const initialState = {
   posts: [],
   post: null,
-  loading: true,
+  offset: 3,
+  hasMore: true,
+  totalPosts: 0,
 };
 
 const reducer = (state, action) => {
@@ -29,6 +33,22 @@ const reducer = (state, action) => {
         ...state,
         posts: [...state.posts, ...action.payload],
       };
+    case SET_TOTAL_POSTS:
+      return {
+        ...state,
+        totalPosts: action.payload,
+      };
+    case SET_HAS_MORE:
+      return {
+        ...state,
+        hasMore: action.payload,
+      };
+    case SET_OFFSET:
+      return {
+        ...state,
+        offset: action.payload,
+      };
+
     case SET_POST:
       return {
         ...state,
@@ -51,11 +71,7 @@ const reducer = (state, action) => {
         ...state,
         posts: [action.payload, ...state.posts],
       };
-    case SET_LOADING:
-      return {
-        ...state,
-        loading: action.payload,
-      };
+
     default:
       return state;
   }
@@ -63,6 +79,24 @@ const reducer = (state, action) => {
 export const PostProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const { user } = useAuthContext();
+  //get posts length
+  const getTotalPosts = async () => {
+    try {
+      const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/post/length";
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Posts from getTotalPosts", response.data.length);
+      dispatch({
+        type: SET_TOTAL_POSTS,
+        payload: response.data.length,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   // Get All Posts
   const getPosts = async () => {
     try {
@@ -76,28 +110,38 @@ export const PostProvider = ({ children }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+
       dispatch({ type: SET_POSTS, payload: response.data.posts });
     } catch (err) {
       console.log(err);
     }
   };
   //add posts
-  const addPosts = async (offset) => {
+  const addPosts = async () => {
     try {
       const url =
         process.env.NEXT_PUBLIC_BACKEND_URL +
         "/api/v1/post/?offset=" +
-        offset +
+        state.offset +
         "&limit=3";
-      if (parseInt(offset) != 0) dispatch({ type: SET_LOADING, payload: true });
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log("Offset from addPosts", offset, response.data.posts, url);
-      dispatch({ type: SET_LOADING, payload: false });
+      console.log(
+        "Offset from addPosts",
+        state.offset,
+        response.data.posts,
+        url
+      );
       dispatch({ type: ADD_POSTS, payload: response.data.posts });
+      if (response.data.posts.length === 0) {
+        dispatch({ type: SET_HAS_MORE, payload: false });
+      } else {
+        dispatch({ type: SET_HAS_MORE, payload: true });
+      }
+      dispatch({ type: SET_OFFSET, payload: state.offset + 3 });
     } catch (err) {
       console.log(err);
     }
@@ -263,6 +307,7 @@ export const PostProvider = ({ children }) => {
         ...state,
         getPosts,
         addPosts,
+        getTotalPosts,
         getPost,
         createPost,
         updatePost,
@@ -271,6 +316,7 @@ export const PostProvider = ({ children }) => {
         votePoll,
         updatePollPost,
         unvotePoll,
+        getTotalPosts,
       }}
     >
       {children}
