@@ -19,6 +19,7 @@ const poppins = Poppins({
 import { pdfjs } from "react-pdf";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Loader1 from "@/components/loader/loader1";
+import { useRouter } from "next/router";
 export default function App({ Component, pageProps }) {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -26,12 +27,23 @@ export default function App({ Component, pageProps }) {
       import.meta.url
     ).toString();
   }, []);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
+  const router = useRouter();
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2500);
+    //check if user is logged in and check prev path
+    if (router.pathname === "/feed" || router.pathname === "/") {
+      if (localStorage.getItem("user")) {
+        router.push("/feed");
+      } else {
+        router.push("/"); //redirect to landing page
+      }
+    }
+    if (localStorage.getItem("user")) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2500);
+    }
     return () => {
       setLoading(false);
     };

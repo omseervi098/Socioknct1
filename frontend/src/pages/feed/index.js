@@ -22,8 +22,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews } = useGeneralContext();
-  const { getTotalPosts, totalPosts, hasMore, posts, getPosts, addPosts } =
-    usePostContext();
+  const { hasMore, posts, getPosts, addPosts } = usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -35,16 +34,8 @@ export default function Feed() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    }
     getWeatherAndNewsOnce();
-    async function handleFetch() {
-      await getTotalPosts();
-      await getPosts();
-    }
-    handleFetch();
+    if (posts.length === 0) getPosts();
   }, []);
 
   if (!auth) {
@@ -67,23 +58,23 @@ export default function Feed() {
         </div>
       </div>
       <div className=" w-full md:w-2/3 lg:w-1/2 px-2">
-        <div className="mb-5">
+        <div className="mb-5 hidden sm:block">
           <AddPost />
         </div>
-        <hr className="border-1 border-gray-400 mx-3" />
+        <hr className="hidden sm:block border-1 border-gray-400 mx-3" />
         <InfiniteScroll
           dataLength={posts.length}
           next={addPosts}
           hasMore={hasMore}
           loader={posts.length === 0 ? <PostSkeleton /> : <Loader2 />}
           endMessage={
-            <p className="text-center text-xs">
-              <b>Yay! You have seen it all</b>
+            <p className="text-center text-xs mt-2">
+              <b>Thats all folks!</b>
             </p>
           }
-          style={{ overflow: "hidden" }}
+          style={{ overflow: "hidden !important" }}
         >
-          <div className="flex flex-col gap-5 w-full pt-6">
+          <div className="flex flex-col gap-5 w-full sm:pt-6">
             {posts &&
               posts.map((post, index) => {
                 return <Post key={index} post={post} />;
@@ -104,7 +95,7 @@ export default function Feed() {
       </div>
       <button
         id="scrollToTop"
-        className="fixed bottom-5 right-5 bg-blue-500 text-white p-2 rounded-full shadow-lg"
+        className="hidden md:block fixed bottom-5 right-5 bg-blue-500 text-white p-2 rounded-full shadow-lg"
         onClick={() => {
           //add smooth scroll
           window.scrollTo({ top: 0, behavior: "smooth" });

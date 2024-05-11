@@ -14,6 +14,7 @@ import {
   faGear,
   faHome,
   faMessage,
+  faPlusCircle,
   faRightToBracket,
   faUserPlus,
   faXmark,
@@ -115,10 +116,10 @@ export default function Navbar() {
           <>
             <Link
               href="/feed"
-              className="flex-grow flex justify-center md:flex-grow-0  min-w-[80px] max-w-[100px]"
+              className="flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto"
             >
               <button
-                className={`p-2 w-full  ${
+                className={`pt-2 pb-1 md:p-2 w-full  ${
                   router.pathname === "/feed"
                     ? "border-t-4 md:border-t-0 md:border-b-4 "
                     : ""
@@ -142,10 +143,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/chat"
-              className="flex-grow flex justify-center md:flex-grow-0  min-w-[80px] max-w-[100px]"
+              className="flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto"
             >
               <button
-                className={`p-2 w-full  ${
+                className={`pt-2 pb-1 md:p-2 w-full  ${
                   router.pathname === "/chat"
                     ? "border-t-4 md:border-t-0 md:border-b-4"
                     : ""
@@ -168,12 +169,18 @@ export default function Navbar() {
                 {/* <div>Profile</div> */}
               </button>
             </Link>
+            <div className="flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto">
+              <button className="pt-2 pb-1 text-white w-full hover:bg-gray-100 hover:bg-opacity-25 ">
+                <FontAwesomeIcon icon={faPlusCircle} className="h-[20px]" />
+                <div className="text-xs">Post</div>
+              </button>
+            </div>
             <Link
               href="/notification"
-              className=" flex-grow flex justify-center md:flex-grow-0 min-w-[80px] max-w-[100px]"
+              className=" flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto"
             >
               <button
-                className={`p-2 w-full ${
+                className={`pt-2 pb-1 md:p-2 w-full ${
                   router.pathname === "/notification"
                     ? "border-t-4 md:border-t-0 md:border-b-4"
                     : ""
@@ -196,10 +203,10 @@ export default function Navbar() {
                 {/* <div>Profile</div> */}
               </button>
             </Link>
-            <div className="flex-grow flex justify-center md:flex-grow-0  min-w-[80px] max-w-[100px]">
+            <div className="flex-grow flex justify-center md:flex-grow-0  w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto">
               <button
                 onClick={() => setOpenDialog(true)}
-                className={`p-2 w-full md:hidden ${
+                className={`pt-2 pb-1 md:p-2 w-full md:hidden ${
                   router.pathname === "/profile" ||
                   router.pathname === "/settings"
                     ? "border-t-4 md:border-t-0 md:border-b-4"
