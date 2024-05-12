@@ -11,7 +11,7 @@ const SET_WEATHER = "SET_WEATHER";
 const SET_NEWS = "SET_NEWS";
 const SET_LOADING = "SET_LOADING";
 const SET_TOUCH = "SET_TOUCH";
-
+const SET_OPEN_DRAWER = "SET_OPEN_DRAWER";
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
@@ -32,6 +32,7 @@ const initialState = {
   weather: null,
   news: null,
   touch: false,
+  openDrawer: false,
   socket: null,
 };
 const reducer = (state, action) => {
@@ -54,6 +55,8 @@ const reducer = (state, action) => {
       return { ...state, loading: action.payload };
     case SET_TOUCH:
       return { ...state, touch: action.payload };
+    case SET_OPEN_DRAWER:
+      return { ...state, openDrawer: action.payload };
     default:
       return state;
   }
@@ -71,6 +74,9 @@ export const GeneralProvider = ({ children }) => {
   };
   const toggleLoading = () => {
     dispatch({ type: SET_LOADING, payload: !state.loading });
+  };
+  const toggleDrawer = () => {
+    dispatch({ type: SET_OPEN_DRAWER, payload: !state.openDrawer });
   };
   const setLocation = (data) => {
     getWeather(data);
@@ -177,6 +183,7 @@ export const GeneralProvider = ({ children }) => {
     <GeneralContext.Provider
       value={{
         ...state,
+        toggleDrawer,
         toggleTheme,
         setSignup,
         setLocation,

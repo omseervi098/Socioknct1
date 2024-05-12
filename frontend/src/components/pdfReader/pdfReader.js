@@ -4,6 +4,7 @@ import {
   faChevronLeft,
   faChevronRight,
   faCircle,
+  faClose,
   faDownload,
   faExpand,
   faX,
@@ -112,12 +113,13 @@ export default function PdfReader({ file, height, info }) {
             <Document
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              className={`h-[${height}px] w-auto`}
+              className={`h-[${height}px] w-auto px-3`}
               loading="Loading..."
             >
               <Page
                 pageNumber={pageNumber}
                 //height={height}
+
                 {...handler1}
                 loading="Loading Page..."
               />
@@ -164,13 +166,12 @@ export default function PdfReader({ file, height, info }) {
             <Document
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              className={`h-[250px] w-max mx-auto px-3 flex justify-center items-center gap-3`}
-              loading="Loading..."
+              className={`h-auto w-max mx-auto px-3 flex justify-center items-center gap-3`}
             >
               {/* repeat page numPages times */}
               {[...Array(numPages)].map((e, i) => (
                 <button
-                  className="w-[250px] h-[250px] bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-300"
+                  className="w-[250px] h-auto bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-300"
                   onClick={() => {
                     setFullScreen(true);
                     setPageNumber(i + 1);
@@ -179,7 +180,7 @@ export default function PdfReader({ file, height, info }) {
                 >
                   <Page
                     pageNumber={i + 1}
-                    className={`rounded-lg h-[250px]`}
+                    className={`rounded-lg h-auto w-[250px]`}
                     height={250}
                     loading="<h1>Loading...</h1>"
                   />
@@ -226,41 +227,46 @@ export default function PdfReader({ file, height, info }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <div className=" bg-gray-200 inline-block w-full h-full relative overflow-hidden  transition-all transform shadow-xl ">
-                  <div className="px-2 absolute w-full py-2 bg-gray-700 bg-opacity-70 z-50 top-0 flex justify-between items-center">
-                    <div className="w-4/5 flex items-center">
-                      <div className="max-w-4/5 text-white text-left truncate">
-                        {info.name.split(".pdf")[0]}&nbsp;
-                      </div>
-                      <div className="w-1/5 flex items-center">
-                        <FontAwesomeIcon
-                          icon={faCircle}
-                          className="text-white h-[5px] hidden sm:block"
-                        />
-                        <div className="text-white hidden sm:block">
-                          &nbsp;{numPages} pages
+                  <div className="px-2 absolute w-full py-3 bg-gray-700 bg-opacity-70 z-50 top-0 flex justify-between items-center">
+                    <div className="w-full flex justify-between items-center">
+                      <div className="w-4/5 flex items-center">
+                        <div className="max-w-4/5 text-white text-left truncate">
+                          {info.name.split(".pdf")[0]}&nbsp;
+                        </div>
+                        <div className="w-1/5 flex items-center">
+                          <FontAwesomeIcon
+                            icon={faCircle}
+                            className="text-white h-[5px] hidden sm:block"
+                          />
+                          <div className="text-white hidden sm:block">
+                            &nbsp;{numPages} pages
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        className="text-white border border-white p-1 rounded-lg flex items-center hover:bg-gray-300"
-                        onClick={() => window.open(file)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          className="h-[15px]"
-                        />
+                      <div className="flex items-center gap-4 ">
+                        <button
+                          className="text-white border border-white p-1 rounded-lg flex items-center hover:bg-gray-300"
+                          onClick={() => window.open(file)}
+                        >
+                          <FontAwesomeIcon
+                            icon={faDownload}
+                            className="h-[18px]"
+                          />
 
-                        <span className="text-xs hidden sm:block">
-                          &nbsp; Download
-                        </span>
-                      </button>
-                      <button
-                        className="text-white"
-                        onClick={() => setFullScreen(false)}
-                      >
-                        <FontAwesomeIcon icon={faX} className="h-[20px]" />
-                      </button>
+                          <span className="text-xs hidden sm:block">
+                            &nbsp; Download
+                          </span>
+                        </button>
+                        <button
+                          className="text-white border border-white p-1 rounded-lg flex items-center hover:bg-gray-300"
+                          onClick={() => setFullScreen(false)}
+                        >
+                          <FontAwesomeIcon
+                            icon={faClose}
+                            className="h-[18px]  "
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
                   {pageNumber > 1 && (
@@ -300,30 +306,32 @@ export default function PdfReader({ file, height, info }) {
                       </div>
                     </Document>
                   </div>
-                  <div className="absolute w-full h-10 bg-gray-700 bg-opacity-50 z-50 bottom-0 flex justify-center items-center gap-2 px-2">
-                    <div className="text-white">
-                      {pageNumber}/{numPages}
+                  <div className="absolute w-full h-10 z-50 bottom-20 sm:bottom-10 md:bottom-5 flex justify-center items-center  ">
+                    <div className="w-[90%] text-white flex justify-center item-center bg-gray-700 gap-4 bg-opacity-50 p-2 rounded-lg">
+                      <div className="text-white">
+                        {pageNumber}/{numPages}
+                      </div>
+                      <div className="flex-grow mx-auto">
+                        <input
+                          id="range"
+                          type="range"
+                          maxLength={numPages}
+                          min="1"
+                          max={numPages}
+                          value={pageNumber}
+                          onChange={(e) => {
+                            setPageNumber(parseInt(e.target.value));
+                          }}
+                          className="block w-full  bg-white border rounded-md focus:border-blue-500 focus:outline-none focus:ring"
+                        />
+                      </div>
+                      <button
+                        className="text-white"
+                        onClick={() => setFullScreen(!fullScreen)}
+                      >
+                        <FontAwesomeIcon icon={faExpand} className="h-[20px]" />
+                      </button>
                     </div>
-                    <div className="flex-grow mx-auto">
-                      <input
-                        id="range"
-                        type="range"
-                        maxLength={numPages}
-                        min="1"
-                        max={numPages}
-                        value={pageNumber}
-                        onChange={(e) => {
-                          setPageNumber(parseInt(e.target.value));
-                        }}
-                        className="block w-full  bg-white border rounded-md focus:border-blue-500 focus:outline-none focus:ring"
-                      />
-                    </div>
-                    <button
-                      className="text-white"
-                      onClick={() => setFullScreen(!fullScreen)}
-                    >
-                      <FontAwesomeIcon icon={faExpand} className="h-[20px]" />
-                    </button>
                   </div>
                 </div>
               </Transition.Child>

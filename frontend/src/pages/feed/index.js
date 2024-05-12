@@ -58,7 +58,7 @@ export default function Feed() {
         </div>
       </div>
       <div className=" w-full md:w-2/3 lg:w-1/2 px-2">
-        <div className="mb-5 hidden sm:block">
+        <div className="mb-5 hidden md:block">
           <AddPost />
         </div>
         <hr className="hidden sm:block border-1 border-gray-400 mx-3" />

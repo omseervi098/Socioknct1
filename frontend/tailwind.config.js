@@ -1,3 +1,4 @@
+import flowbite from "flowbite-react/tailwind";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["selector", "[data-theme='dark']"],
@@ -5,6 +6,7 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    flowbite.content(),
   ],
   theme: {
     extend: {
@@ -23,5 +25,5 @@ module.exports = {
       display: ["group-hover"],
     },
   },
-  plugins: [],
+  plugins: [flowbite.plugin()],
 };

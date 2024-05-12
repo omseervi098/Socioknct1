@@ -201,6 +201,7 @@ export default function AddPost() {
           </div>
         </div>
       </div>
+
       <ArticleModal open={open.article} handleOpen={handleOpen} />
       <VideoModal open={open.video} handleOpen={handleOpen} />
       <PollModal open={open.poll} handleOpen={handleOpen} />

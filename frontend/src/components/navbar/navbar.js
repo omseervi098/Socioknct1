@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu, Transition, Dialog } from "@headlessui/react";
 import {
   faArrowRightFromBracket,
+  faBars,
   faBell,
   faChevronDown,
   faGear,
@@ -19,20 +20,40 @@ import {
   faUserPlus,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { Drawer } from "flowbite-react";
 import { useRouter } from "next/router";
 import { Switch } from "@headlessui/react";
 import { useAuthContext } from "@/context/authcontext";
 import { faRocketchat } from "@fortawesome/free-brands-svg-icons";
 import { googleLogout } from "@react-oauth/google";
+import PhotoModal from "../modals/photoModal";
+import ArticleModal from "../modals/articleModal";
+import VideoModal from "../modals/videoModal";
+import DocumentModal from "../modals/documentModal";
+import PollModal from "../modals/pollModal";
+import AudioModal from "../modals/audioModal";
+
 export default function Navbar() {
-  const { theme, themes, toggleTheme } = useGeneralContext();
+  const { theme, themes, toggleTheme, openDrawer, toggleDrawer } =
+    useGeneralContext();
   const { auth, user, logout } = useAuthContext();
   const [openDialog, setOpenDialog] = React.useState(false);
+
   const router = useRouter();
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
-
+  const [open, setOpen] = React.useState({
+    photo: false,
+    video: false,
+    document: false,
+    poll: false,
+    audio: false,
+    article: false,
+  });
+  const handleOpen = (type) => {
+    setOpen({ ...open, [type]: !open[type] });
+  };
   return (
     <div
       className={`h-auto  flex justify-between items-center text-black shadow-sm ${styles.navbar}  md:px-5`}
@@ -170,10 +191,135 @@ export default function Navbar() {
               </button>
             </Link>
             <div className="flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto">
-              <button className="pt-2 pb-1 text-white w-full hover:bg-gray-100 hover:bg-opacity-25 ">
+              <button
+                className="pt-2 pb-1 text-white w-full hover:bg-gray-100 hover:bg-opacity-25 "
+                onClick={() => toggleDrawer()}
+              >
                 <FontAwesomeIcon icon={faPlusCircle} className="h-[20px]" />
                 <div className="text-xs">Post</div>
               </button>
+            </div>
+            <Drawer
+              open={openDrawer}
+              onClose={() => toggleDrawer()}
+              position="bottom"
+              className="p-0"
+            >
+              <Drawer.Header
+                title="Add Post"
+                onClick={() => toggleDrawer()}
+                className="cursor-pointer px-4 pt-4 hover:bg-gray-50 dark:hover:bg-gray-700"
+              />
+              <Drawer.Items className="p-3 px-5">
+                <div className="grid grid-cols-3 gap-4 p-2 lg:grid-cols-4">
+                  <div
+                    className="cursor-pointer rounded-lg bg-gray-50 p-4 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    onClick={() => setOpen({ ...open, photo: !open.photo })}
+                  >
+                    <div className="mx-auto mb-2 flex h-[48px] max-h-[48px] w-[48px] max-w-[48px] items-center justify-center rounded-full bg-gray-200 p-2 dark:bg-gray-600">
+                      <Image
+                        src="/icons/photo.png"
+                        width={20}
+                        height={20}
+                        alt="photo-icon"
+                      />
+                    </div>
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                      Photo
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer rounded-lg bg-gray-50 p-4 px-2 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    onClick={() =>
+                      setOpen({ ...open, document: !open.document })
+                    }
+                  >
+                    <div className="mx-auto mb-2 flex h-[48px] max-h-[48px] w-[48px] max-w-[48px] items-center justify-center rounded-full bg-gray-200 p-2 dark:bg-gray-600">
+                      <Image
+                        src="/icons/document.png"
+                        width={20}
+                        height={20}
+                        alt="document-icon"
+                      />
+                    </div>
+                    <div className="text-center  text-gray-500 dark:text-gray-400 text-sm">
+                      Document
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer rounded-lg bg-gray-50 p-4 hover:bg-gray-100 lg:block dark:bg-gray-700 dark:hover:bg-gray-600"
+                    onClick={() => setOpen({ ...open, video: !open.video })}
+                  >
+                    <div className="mx-auto mb-2 flex h-[48px] max-h-[48px] w-[48px] max-w-[48px] items-center justify-center rounded-full bg-gray-200 p-2 dark:bg-gray-600">
+                      <Image
+                        src="/icons/video.png"
+                        width={20}
+                        height={20}
+                        alt="video-icon"
+                      />
+                    </div>
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                      Video
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer rounded-lg bg-gray-50 p-4 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    onClick={() => setOpen({ ...open, poll: !open.poll })}
+                  >
+                    <div className="mx-auto mb-2 flex h-[48px] max-h-[48px] w-[48px] max-w-[48px] items-center justify-center rounded-full bg-gray-200 p-2 dark:bg-gray-600">
+                      <Image
+                        src="/icons/poll.png"
+                        width={20}
+                        height={20}
+                        alt="poll-icon"
+                      />
+                    </div>
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                      Poll
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer rounded-lg bg-gray-50 p-4 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    onClick={() => setOpen({ ...open, audio: !open.audio })}
+                  >
+                    <div className="mx-auto mb-2 flex h-[48px] max-h-[48px] w-[48px] max-w-[48px] items-center justify-center rounded-full bg-gray-200 p-2 dark:bg-gray-600">
+                      <Image
+                        src="/icons/music.png"
+                        width={20}
+                        height={20}
+                        alt="audio-icon"
+                      />
+                    </div>
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                      Audio
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer rounded-lg bg-gray-50 p-4 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    onClick={() => setOpen({ ...open, article: !open.article })}
+                  >
+                    <div className="mx-auto mb-2 flex h-[48px] max-h-[48px] w-[48px] max-w-[48px] items-center justify-center rounded-full bg-gray-200 p-2 dark:bg-gray-600">
+                      <Image
+                        src="/icons/article.png"
+                        width={20}
+                        height={20}
+                        alt="article-icon"
+                      />
+                    </div>
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                      Article
+                    </div>
+                  </div>
+                </div>
+              </Drawer.Items>
+            </Drawer>
+            <div className="md:hidden">
+              <PhotoModal open={open.photo} handleOpen={handleOpen} />
+              <ArticleModal open={open.article} handleOpen={handleOpen} />
+              <VideoModal open={open.video} handleOpen={handleOpen} />
+              <DocumentModal open={open.document} handleOpen={handleOpen} />
+              <PollModal open={open.poll} handleOpen={handleOpen} />
+              <AudioModal open={open.audio} handleOpen={handleOpen} />
             </div>
             <Link
               href="/notification"
