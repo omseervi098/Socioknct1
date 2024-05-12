@@ -135,6 +135,16 @@ blockquote:after {
   width: 100% !important;
   height: 100% !important;
 }
+.nonfull .react-pdf__Page {
+ 
+  max-height: 300px !important;
+
+}
+.nonfull .react-pdf__Page__canvas {
+
+  max-height: 300px !important;
+  
+}
 .react-pdf__Page__textContent {
 display: none;
 }

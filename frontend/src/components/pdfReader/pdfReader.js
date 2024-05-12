@@ -109,17 +109,18 @@ export default function PdfReader({ file, height, info }) {
               <FontAwesomeIcon icon={faChevronRight} className="text-white" />
             </div>
           )}
-          <div className="max-w-max py-3 ">
+          <div className={`max-w-max py-3 nonfull w-full`}>
             <Document
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              className={`h-auto w-auto px-3`}
+              className={`w-full px-2 max-h-[${height}px] `}
               loading="Loading..."
             >
               <Page
                 pageNumber={pageNumber}
                 //height={height}
-
+                className={`h-full w-auto`}
+                style={{}}
                 {...handler1}
                 loading="Loading Page..."
               />
