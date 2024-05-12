@@ -113,7 +113,7 @@ export default function PdfReader({ file, height, info }) {
             <Document
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              className={`h-[${height}px] w-auto px-3`}
+              className={`h-auto w-auto px-3`}
               loading="Loading..."
             >
               <Page
