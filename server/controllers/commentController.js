@@ -1,16 +1,34 @@
+import { text } from "express";
+import { Post } from "../models/Post.js";
+import { Comment } from "../models/Comment.js";
+
 export const createComment = async (req, res) => {
   try {
-    const { user, post, content } = req.body;
-    const newComment = new Comment({
-      user,
-      post,
-      content,
+    const { postId, content } = req.body;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    console.log(postId, content, req.user._id);
+    const newComment = await Comment.create({
+      user: req.user._id,
+      post: postId,
+      text: content,
     });
-    await newComment.save();
+    //populate the user field
+    await newComment.populate("user", "name avatar bio");
+
+    post.comments.push(newComment._id);
+    await post.save();
     return res
-      .status(201)
+      .status(200)
       .json({ message: "Comment created successfully", newComment });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

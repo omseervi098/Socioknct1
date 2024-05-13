@@ -151,3 +151,8 @@ display: none;
 .react-pdf__Page__annotations {
   display: none;
 }
+/* Textarea */
+.textareacommentreply img{
+  display: inline;
+  
+}

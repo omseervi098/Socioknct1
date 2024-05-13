@@ -6,11 +6,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCircle,
+  faComment,
+  faCommentAlt,
   faCopy,
-  faDeleteLeft,
   faEdit,
   faEllipsisH,
+  faPaperPlane,
   faShare,
+  faThumbsUp,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import AudioPlayer from "react-h5-audio-player";
@@ -20,8 +23,8 @@ import ThreeImage from "../image/threeimage";
 import PostImageModal from "../modals/postImageModal";
 import { useAuthContext } from "@/context/authcontext";
 import toast from "react-hot-toast";
-import { text } from "@fortawesome/fontawesome-svg-core";
 import { socket } from "@/utils/socket";
+import Comment from "../comment/Comment";
 export default function Post(props) {
   const { post } = props;
   const { themes, touch } = useGeneralContext();
@@ -44,6 +47,7 @@ export default function Post(props) {
       : []
   );
   const [voted, setVoted] = useState(false);
+  const [openComment, setOpenComment] = useState(false);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const textRef = useRef(null);
@@ -57,6 +61,39 @@ export default function Post(props) {
       success: "Post Deleted Successfully",
       error: "Error Deleting Post",
     });
+  };
+  const parseDate = (date) => {
+    const newDate = new Date(date);
+    //convert date to local time zone
+    const localDate = new Date(newDate.toLocaleString());
+    //now get current date
+    const currentDate = new Date();
+    //get the difference in milliseconds
+    const diff = currentDate - newDate;
+    //get the difference in seconds
+    const seconds = diff / 1000;
+    //if the difference is less than 60 seconds then it is a seconds ago
+    if (seconds < 60) {
+      return `${Math.floor(seconds)} seconds ago`;
+    }
+    //if the difference is less than 60 minutes then it is a minutes ago
+    if (seconds < 60 * 60) {
+      return `${Math.floor(seconds / 60)} minutes ago`;
+    }
+    //if the difference is less than 24 hours then it is a hours ago
+    if (seconds < 60 * 60 * 24) {
+      return `${Math.floor(seconds / 60 / 60)} hours ago`;
+    }
+    //if the difference is less than 30 days then it is a days ago
+    if (seconds < 60 * 60 * 24 * 30) {
+      return `${Math.floor(seconds / 60 / 60 / 24)} days ago`;
+    }
+    //if the difference is less than 12 months then it is a months ago
+    if (seconds < 60 * 60 * 24 * 30 * 12) {
+      return `${Math.floor(seconds / 60 / 60 / 24 / 30)} months ago`;
+    }
+    //if the difference is more than 12 months then it is a years ago
+    return `${Math.floor(seconds / 60 / 60 / 24 / 30 / 12)} years ago`;
   };
 
   useEffect(() => {
@@ -209,7 +246,7 @@ export default function Post(props) {
                     icon={faCircle}
                     className="h-[5px] text-green-500"
                   />
-                  &nbsp;10 days
+                  &nbsp;{parseDate(post.createdAt)}
                 </p>
               </div>
               <div className="w-full text-xs flex flex-row items-center overflow-hidden ">
@@ -547,6 +584,71 @@ export default function Post(props) {
             </div>
           </div>
         )}
+        <div className="w-full flex flex-row justify-between items-center gap-2 pb-2 pt-1 px-1">
+          <div className="flex flex-row items-center gap-2">
+            <div className="relative flex flex-row items-center gap-0 w-14 ">
+              <div className="w-6 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
+                <Image
+                  src="https://ui-avatars.com/api/?name=Ocs+Gkads"
+                  alt="avatar"
+                  width={50}
+                  height={50}
+                  className=" rounded-full"
+                />
+              </div>
+              <div className="absolute w-6 left-4 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
+                <Image
+                  src="https://ui-avatars.com/api/?name=Fed+Jsss"
+                  alt="avatar"
+                  width={50}
+                  height={50}
+                  className=" rounded-full"
+                />
+              </div>
+              <div className="absolute left-8 w-6 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
+                <Image
+                  src="https://ui-avatars.com/api/?name=John+Doe"
+                  alt="avatar"
+                  width={50}
+                  height={50}
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="text-xs text-gray-500">110 Likes</div>
+          </div>
+          <div className="flex flex-row items-center gap-1">
+            <div className="rounded-full text-gray-500 flex items-center justify-center">
+              <FontAwesomeIcon icon={faComment} className="h-[15px]" />
+            </div>
+            <div className="text-xs text-gray-500">10 Comments</div>
+          </div>
+        </div>
+        <div className="w-full flex flex-row justify-between items-center gap-2  border-t border-gray-300 px-0 pt-1">
+          <div className="flex flex-row items-center gap-0">
+            <button className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md">
+              <FontAwesomeIcon icon={faThumbsUp} className="h-[20px]" />
+              <span className="text-xs text-gray-700">Like</span>
+            </button>
+            <button
+              className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md"
+              onClick={() => setOpenComment(!openComment)}
+            >
+              <FontAwesomeIcon icon={faCommentAlt} className="h-[20px]" />
+              <span className="text-xs text-gray-700">Comment</span>
+            </button>
+          </div>
+          <button className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md">
+            <FontAwesomeIcon icon={faPaperPlane} className="h-[20px]" />
+            <span className="text-xs text-gray-700">Share</span>
+          </button>
+        </div>
+        <Comment
+          postId={post._id}
+          comments={post.comments}
+          openComment={openComment}
+          parseDate={parseDate}
+        />
       </div>
     </div>
   );

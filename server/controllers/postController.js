@@ -143,10 +143,12 @@ export const getPosts = async (req, res) => {
     const { offset, limit } = req.query;
     const posts = await Post.find()
       .populate("user")
+      .populate({ path: "comments", populate: { path: "user" } })
       .populate("poll")
       .sort({ createdAt: -1 })
       .skip(parseInt(offset))
       .limit(parseInt(limit));
+
     return res.status(200).json({ posts });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });

@@ -190,7 +190,7 @@ export default function Navbar() {
                 {/* <div>Profile</div> */}
               </button>
             </Link>
-            <div className="flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto">
+            <div className="md:hidden flex-grow flex justify-center md:flex-grow-0 w-1/5  md:min-w-[80px] md:max-w-[100px] md:w-auto">
               <button
                 className="pt-2 pb-1 text-white w-full hover:bg-gray-100 hover:bg-opacity-25 "
                 onClick={() => toggleDrawer()}
@@ -204,6 +204,7 @@ export default function Navbar() {
               onClose={() => toggleDrawer()}
               position="bottom"
               className="p-0"
+              maskClosable={true}
             >
               <Drawer.Header
                 title="Add Post"

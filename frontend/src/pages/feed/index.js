@@ -43,13 +43,13 @@ export default function Feed() {
   }
 
   return (
-    <div className="relative flex flex-row justify-between items-start w-full h-full md:space-x-4 mt-5 md:px-10 xl:px-16">
+    <div className="relative flex flex-row justify-between items-start w-full h-full md:mt-5 md:px-10 xl:px-16">
       {/* <div className="fixed left-0 w-full z-10 flex items-center justify-center top-20 transform -translate-y-1/2">
         <button className="bg-blue-500 text-sm text-white p-1 px-4 rounded-full shadow-lg">
           New Posts
         </button>
       </div> */}
-      <div className="hidden m-0 p-0 md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5">
+      <div className="hidden m-0 p-0 md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5 ">
         <div className="mb-3 m-0 p-0">
           <InfoCard />
         </div>
@@ -57,11 +57,11 @@ export default function Feed() {
           <SuggestionsCard />
         </div>
       </div>
-      <div className=" w-full md:w-2/3 lg:w-1/2 px-2">
-        <div className="mb-5 hidden md:block">
+      <div className=" w-full md:w-2/3 lg:w-1/2 px-1 md:px-4">
+        <div className="mb-4 hidden md:block">
           <AddPost />
         </div>
-        <hr className="hidden sm:block border-1 border-gray-400 mx-3" />
+        <hr className="hidden sm:block border-1 border-gray-400 mx-4" />
         <InfiniteScroll
           dataLength={posts.length}
           next={addPosts}
@@ -74,7 +74,7 @@ export default function Feed() {
           }
           style={{ overflow: "hidden !important" }}
         >
-          <div className="flex flex-col gap-5 w-full sm:pt-6">
+          <div className="flex flex-col gap-3 w-full md:pt-4">
             {posts &&
               posts.map((post, index) => {
                 return <Post key={index} post={post} />;

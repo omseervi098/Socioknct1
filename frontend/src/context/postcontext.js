@@ -110,6 +110,7 @@ export const PostProvider = ({ children }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      console.log("Posts from getPosts", response.data.posts);
 
       dispatch({ type: SET_POSTS, payload: response.data.posts });
     } catch (err) {
@@ -301,6 +302,29 @@ export const PostProvider = ({ children }) => {
       return response.data.secure_url;
     }
   };
+  const addComment = async ({ postId, comment }) => {
+    console.log("Add Comment", postId, comment);
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/comment/create`;
+      const resp = await axios.post(
+        url,
+        { postId, content: comment },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Comment from addComment", resp.data);
+      //search for the post
+      const post = state.posts.find((post) => post._id === postId);
+      post.comments.push(resp.data.newComment);
+      dispatch({ type: UPDATE_POST, payload: post });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <PostContext.Provider
       value={{
@@ -311,6 +335,7 @@ export const PostProvider = ({ children }) => {
         getPost,
         createPost,
         updatePost,
+        addComment,
         deletePost,
         uploadToCloud,
         votePoll,

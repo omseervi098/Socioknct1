@@ -36,7 +36,13 @@ const nextConfig = {
         hostname: "unsplash.com",
       },
       {
+        hostname: "source.unsplash.com",
+      },
+      {
         hostname: "openweathermap.org",
+      },
+      {
+        hostname: "randomuser.me",
       },
     ],
   },
