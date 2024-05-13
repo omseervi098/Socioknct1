@@ -13,6 +13,7 @@ import {
   faEllipsisH,
   faPaperPlane,
   faShare,
+  faSmile,
   faThumbsUp,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -25,6 +26,8 @@ import { useAuthContext } from "@/context/authcontext";
 import toast from "react-hot-toast";
 import { socket } from "@/utils/socket";
 import Comment from "../comment/Comment";
+import { Textarea } from "flowbite-react";
+import EmojiPickerModal from "../modals/emojiPickerModal";
 export default function Post(props) {
   const { post } = props;
   const { themes, touch } = useGeneralContext();
@@ -34,7 +37,15 @@ export default function Post(props) {
   const [audioVisible, setAudioVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
-  const { deletePost, votePoll, updatePollPost, unvotePoll } = usePostContext();
+  const { deletePost, votePoll, updatePollPost, unvotePoll, addComment } =
+    usePostContext();
+  const [expandComment, setExpandComment] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const commentRef = useRef();
+  const handleAddComment = () => {
+    console.log("Add comment");
+    addComment({ postId: post._id, comment: commentRef.current.value });
+  };
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
@@ -643,12 +654,104 @@ export default function Post(props) {
             <span className="text-xs text-gray-700">Share</span>
           </button>
         </div>
-        <Comment
-          postId={post._id}
-          comments={post.comments}
-          openComment={openComment}
-          parseDate={parseDate}
-        />
+        <Transition
+          show={openComment}
+          className="w-full"
+          enter="transition-opacity duration-500"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-300"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div
+            className={` w-full flex flex-row items-start justify-center pt-2 pb-0 px-0 
+`}
+          >
+            <div className="min-w-[45px] w-[45px] h-auto max-h-12 rounded-full overflow-hidden">
+              <Image
+                src={user.avatar}
+                alt="avatar"
+                width={50}
+                height={50}
+                className="w-[45px] h-auto rounded-full"
+              />
+            </div>
+            <div className="relative w-[calc(100%-45px)] flex flex-col items-start gap-1 pl-2">
+              <div className="relative w-full">
+                <Textarea
+                  placeholder="Write a comment"
+                  className={`textareacommentreply p-2 relative w-full text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus:border-blue-500 ${
+                    touch ? "" : "pe-8"
+                  } min-h-[40px] max-h-[100px]`}
+                  rows={1}
+                  ref={commentRef}
+                />
+                {!touch && (
+                  <button
+                    className=" absolute right-1 bottom-1 text-gray-500  rounded-full flex items-center justify-center gap-1  p-1 px-2"
+                    onClick={() => setShowEmoji(!showEmoji)}
+                  >
+                    <FontAwesomeIcon icon={faSmile} className="h-[18px]" />
+                  </button>
+                )}
+              </div>
+              <button
+                className="bg-blue-500 flex items-center justify-center gap-1 hover:bg-blue-700 p-1 px-2  rounded-full"
+                onClick={handleAddComment}
+              >
+                <span className="text-xs text-white">Post</span>
+              </button>
+            </div>
+          </div>
+        </Transition>
+        <div className="w-full flex flex-col items-start gap-2 py-2 px-0">
+          {post.comments.slice(0, 1).map((comment, index) => (
+            <Comment
+              comment={comment}
+              parseDate={parseDate}
+              key={index}
+              postId={post._id}
+            />
+          ))}
+          <Transition
+            show={expandComment}
+            className="w-full"
+            enter="transition-opacity duration-500"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            {post.comments.length > 1 &&
+              post.comments
+                .slice(1)
+                .map((comment, idx) => (
+                  <Comment
+                    comment={comment}
+                    parseDate={parseDate}
+                    key={idx}
+                    postId={post._id}
+                  />
+                ))}
+          </Transition>
+          <div
+            className="w-full flex text-xs flex-col items-start gap-2 py-0 px-1 hover:text-blue-500"
+            onClick={() => setExpandComment(!expandComment)}
+          >
+            {post.comments.length > 1 && (
+              <span className="text-xs font-semibold text-gray-700 hover:text-blue-500">
+                View {expandComment ? "less" : "more"} comments
+              </span>
+            )}
+          </div>
+          <EmojiPickerModal
+            showEmoji={showEmoji}
+            setShowEmoji={setShowEmoji}
+            commentRef={commentRef}
+          />
+        </div>
       </div>
     </div>
   );

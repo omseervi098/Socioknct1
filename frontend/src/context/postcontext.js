@@ -325,6 +325,33 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  const addReply = async ({ postId, commentId, content }) => {
+    console.log("Add Reply", postId, commentId, content);
+    try {
+      const url = process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/reply/create`;
+      const resp = await axios.post(
+        url,
+        { postId, commentId, content },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Reply from addReply", resp.data);
+      //search for the post
+      const post = state.posts.find((post) => post._id === postId);
+      const comment = post.comments.find((com) => com._id === commentId);
+      comment.replies.push(resp.data.reply);
+      // make changes to the post
+      post.comments = post.comments.map((com) =>
+        com._id === commentId ? comment : com
+      );
+      dispatch({ type: UPDATE_POST, payload: post });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <PostContext.Provider
       value={{
@@ -342,6 +369,7 @@ export const PostProvider = ({ children }) => {
         updatePollPost,
         unvotePoll,
         getTotalPosts,
+        addReply,
       }}
     >
       {children}
