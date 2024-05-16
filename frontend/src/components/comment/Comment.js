@@ -5,6 +5,7 @@ import {
   faHandDots,
   faListDots,
   faSmile,
+  faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Textarea } from "flowbite-react";
@@ -72,7 +73,8 @@ export default function Comment(props) {
               </div>
               <div className="w-full flex flex-row items-center justify-start gap-2">
                 <button className="text-xs font-semibold text-gray-700 hover:text-blue-500">
-                  Like (10)
+                  <FontAwesomeIcon icon={faThumbsUp} className="h-[12px]" />{" "}
+                  Like (20)
                 </button>
                 |
                 <button
@@ -165,14 +167,16 @@ export default function Comment(props) {
                   />
                 ))}
               </Transition>
-              <button
-                className="w-full flex text-xs flex-col items-start gap-2 py-2 px-1"
-                onClick={() => setExpandReply(!expandReply)}
-              >
-                {comment.replies.length > 1
-                  ? `View ${expandReply ? "less" : "more"} replies ...`
-                  : "Load more replies ..."}
-              </button>
+              {comment.replies.length > 1 ? (
+                <button
+                  className="w-full flex text-xs flex-col items-start gap-2 pt-1 pb-0 px-1 text-gray-500 hover:text-blue-500"
+                  onClick={() => setExpandReply(!expandReply)}
+                >
+                  View {expandReply ? "less" : "more"} replies ...
+                </button>
+              ) : (
+                ""
+              )}
             </>
           )}
           <EmojiPickerModal

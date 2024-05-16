@@ -28,9 +28,14 @@ import { socket } from "@/utils/socket";
 import Comment from "../comment/Comment";
 import { Textarea } from "flowbite-react";
 import EmojiPickerModal from "../modals/emojiPickerModal";
+import EditPhotoModal from "../editModal/editPhotoModal";
+import EditArticleModal from "../editModal/editArticleModal";
+import EditDocumentModal from "../editModal/editDocumentModal";
+import EditVideoModal from "../editModal/editVideoModal";
+import EditAudioModal from "../editModal/editAudioModal";
 export default function Post(props) {
   const { post } = props;
-  const { themes, touch } = useGeneralContext();
+  const { themes, touch, addAudioRef, stopAllAudio } = useGeneralContext();
   const [seeMore, setSeeMore] = useState(false);
   const [showSeeMore, setShowSeeMore] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -39,9 +44,22 @@ export default function Post(props) {
   const { user } = useAuthContext();
   const { deletePost, votePoll, updatePollPost, unvotePoll, addComment } =
     usePostContext();
+  const musicRef = useRef(null);
   const [expandComment, setExpandComment] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState({
+    image: false,
+    video: false,
+    audio: false,
+    document: false,
+    article: false,
+    poll: false,
+  });
   const commentRef = useRef();
+
+  const handleOpenEditModal = (type) => {
+    setOpenEditModal({ ...openEditModal, [type]: !openEditModal[type] });
+  };
   const handleAddComment = () => {
     console.log("Add comment");
     addComment({ postId: post._id, comment: commentRef.current.value });
@@ -75,35 +93,25 @@ export default function Post(props) {
   };
   const parseDate = (date) => {
     const newDate = new Date(date);
-    //convert date to local time zone
     const localDate = new Date(newDate.toLocaleString());
-    //now get current date
     const currentDate = new Date();
-    //get the difference in milliseconds
     const diff = currentDate - newDate;
-    //get the difference in seconds
     const seconds = diff / 1000;
-    //if the difference is less than 60 seconds then it is a seconds ago
     if (seconds < 60) {
       return `${Math.floor(seconds)} seconds ago`;
     }
-    //if the difference is less than 60 minutes then it is a minutes ago
     if (seconds < 60 * 60) {
       return `${Math.floor(seconds / 60)} minutes ago`;
     }
-    //if the difference is less than 24 hours then it is a hours ago
     if (seconds < 60 * 60 * 24) {
       return `${Math.floor(seconds / 60 / 60)} hours ago`;
     }
-    //if the difference is less than 30 days then it is a days ago
     if (seconds < 60 * 60 * 24 * 30) {
       return `${Math.floor(seconds / 60 / 60 / 24)} days ago`;
     }
-    //if the difference is less than 12 months then it is a months ago
     if (seconds < 60 * 60 * 24 * 30 * 12) {
       return `${Math.floor(seconds / 60 / 60 / 24 / 30)} months ago`;
     }
-    //if the difference is more than 12 months then it is a years ago
     return `${Math.floor(seconds / 60 / 60 / 24 / 30 / 12)} years ago`;
   };
 
@@ -113,6 +121,9 @@ export default function Post(props) {
     });
     const videoElement = videoRef.current;
     const audioElement = audioRef.current;
+    if (musicRef && musicRef.current) {
+      addAudioRef(musicRef.current);
+    }
     const observer1 = new IntersectionObserver(
       ([entry]) => {
         setVisible(entry.isIntersecting);
@@ -302,9 +313,24 @@ export default function Post(props) {
                                   : "text-gray-700",
                                 "flex px-4 py-2 text-sm w-full text-left gap-2"
                               )}
-                              onClick={() =>
-                                setOpen({ ...open, poll: !open.poll })
-                              }
+                              onClick={() => {
+                                //check if post has poll
+                                const ans =
+                                  post.images && post.images.length > 0
+                                    ? "image"
+                                    : post.video
+                                    ? "video"
+                                    : post.audio
+                                    ? "audio"
+                                    : post.document
+                                    ? "document"
+                                    : "article";
+                                console.log("Edit Post", ans);
+                                setOpenEditModal({
+                                  ...openEditModal,
+                                  [ans]: true,
+                                });
+                              }}
                             >
                               <FontAwesomeIcon
                                 icon={faEdit}
@@ -517,7 +543,7 @@ export default function Post(props) {
             <AudioPlayer
               src={post.audio}
               // other props here
-              // ref={audioRef}
+              ref={musicRef}
               autoPlayAfterSrcChange={false}
               autoPlay={false}
               showJumpControls={false}
@@ -705,7 +731,7 @@ export default function Post(props) {
             </div>
           </div>
         </Transition>
-        <div className="w-full flex flex-col items-start gap-2 py-2 px-0">
+        <div className="w-full flex flex-col items-start gap-2 pt-2 pb-0 px-0">
           {post.comments.slice(0, 1).map((comment, index) => (
             <Comment
               comment={comment}
@@ -716,7 +742,7 @@ export default function Post(props) {
           ))}
           <Transition
             show={expandComment}
-            className="w-full"
+            className="w-full flex flex-col gap-3"
             enter="transition-opacity duration-500"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -736,20 +762,53 @@ export default function Post(props) {
                   />
                 ))}
           </Transition>
-          <div
-            className="w-full flex text-xs flex-col items-start gap-2 py-0 px-1 hover:text-blue-500"
-            onClick={() => setExpandComment(!expandComment)}
-          >
-            {post.comments.length > 1 && (
+          {post.comments.length > 1 && (
+            <button
+              className="w-full flex text-xs items-start gap-0 py-0 px-1 hover:text-blue-500"
+              onClick={() => setExpandComment(!expandComment)}
+            >
               <span className="text-xs font-semibold text-gray-700 hover:text-blue-500">
                 View {expandComment ? "less" : "more"} comments
               </span>
-            )}
-          </div>
+            </button>
+          )}
           <EmojiPickerModal
             showEmoji={showEmoji}
             setShowEmoji={setShowEmoji}
             commentRef={commentRef}
+          />
+          {post.images && post.images.length > 0 && (
+            <EditPhotoModal
+              open={openEditModal["image"]}
+              handleOpen={handleOpenEditModal}
+              post={post}
+            />
+          )}
+          {post.document && (
+            <EditDocumentModal
+              open={openEditModal["document"]}
+              handleOpen={handleOpenEditModal}
+              post={post}
+            />
+          )}
+          {post.video && (
+            <EditVideoModal
+              open={openEditModal["video"]}
+              handleOpen={handleOpenEditModal}
+              post={post}
+            />
+          )}
+          {post.audio && (
+            <EditAudioModal
+              open={openEditModal["audio"]}
+              handleOpen={handleOpenEditModal}
+              post={post}
+            />
+          )}
+          <EditArticleModal
+            open={openEditModal["article"]}
+            handleOpen={handleOpenEditModal}
+            post={post}
           />
         </div>
       </div>

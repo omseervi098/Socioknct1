@@ -4,13 +4,13 @@ export default function PostSkeleton() {
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
         <div
           role="status"
-          class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 flex flex-col  items-center justify-center"
+          className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 flex flex-col  items-center justify-center"
         >
           <div className=" pb-2 pt-1 w-full flex flex-col justify-between gap-2">
             <div className="w-full flex flex-row gap-2">
               <div className="flex flex-row items-center gap-2">
                 <svg
-                  class="w-10 h-10 rounded-full text-slate-400 dark:text-gray-600"
+                  className="w-10 h-10 rounded-full text-slate-400 dark:text-gray-600"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -20,34 +20,34 @@ export default function PostSkeleton() {
                 </svg>
               </div>
               <div className="gap-1 w-full flex flex-col justify-center">
-                <div class="h-2 bg-slate-400 rounded-full  w-48"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full "></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-48"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full "></div>
               </div>
             </div>
             <div className="w-full flex flex-col gap-2 mt-2">
               <div className="gap-1 w-full flex flex-col justify-center">
-                <div class="h-2 bg-slate-400 rounded-full  w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full  w-48"></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-48"></div>
               </div>
             </div>
           </div>
 
-          <span class="sr-only">Loading...</span>
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
         <div
           role="status"
-          class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 flex flex-col  items-center justify-center"
+          className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 flex flex-col  items-center justify-center"
         >
           <div className=" pb-2 pt-1 w-full flex flex-col justify-between gap-2">
             <div className="w-full flex flex-row gap-2">
               <div className="flex flex-row items-center gap-2">
                 <svg
-                  class="w-10 h-10 rounded-full text-slate-400 dark:text-gray-600"
+                  className="w-10 h-10 rounded-full text-slate-400 dark:text-gray-600"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -57,22 +57,22 @@ export default function PostSkeleton() {
                 </svg>
               </div>
               <div className="gap-1 w-full flex flex-col justify-center">
-                <div class="h-2 bg-slate-400 rounded-full  w-48"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full "></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-48"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full "></div>
               </div>
             </div>
             <div className="w-full  flex flex-col gap-2 mt-2">
               <div className="gap-1 px-2 w-full flex flex-col justify-center">
-                <div class="h-2 bg-slate-400 rounded-full  w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full  w-48"></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-48"></div>
               </div>
               <div className="flex flex-row items-center gap-0">
                 <div className="w-full h-48 bg-slate-200 flex items-center justify-center rounded-l-lg">
                   <svg
-                    class="w-10 h-10 text-slate-400 "
+                    className="w-10 h-10 text-slate-400 "
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -83,7 +83,7 @@ export default function PostSkeleton() {
                 </div>
                 <div className="w-full h-48 bg-slate-300 flex items-center justify-center rounded-r-lg">
                   <svg
-                    class="w-10 h-10 text-slate-400  "
+                    className="w-10 h-10 text-slate-400  "
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -96,19 +96,19 @@ export default function PostSkeleton() {
             </div>
           </div>
 
-          <span class="sr-only">Loading...</span>
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
         <div
           role="status"
-          class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 flex flex-col  items-center justify-center"
+          className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 flex flex-col  items-center justify-center"
         >
           <div className=" pb-2 pt-1 w-full flex flex-col justify-between gap-2">
             <div className="w-full flex flex-row gap-2">
               <div className="flex flex-row items-center gap-2">
                 <svg
-                  class="w-10 h-10 rounded-full text-slate-400 dark:text-gray-600"
+                  className="w-10 h-10 rounded-full text-slate-400 dark:text-gray-600"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -118,25 +118,25 @@ export default function PostSkeleton() {
                 </svg>
               </div>
               <div className="gap-1 w-full flex flex-col justify-center">
-                <div class="h-2 bg-slate-400 rounded-full  w-48"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full "></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-48"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full "></div>
               </div>
             </div>
             <div className="w-full flex flex-col gap-2 mt-2">
               <div className="gap-1 w-full flex flex-col justify-center">
-                <div class="h-2 bg-slate-400 rounded-full  w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-96"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-full"></div>
-                <div class="h-2 bg-slate-400 rounded-full   w-96"></div>
-                <div class="h-2 bg-slate-400 rounded-full  w-48"></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-96"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-full"></div>
+                <div className="h-2 bg-slate-400 rounded-full   w-96"></div>
+                <div className="h-2 bg-slate-400 rounded-full  w-48"></div>
               </div>
             </div>
           </div>
 
-          <span class="sr-only">Loading...</span>
+          <span className="sr-only">Loading...</span>
         </div>
       </div>
     </div>

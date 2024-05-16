@@ -12,6 +12,7 @@ const SET_NEWS = "SET_NEWS";
 const SET_LOADING = "SET_LOADING";
 const SET_TOUCH = "SET_TOUCH";
 const SET_OPEN_DRAWER = "SET_OPEN_DRAWER";
+
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
@@ -57,12 +58,15 @@ const reducer = (state, action) => {
       return { ...state, touch: action.payload };
     case SET_OPEN_DRAWER:
       return { ...state, openDrawer: action.payload };
+    case SET_AUDIO:
+      return { ...state, audio: action.payload };
     default:
       return state;
   }
 };
 export const GeneralProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
+  const audioRefs = React.useRef([]);
   const toggleTheme = () => {
     const newTheme = state.theme === "light" ? "dark" : "light";
     localStorage.setItem("theme", newTheme);
@@ -82,6 +86,18 @@ export const GeneralProvider = ({ children }) => {
     getWeather(data);
     dispatch({ type: SET_LOCATION, payload: data });
   };
+  const addAudioRef = (ref) => {
+    audioRefs.current.push(ref);
+  };
+  const stopAllAudio = () => {
+    console.log(audioRefs.current);
+    audioRefs.current.forEach((ref) => {
+      if (ref == null) return;
+
+      ref.audio.current.pause();
+    });
+  };
+
   const getWeatherByCoords = async (lat, lon) => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/weather/get";
@@ -185,6 +201,8 @@ export const GeneralProvider = ({ children }) => {
         ...state,
         toggleDrawer,
         toggleTheme,
+        addAudioRef,
+        stopAllAudio,
         setSignup,
         setLocation,
         getWeatherByCity,

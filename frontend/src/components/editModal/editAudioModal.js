@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AudioPlayer from "react-h5-audio-player";
@@ -17,18 +17,31 @@ const poppins = Poppins({
   variable: "--font-poppins",
   display: "auto",
 });
-export default function AudioModal(props) {
+export default function EditAudioModal(props) {
   const cancelButtonRef = useRef(null);
   const { user } = useAuthContext();
-  const { themes, stopAllAudio } = useGeneralContext();
-  const { createPost, uploadToCloud } = usePostContext();
-  const [files, setFiles] = useState([]);
-  const [content, setContent] = useState("<p>Write something here...</p>");
-  const [audioSrc, setAudioSrc] = useState("");
-  const [audioURL, setAudioURL] = useState("");
+  const { post } = props;
+  const { themes, addAudioRef, stopAllAudio } = useGeneralContext();
+  const { updatePost, uploadToCloud } = usePostContext();
+  const [files, setFiles] = useState(
+    post.audio
+      ? [
+          {
+            name: "Audio File",
+            size: 1024 * 1024 * 5,
+            url: post.audio,
+          },
+        ]
+      : []
+  );
+  const musicRef = useRef(null);
+
+  const [content, setContent] = useState(post.text);
+  const [audioSrc, setAudioSrc] = useState(post.audio);
+  const [audioURL, setAudioURL] = useState(post.audio);
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const musicRef = useRef(null);
+  const [next, setNext] = useState(false);
   const updateFile = (files) => {
     if (files.length > 1) {
       toast.error("You can only upload one Audio file");
@@ -44,6 +57,12 @@ export default function AudioModal(props) {
   const handleUpload = async () => {
     setLoading(true);
     try {
+      if (files[0].url) {
+        setAudioURL(files[0].url);
+        setLoading(false);
+        setNext(true);
+        return;
+      }
       const resp = await uploadToCloud({
         file: files[0].file,
         type: { general: "raw", type: "audio" },
@@ -51,10 +70,12 @@ export default function AudioModal(props) {
       console.log(resp);
       setAudioURL(resp);
       setLoading(false);
+      setNext(true);
     } catch (err) {
       console.log(err);
       toast.error("Error uploading audio");
       setLoading(false);
+      setNext(false);
     }
   };
   const handleSubmit = async () => {
@@ -67,26 +88,37 @@ export default function AudioModal(props) {
       {
         loading: "Posting...",
         success: (data) => {
-          setFiles([]);
-          setContent("<p>Write something here...</p>");
-          setAudioURL("");
-          setAudioSrc("");
+          setFiles(
+            data.audio
+              ? [{ name: "Audio File", size: 1024 * 1024 * 5, url: data.audio }]
+              : []
+          );
+          setContent(data.text);
+          setAudioURL(data.audio);
+          setAudioSrc(data.audio);
           setLoading(false);
+          setNext(false);
           props.handleOpen("audio");
           return "Posted";
         },
         error: (err) => {
           setLoading(false);
-          setFiles([]);
-          setContent("<p>Write something here...</p>");
-          setAudioURL("");
-          setAudioSrc("");
+          setFiles(
+            post.audio
+              ? [{ name: "Audio File", size: 1024 * 1024 * 5, url: post.audio }]
+              : []
+          );
+          setContent(post.text);
+          setAudioURL(post.audio);
+          setAudioSrc(post.audio);
+          setNext(false);
           props.handleOpen("audio");
           return "Error Posting";
         },
       }
     );
   };
+
   return (
     <Transition.Root show={props.open} as={Fragment}>
       <Dialog
@@ -133,7 +165,7 @@ export default function AudioModal(props) {
                     <div className="flex flex-col">
                       <span className="text-md font-semibold">{user.name}</span>
                       <span className="text-xs text-gray-500">
-                        Add a new Audio Post
+                        Edit your Audio Post
                       </span>
                     </div>
                   </div>
@@ -144,10 +176,21 @@ export default function AudioModal(props) {
                         className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
                         onClick={() => {
                           props.handleOpen("audio");
-                          setFiles([]);
-                          setContent("<p>Write something here...</p>");
-                          setAudioURL("");
-                          setAudioSrc("");
+                          setFiles(
+                            post.audio
+                              ? [
+                                  {
+                                    name: "Audio File",
+                                    size: 1024 * 1024 * 5,
+                                    url: post.audio,
+                                  },
+                                ]
+                              : []
+                          );
+                          setContent(post.text);
+                          setAudioURL(post.audio);
+                          setAudioSrc(post.audio);
+                          setNext(false);
                           setLoading(false);
                         }}
                       />
@@ -160,102 +203,88 @@ export default function AudioModal(props) {
                       <div className="w-10 h-10 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
                       <span>Uploading Your Audio...</span>
                     </div>
-                  ) : audioURL == "" ? (
+                  ) : !next ? (
                     <div className="flex items-center flex-col md:flex-row gap-4 w-full ">
-                      {files.length == 0 ? (
-                        <Dropzone
-                          onChange={updateFile}
-                          accept="audio/*"
-                          minHeight="300px"
-                          label="Drag and drop your audio here"
-                          multiple={false}
-                          maxFiles={1}
-                          maxFileSize={1024 * 1024 * 5}
-                          className={`max-h-[270px] overflow-y-auto`}
-                          value={files}
-                        ></Dropzone>
-                      ) : (
-                        <>
-                          <div className="flex flex-col   gap-3 w-full ">
-                            <div className="flex flex-col  items-center justify-center gap-2">
-                              <div className="relative flex bg-gray-50 w-full py-2 rounded-lg items-center justify-center gap-0">
-                                {playing ? (
-                                  <Image
-                                    src="/icons/musicanimation.gif"
-                                    className="h-[100px] w-full"
-                                    alt="audio"
-                                    width={40}
-                                    height={40}
-                                  />
-                                ) : (
-                                  <Image
-                                    src="/icons/musicanimationstop.png"
-                                    className="h-[100px] w-full"
-                                    alt="audio"
-                                    width={40}
-                                    height={40}
-                                  />
-                                )}
+                      <>
+                        <div className="flex flex-col   gap-3 w-full ">
+                          <div className="flex flex-col  items-center justify-center gap-2">
+                            <div className="relative flex bg-gray-50 w-full py-2 rounded-lg items-center justify-center gap-0">
+                              {playing ? (
                                 <Image
-                                  src="/icons/music.png"
-                                  className="absolute w-14 h-14"
+                                  src="/icons/musicanimation.gif"
+                                  className="h-[100px] w-full"
                                   alt="audio"
-                                  width={100}
-                                  height={100}
+                                  width={40}
+                                  height={40}
                                 />
-                              </div>
-                              <AudioPlayer
-                                src={audioSrc}
-                                ref={musicRef}
-                                showJumpControls={false}
-                                onLoadStart={() => console.log("loading audio")}
-                                hasDefaultKeyBindings={false}
-                                autoPlay={false}
-                                onPlay={(e) => {
-                                  stopAllAudio();
-                                  setPlaying(true);
-                                }}
-                                onPause={(e) => setPlaying(false)}
-                                autoPlayAfterSrcChange={false}
+                              ) : (
+                                <Image
+                                  src="/icons/musicanimationstop.png"
+                                  className="h-[100px] w-full"
+                                  alt="audio"
+                                  width={40}
+                                  height={40}
+                                />
+                              )}
+                              <Image
+                                src="/icons/music.png"
+                                className="absolute w-14 h-14"
+                                alt="audio"
+                                width={100}
+                                height={100}
                               />
                             </div>
-                            <div className="flex flex-col justify-center gap-2 bg-gray-100 p-2 rounded-lg">
-                              <div className="text-xs md:text-sm flex">
-                                Name:
-                                <div className="font-semibold px-2">
-                                  {files[0].name}
-                                </div>
-                              </div>
-                              <div className="text-xs md:text-sm flex">
-                                Size :
-                                <div className="font-semibold px-2">
-                                  {Math.round(
-                                    (files[0].size / (1024 * 1024)) * 100
-                                  ) / 100}{" "}
-                                  mb
-                                </div>
+                            <AudioPlayer
+                              ref={musicRef}
+                              src={audioSrc}
+                              showJumpControls={false}
+                              onLoadStart={() => console.log("loading audio")}
+                              hasDefaultKeyBindings={false}
+                              onPlay={() => {
+                                stopAllAudio();
+                                setPlaying(true);
+                              }}
+                              onPause={() => setPlaying(false)}
+                              autoPlay={false}
+                              autoPlayAfterSrcChange={false}
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center gap-2 bg-gray-100 p-2 rounded-lg">
+                            <div className="text-xs md:text-sm flex">
+                              Name:
+                              <div className="font-semibold px-2">
+                                {files[0].name}
                               </div>
                             </div>
-                            <div className="flex justify-center gap-2">
-                              <button
-                                className="bg-red-600 text-white font-semibold rounded-md p-2 hover:bg-red-500 transition-all"
-                                onClick={() => setFiles([])}
-                              >
-                                Remove
-                              </button>
-                              <FileInputButton
-                                onChange={updateFile}
-                                accept="audio/*"
-                                multiple={false}
-                                maxFiles={1}
-                                maxFileSize={1024 * 1024 * 5}
-                              >
-                                Replace
-                              </FileInputButton>
+                            <div className="text-xs md:text-sm flex">
+                              Size :
+                              <div className="font-semibold px-2">
+                                {Math.round(
+                                  (files[0].size / (1024 * 1024)) * 100
+                                ) / 100}{" "}
+                                mb
+                              </div>
                             </div>
                           </div>
-                        </>
-                      )}
+                          <div className="flex justify-center gap-2">
+                            <button
+                              className="bg-red-600 text-white font-semibold rounded-md p-2 hover:bg-red-500 transition-all"
+                              onClick={() => setFiles([])}
+                            >
+                              Remove
+                            </button>
+                            <FileInputButton
+                              onChange={updateFile}
+                              accept="audio/*"
+                              multiple={false}
+                              maxFiles={1}
+                              maxFileSize={1024 * 1024 * 5}
+                            >
+                              Replace
+                            </FileInputButton>
+                          </div>
+                        </div>
+                      </>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-2 flex-wrap rounded-lg">
@@ -269,7 +298,7 @@ export default function AudioModal(props) {
                 </div>
                 {!loading && (
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    {audioURL == "" ? (
+                    {!next ? (
                       <button
                         type="button"
                         className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto
@@ -315,11 +344,22 @@ export default function AudioModal(props) {
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                       onClick={() => {
                         props.handleOpen("audio");
-                        setFiles([]);
-                        setContent("<p>Write something here...</p>");
-                        setAudioURL("");
-                        setAudioSrc("");
+                        setFiles(
+                          post.audio
+                            ? [
+                                {
+                                  name: "Audio File",
+                                  size: 1024 * 1024 * 5,
+                                  url: post.audio,
+                                },
+                              ]
+                            : []
+                        );
+                        setContent(post.text);
+                        setAudioURL(post.audio);
+                        setAudioSrc(post.audio);
                         setLoading(false);
+                        setNext(false);
                       }}
                       ref={cancelButtonRef}
                     >

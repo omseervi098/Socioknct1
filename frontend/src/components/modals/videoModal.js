@@ -117,7 +117,7 @@ export default function VideoModal(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all h-screen w-screen md:h-auto md:w-auto sm:my-8 sm:w-[600px] md:w-[700px] lg:w-[900px]">
+              <Dialog.Panel className="relative transform flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all h-screen w-screen md:h-auto md:w-auto  sm:w-[600px] md:w-[700px] lg:w-[900px]">
                 <div className=" pt-3 pb-3 px-4 flex flex-row justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Image
@@ -151,7 +151,7 @@ export default function VideoModal(props) {
                     </div>
                   )}
                 </div>
-                <div className="bg-white px-4 pb-4 pt-0 w-full">
+                <div className="bg-white px-4 pb-4 py-4 sm:py-0 w-full">
                   {loading ? (
                     <div className="flex items-center justify-center gap-2 w-full h-[300px]">
                       <div className="w-10 h-10 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
@@ -176,7 +176,7 @@ export default function VideoModal(props) {
                           <div className="flex flex gap-2 justify-center items-center w-full md:w-2/3">
                             <VideoPreview
                               src={videoSrc}
-                              className="w-full h-full rounded-lg "
+                              className="w-full h-full   rounded-lg "
                               controls
                             />
                           </div>
@@ -231,7 +231,7 @@ export default function VideoModal(props) {
                   )}
                 </div>
                 {!loading && (
-                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <div className=" bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     {videoURL == "" ? (
                       <button
                         type="button"

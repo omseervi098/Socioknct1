@@ -5,6 +5,7 @@ import {
   faHandDots,
   faListDots,
   faSmile,
+  faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Textarea } from "flowbite-react";
@@ -56,7 +57,8 @@ export default function Reply(props) {
             </div>
             <div className="w-full flex flex-row items-center justify-start gap-3">
               <button className="text-xs font-semibold text-gray-700 hover:text-blue-500">
-                Like (10)
+                <FontAwesomeIcon icon={faThumbsUp} className="h-[12px]" /> Like
+                (10)
               </button>
             </div>
           </div>

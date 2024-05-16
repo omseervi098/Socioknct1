@@ -99,15 +99,37 @@ export const updatePost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+    console.log(post.user, req.user._id);
+    if (post.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
     post.text = content;
     post.images = images;
     post.video = video;
     post.audio = audio;
     post.document = document;
     await post.save();
-
+    await post.populate([
+      { path: "poll" },
+      { path: "user", select: "name avatar bio" },
+      {
+        path: "comments",
+        populate: [
+          {
+            path: "replies",
+            populate: { path: "user", select: "name avatar bio" },
+          },
+          {
+            path: "user",
+            select: "name avatar bio",
+          },
+        ],
+      },
+    ]);
+    console.log(post);
     return res.status(200).json({ message: "Post updated successfully", post });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };

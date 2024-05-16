@@ -206,6 +206,7 @@ export const PostProvider = ({ children }) => {
       );
       console.log("Post from updatePost", response.data);
       dispatch({ type: UPDATE_POST, payload: response.data.post });
+      return response.data.post;
     } catch (err) {
       console.log(err);
     }

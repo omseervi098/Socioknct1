@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faList, faX } from "@fortawesome/free-solid-svg-icons";
@@ -11,28 +11,57 @@ import imageCompression from "browser-image-compression";
 import TextEditor from "../textEditor/textEditor";
 import { usePostContext } from "@/context/postcontext";
 import toast from "react-hot-toast";
+import Post from "../post/Post";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "auto",
 });
-export default function PhotoModal(props) {
+export default function EditPhotoModal(props) {
+  const { post } = props;
   const cancelButtonRef = useRef(null);
   const { user } = useAuthContext();
   const { themes } = useGeneralContext();
-  const { createPost, uploadToCloud } = usePostContext();
-  const [files, setFiles] = useState([]);
-  const [uploadedUrl, setUploadedUrl] = useState([]);
-  const [imageSrc, setImageSrc] = useState(undefined);
+  const { createPost, uploadToCloud, updatePost } = usePostContext();
+  const [uploadedUrl, setUploadedUrl] = useState(post.images);
+  const [files, setFiles] = useState(
+    post.images &&
+      post.images.map((url, idx) => {
+        return {
+          id: idx,
+          size: 0,
+          name: `image-${idx + 1}`,
+          type: "image/jpeg",
+          imageUrl: url,
+          valid: true,
+        };
+      })
+  );
+  const [imageSrc, setImageSrc] = useState(post.images[0]);
   const [viewall, setViewAll] = useState(false);
-  const [content, setContent] = useState("<p>Write something here...</p>");
+  const [content, setContent] = useState(post.text);
   const [loading, setLoading] = useState(false);
+  const [next, setNext] = useState(false);
+
   const compressFiles = async (files) => {
     try {
       const compressedFiles = [];
+      console.log("files", files);
       for (let i = 0; i < files.length; i++) {
         const file = files[i].file;
+        //check if the file is already compressed
+        if (files[i].imageUrl) {
+          compressedFiles.push({
+            imageUrl: files[i].imageUrl,
+            id: files[i].id,
+            valid: files[i].valid,
+            name: files[i].name,
+            type: files[i].type,
+            size: files[i].size,
+          });
+          continue;
+        }
         const compressedFile = await imageCompression(file, {
           maxSizeMB: 0.3,
           maxWidthOrHeight: 1024,
@@ -52,6 +81,7 @@ export default function PhotoModal(props) {
           compressedFile.size / (1024 * 1024)
         );
       }
+      console.log("compressedFiles", compressedFiles);
       return compressedFiles;
     } catch (e) {
       console.log(e);
@@ -90,7 +120,6 @@ export default function PhotoModal(props) {
   const onDelete = (id) => {
     console.log("delete", id);
     setFiles(files.filter((x) => x.id !== id));
-    setImageSrc(undefined);
   };
   const handleSee = (imageSource) => {
     setImageSrc(imageSource);
@@ -100,9 +129,11 @@ export default function PhotoModal(props) {
   const handleUpload = async () => {
     setLoading(true);
     const compressedFiles = await compressFiles(files);
-    //upload the files
+    console.log("compressedFiles", compressedFiles);
+
     const urls = await Promise.all(
       compressedFiles.map(async (file) => {
+        if (file.imageUrl) return file.imageUrl;
         const resp = await uploadToCloud({
           file: file.file,
           type: { general: "image", type: "image" },
@@ -111,13 +142,15 @@ export default function PhotoModal(props) {
         return resp;
       })
     );
+    console.log("urls", urls);
     setUploadedUrl(urls);
+    setNext(true);
     setLoading(false);
   };
   const handleSubmit = async () => {
     toast
       .promise(
-        createPost({
+        updatePost(post._id, {
           content: content,
           type: "image",
           images: uploadedUrl,
@@ -128,11 +161,26 @@ export default function PhotoModal(props) {
           error: "Failed to post",
         }
       )
-      .then(() => {
-        props.handleOpen("photo");
-        setFiles([]);
-        setUploadedUrl([]);
-        setContent("<p>Write something here...</p>");
+      .then((resp) => {
+        console.log("resp", resp);
+        props.handleOpen("image");
+        setLoading(false);
+        setViewAll(false);
+        setNext(false);
+        setFiles(
+          resp.images.map((url, idx) => {
+            return {
+              id: idx,
+              size: 0,
+              name: `image-${idx + 1}`,
+              type: "image/jpeg",
+              imageUrl: url,
+            };
+          })
+        );
+        setUploadedUrl(resp.images);
+        setContent(resp.text);
+        setImageSrc(resp.images[0]);
       });
   };
 
@@ -169,7 +217,7 @@ export default function PhotoModal(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 h-screen w-screen w-full sm:h-auto sm:w-[500px] md:w-[700px] lg:w-[900px]">
+              <Dialog.Panel className="relative transform overflow-x-hidden flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 h-screen w-screen w-full md:h-auto md:w-auto sm:w-[500px] lg:w-[900px]">
                 <div className=" pt-3 pb-3 px-4 flex flex-row justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Image
@@ -182,7 +230,7 @@ export default function PhotoModal(props) {
                     <div className="flex flex-col">
                       <span className="text-md font-semibold">{user.name}</span>
                       <span className="text-xs text-gray-500">
-                        Add a new Photo Post
+                        Edit your Post
                       </span>
                     </div>
                   </div>
@@ -191,15 +239,25 @@ export default function PhotoModal(props) {
                       <FontAwesomeIcon
                         icon={faX}
                         className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
-                        onClick={() => {
-                          props.handleOpen("photo");
-                          setFiles([]);
-                          setUploadedUrl([]);
-                          setImageSrc(undefined);
-                          setContent("<p>Write something here...</p>");
+                        onClick={async () => {
+                          await props.handleOpen("image");
                           setLoading(false);
                           setViewAll(false);
-                          compressFiles;
+                          setContent(post.text);
+                          setNext(false);
+                          setUploadedUrl(post.images);
+                          setImageSrc(post.images[0]);
+                          setFiles(
+                            post.images.map((url, idx) => {
+                              return {
+                                id: idx,
+                                size: 0,
+                                name: `image-${idx + 1}`,
+                                type: "image/jpeg",
+                                imageUrl: url,
+                              };
+                            })
+                          );
                         }}
                       />
                     </div>
@@ -208,11 +266,11 @@ export default function PhotoModal(props) {
 
                 <div className="bg-white px-4 pb-4 pt-0 w-full">
                   {loading ? (
-                    <div className="flex flex-col items-center justify-center gap-2 w-full h-[350px]">
+                    <div className="flex flex-col items-center justify-center gap-2 w-full h-[300px]">
                       <div className="w-10 h-10 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
                       <span>Compressing & Uploading images...</span>
                     </div>
-                  ) : uploadedUrl.length == 0 ? (
+                  ) : !next ? (
                     <div className="flex items-center flex-col sm:flex-row gap-4 w-full ">
                       {files.length == 0 ? (
                         <Dropzone
@@ -230,23 +288,19 @@ export default function PhotoModal(props) {
                           <div
                             className={`${
                               viewall
-                                ? "hidden lg:block w-full flex-grow h-[360px]  rounded-lg bg-gray-200 relative"
-                                : "flex-grow  w-full h-[360px] rounded-lg bg-gray-200 relative"
+                                ? "hidden lg:block w-full flex-grow h-[360px] rounded-lg bg-gray-200 relative"
+                                : "flex-grow w-full h-[360px] rounded-lg bg-gray-200 relative"
                             }
                           "`}
                           >
-                            <div className="h-full w-full flex flex gap-2 justify-center items-center p-2">
+                            <div className="h-full w-full flex flex gap-2 justify-center items-center">
                               <div className="flex justify-center items-center w-full h-full">
                                 <Image
-                                  src={
-                                    imageSrc === undefined
-                                      ? URL.createObjectURL(files[0].file)
-                                      : imageSrc
-                                  }
-                                  width={300}
+                                  src={imageSrc}
+                                  width={500}
                                   height={500}
                                   alt="image"
-                                  className="rounded-lg  max-h-[330px] w-auto "
+                                  className="rounded-lg max-h-[330px] mt-2 w-auto"
                                 />
                               </div>
                               {!viewall && (
@@ -266,7 +320,7 @@ export default function PhotoModal(props) {
                           <div
                             className={`
                             ${viewall ? "block" : "hidden"}
-                            lg:flex flex-col flex-grow h-full w-full  rounded-lg lg:w-[500px]`}
+                            lg:flex flex-col flex-grow h-full w-full rounded-lg lg:w-[500px]`}
                           >
                             {viewall && (
                               <button
@@ -278,8 +332,8 @@ export default function PhotoModal(props) {
                                 <span> Back</span>
                               </button>
                             )}
-                            <div className="flex items-center  justify-center gap-2 flex-wrap  h-[300px]  overflow-y-auto bg-gray-200 p-2 rounded-lg">
-                              {files.map((file) => (
+                            <div className="flex items-center justify-center gap-2 flex-wrap h-[300px]  overflow-y-auto bg-gray-200 p-2 rounded-lg">
+                              {files.map((file, idx) => (
                                 <FileMosaic
                                   {...file}
                                   key={file.id}
@@ -325,7 +379,7 @@ export default function PhotoModal(props) {
                 </div>
                 {!loading && (
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    {uploadedUrl.length == 0 ? (
+                    {!next ? (
                       <button
                         type="button"
                         className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto
@@ -370,13 +424,24 @@ export default function PhotoModal(props) {
                       type="button"
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                       onClick={() => {
-                        props.handleOpen("photo");
-                        setFiles([]);
-                        setUploadedUrl([]);
-                        setImageSrc(undefined);
-                        setContent("<p>Write something here...</p>");
+                        props.handleOpen("image");
                         setLoading(false);
                         setViewAll(false);
+                        setContent(post.text);
+                        setNext(false);
+                        setUploadedUrl(post.images);
+                        setFiles(
+                          post.images.map((url, idx) => {
+                            return {
+                              id: idx,
+                              size: 0,
+                              name: `image-${idx + 1}`,
+                              type: "image/jpeg",
+                              imageUrl: url,
+                            };
+                          })
+                        );
+                        setImageSrc(post.images[0]);
                       }}
                       ref={cancelButtonRef}
                     >

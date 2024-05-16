@@ -21,7 +21,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Editor } from "@tiptap/react";
 export default function ToolBar({ editor, showEmojiPicker }) {
-  const { themes } = useGeneralContext();
+  const { touch, themes } = useGeneralContext();
   if (!editor) return null;
   const [showAnchor, setShowAnchor] = useState(false);
   const [urlValue, setUrlValue] = useState(null);
@@ -148,6 +148,7 @@ export default function ToolBar({ editor, showEmojiPicker }) {
       <div className="relative ">
         <button
           onClick={() => {
+            console.log("quote");
             setShowAnchor(!showAnchor);
             setUrlValue(editor.getAttributes("link").href);
           }}
@@ -160,7 +161,11 @@ export default function ToolBar({ editor, showEmojiPicker }) {
           <FontAwesomeIcon icon={faLink} />
         </button>
         {showAnchor && (
-          <div className="hidden sm:block absolute text-xs z-50 top-9 w-[220px] bg-blue-100 p-2 rounded-md shadow-lg right-[20px] right-0">
+          <div
+            className={`${
+              touch ? "hidden" : "block"
+            } absolute text-xs z-50 top-9 w-[220px] bg-blue-100 p-2 rounded-md shadow-lg right-[20px] right-0`}
+          >
             <input
               type="text"
               placeholder="Enter URL"

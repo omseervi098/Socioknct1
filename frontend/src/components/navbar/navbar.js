@@ -204,7 +204,6 @@ export default function Navbar() {
               onClose={() => toggleDrawer()}
               position="bottom"
               className="p-0"
-              maskClosable={true}
             >
               <Drawer.Header
                 title="Add Post"

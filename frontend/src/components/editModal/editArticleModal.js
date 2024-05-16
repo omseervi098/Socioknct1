@@ -15,12 +15,13 @@ const poppins = Poppins({
   variable: "--font-poppins",
   display: "auto",
 });
-export default function ArticleModal(props) {
+export default function EditArticleModal(props) {
   const cancelButtonRef = useRef(null);
+  const { post } = props;
   const { user } = useAuthContext();
   const { themes } = useGeneralContext();
-  const { createPost } = usePostContext();
-  const [content, setContent] = useState("<p>Write something here...</p>");
+  const { updatePost } = usePostContext();
+  const [content, setContent] = useState(post.text);
   const [bool, setBool] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,22 +35,22 @@ export default function ArticleModal(props) {
       return toast.error("Empty content not allowed");
     }
     //disable the button
-    await setBool(true);
+    setBool(true);
     await toast
-      .promise(createPost({ content: content, type: "text" }), {
+      .promise(updatePost(post._id, { content: content, type: "text" }), {
         loading: "Posting...",
         success: "Posted successfully",
         error: "Failed to post",
       })
-      .then(() => {
+      .then((resp) => {
         setBool(false);
-        setContent("<p>Write something here...</p>");
+        setContent(resp.text);
         props.handleOpen("article");
       })
       .catch((err) => {
         console.log(err);
         setBool(false);
-        setContent("<p>Write something here...</p>");
+        setContent(post.text);
       });
   };
   return (
@@ -86,7 +87,7 @@ export default function ArticleModal(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-x-hidden flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all h-screen w-screen w-full md:h-auto md:w-auto md:my-8 sm:w-full sm:max-w-xl">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all h-screen w-screen w-full md:h-auto md:w-auto sm:my-8 sm:w-full sm:max-w-xl">
                 <div className=" pt-3 pb-3 px-4 flex flex-row justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Image
@@ -99,7 +100,7 @@ export default function ArticleModal(props) {
                     <div className="flex flex-col">
                       <span className="text-md font-semibold">{user.name}</span>
                       <span className="text-xs text-gray-500">
-                        Add a new article
+                        Edit your Article
                       </span>
                     </div>
                   </div>
@@ -109,7 +110,7 @@ export default function ArticleModal(props) {
                       className="text-gray-500 cursor-pointer hover:text-red-600 transition-all hover:border rounded-full p-1"
                       onClick={() => {
                         props.handleOpen("article");
-                        setContent("<p>Write something here...</p>");
+                        setContent(post.text);
                       }}
                     />
                   </div>
@@ -143,7 +144,7 @@ export default function ArticleModal(props) {
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 sm:mt-0 sm:w-auto"
                     onClick={() => {
                       props.handleOpen("article");
-                      setContent("<p>Write something here...</p>");
+                      setContent(post.text);
                     }}
                     ref={cancelButtonRef}
                   >

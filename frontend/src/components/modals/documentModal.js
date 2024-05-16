@@ -130,7 +130,7 @@ export default function DocumentModal(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all h-screen w-screen md:h-auto sm:my-8 md:w-full sm:w-[600px] md:w-[700px] lg:w-[900px]">
+              <Dialog.Panel className="relative transform flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all h-screen w-screen md:h-auto md:my-8 md:w-full sm:w-[600px] md:w-[700px] lg:w-[900px]">
                 <div className=" pt-3 pb-3 px-4 flex flex-row justify-between items-center">
                   <div className="flex  items-center gap-2">
                     <Image

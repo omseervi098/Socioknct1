@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }) {
       import.meta.url
     ).toString();
   }, []);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const router = useRouter();
   useEffect(() => {
     //check if user is logged in and check prev path
@@ -38,12 +38,10 @@ export default function App({ Component, pageProps }) {
         router.push("/"); //redirect to landing page
       }
     }
-    if (localStorage.getItem("user")) {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-      }, 2500);
-    }
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2500);
     return () => {
       setLoading(false);
     };
