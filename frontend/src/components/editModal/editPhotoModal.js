@@ -217,7 +217,7 @@ export default function EditPhotoModal(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-x-hidden flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 h-screen w-screen w-full md:h-auto md:w-auto sm:w-[500px] lg:w-[900px]">
+              <Dialog.Panel className="relative transform  flex flex-col justify-between rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 h-screen w-screen w-full md:h-auto md:w-auto sm:w-[500px] md:w-[700px] lg:w-[900px]">
                 <div className=" pt-3 pb-3 px-4 flex flex-row justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Image
@@ -286,21 +286,19 @@ export default function EditPhotoModal(props) {
                       ) : (
                         <>
                           <div
-                            className={`${
-                              viewall
-                                ? "hidden lg:block w-full flex-grow h-[360px] rounded-lg bg-gray-200 relative"
-                                : "flex-grow w-full h-[360px] rounded-lg bg-gray-200 relative"
+                            className={`rounded-lg bg-gray-200 relative flex-grow w-full h-[360px]  ${
+                              viewall ? "hidden lg:block " : ""
                             }
                           "`}
                           >
-                            <div className="h-full w-full flex flex gap-2 justify-center items-center">
+                            <div className="h-full w-full flex gap-2 justify-center items-center p-2">
                               <div className="flex justify-center items-center w-full h-full">
                                 <Image
                                   src={imageSrc}
-                                  width={500}
+                                  width={300}
                                   height={500}
                                   alt="image"
-                                  className="rounded-lg max-h-[330px] mt-2 w-auto"
+                                  className=" h-full w-auto object-contain rounded-lg"
                                 />
                               </div>
                               {!viewall && (

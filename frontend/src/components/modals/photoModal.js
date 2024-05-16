@@ -235,7 +235,7 @@ export default function PhotoModal(props) {
                             }
                           "`}
                           >
-                            <div className="h-full w-full flex flex gap-2 justify-center items-center p-2">
+                            <div className="h-full w-full flex gap-2 justify-center items-center p-2">
                               <div className="flex justify-center items-center w-full h-full">
                                 <Image
                                   src={
@@ -246,7 +246,7 @@ export default function PhotoModal(props) {
                                   width={300}
                                   height={500}
                                   alt="image"
-                                  className="rounded-lg  max-h-[330px] w-auto "
+                                  className="rounded-lg  max-h-[330px] w-auto object-contain"
                                 />
                               </div>
                               {!viewall && (
