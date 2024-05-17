@@ -326,6 +326,58 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  const editComment = async ({ postId, commentId, text }) => {
+    console.log("Edit Comment", postId, commentId, text);
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        `/api/v1/comment/update/${commentId}`;
+      const resp = await axios.put(
+        url,
+        { content: text },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Comment from editComment", resp.data);
+      //search for the post
+      const post = state.posts.find((post) => post._id === postId);
+      const comment = post.comments.find((com) => com._id === commentId);
+      comment.text = resp.data.comment.text;
+      // make changes to the post
+      post.comments = post.comments.map((com) =>
+        com._id === commentId ? comment : com
+      );
+      dispatch({ type: UPDATE_POST, payload: post });
+    } catch (err) {
+      console.log(err);
+      throw new Error(err.response.data.message);
+    }
+  };
+  const deleteComment = async ({ postId, commentId }) => {
+    console.log("Delete Comment", postId, commentId);
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        `/api/v1/comment/delete/${commentId}`;
+      const resp = await axios.delete(url, {
+        data: { postId },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Comment from deleteComment", resp.data);
+      //search for the post
+      const post = state.posts.find((post) => post._id === postId);
+      post.comments = post.comments.filter((com) => com._id !== commentId);
+      dispatch({ type: UPDATE_POST, payload: post });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const addReply = async ({ postId, commentId, content }) => {
     console.log("Add Reply", postId, commentId, content);
     try {
@@ -353,6 +405,66 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  const editReply = async ({ postId, commentId, replyId, content }) => {
+    console.log("Edit Reply", postId, commentId, replyId, content);
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/reply/update/${replyId}`;
+      const resp = await axios.put(
+        url,
+        { content },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Reply from editReply", resp.data);
+      //search for the post
+      const post = state.posts.find((post) => post._id === postId);
+      const comment = post.comments.find((com) => com._id === commentId);
+      const reply = comment.replies.find((rep) => rep._id === replyId);
+      reply.text = resp.data.reply.text;
+      // make changes to the post
+      comment.replies = comment.replies.map((rep) =>
+        rep._id === replyId ? reply : rep
+      );
+      post.comments = post.comments.map((com) =>
+        com._id === commentId ? comment : com
+      );
+      dispatch({ type: UPDATE_POST, payload: post });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const deleteReply = async ({ postId, commentId, replyId }) => {
+    console.log("Delete Reply", postId, commentId, replyId);
+    try {
+      const resp = await axios.delete(
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/reply/delete/${replyId}`,
+
+        {
+          data: { commentId },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      console.log("Reply from deleteReply", resp.data);
+      //search for the post
+      const post = state.posts.find((post) => post._id === postId);
+      const comment = post.comments.find((com) => com._id === commentId);
+      comment.replies = comment.replies.filter((rep) => rep._id !== replyId);
+      // make changes to the post
+      post.comments = post.comments.map((com) =>
+        com._id === commentId ? comment : com
+      );
+      dispatch({ type: UPDATE_POST, payload: post });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <PostContext.Provider
       value={{
@@ -363,14 +475,18 @@ export const PostProvider = ({ children }) => {
         getPost,
         createPost,
         updatePost,
-        addComment,
         deletePost,
         uploadToCloud,
         votePoll,
         updatePollPost,
         unvotePoll,
         getTotalPosts,
+        addComment,
+        editComment,
+        deleteComment,
         addReply,
+        editReply,
+        deleteReply,
       }}
     >
       {children}

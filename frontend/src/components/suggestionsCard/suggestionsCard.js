@@ -6,16 +6,20 @@ export default function SuggestionsCard() {
   const [suggestions, setSuggestions] = React.useState([]);
   useEffect(() => {
     async function loadSuggestions() {
-      const res = await axios.get(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/user/suggested-users",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setSuggestions(res.data.suggestedUsers);
-      console.log("Suggestions Loaded", res.data);
+      try {
+        const res = await axios.get(
+          process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/user/suggested-users",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setSuggestions(res.data.suggestedUsers);
+        console.log("Suggestions Loaded", res.data);
+      } catch (err) {
+        console.log(err);
+      }
     }
     loadSuggestions();
   }, []);

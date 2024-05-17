@@ -19,9 +19,11 @@ import Loader1 from "@/components/loader/loader1";
 import PostSkeleton from "@/components/post/PostSkeleton";
 import Loader2 from "@/components/loader/loader2";
 import InfiniteScroll from "react-infinite-scroll-component";
+import DeleteAlert from "@/components/modals/deleteAlert";
 export default function Feed() {
   const { auth, user } = useAuthContext();
-  const { location, getWeather, getNews } = useGeneralContext();
+  const { location, getWeather, getNews, deleteAlert, setDeleteAlert } =
+    useGeneralContext();
   const { hasMore, posts, getPosts, addPosts } = usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
@@ -103,6 +105,13 @@ export default function Feed() {
       >
         <FontAwesomeIcon icon={faChevronUp} />
       </button>
+      <DeleteAlert
+        text={deleteAlert.text}
+        id={deleteAlert.id}
+        open={deleteAlert.open}
+        setOpen={setDeleteAlert}
+        handleDelete={deleteAlert.handleDelete}
+      />
     </div>
   );
 }

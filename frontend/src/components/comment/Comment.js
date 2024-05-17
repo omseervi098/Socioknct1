@@ -1,29 +1,36 @@
 import { useAuthContext } from "@/context/authcontext";
 import { useGeneralContext } from "@/context/generalcontext";
 import {
+  faEdit,
   faEllipsisH,
   faHandDots,
   faListDots,
   faSmile,
   faThumbsUp,
+  faTrash,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Textarea } from "flowbite-react";
 import Image from "next/image";
 import Reply from "./Reply";
 import EmojiPicker from "emoji-picker-react";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import EmojiPickerModal from "../modals/emojiPickerModal";
 import { usePostContext } from "@/context/postcontext";
-import { Transition } from "@headlessui/react";
+import { Menu, Transition } from "@headlessui/react";
+import DeleteAlert from "../modals/deleteAlert";
+import toast from "react-hot-toast";
 export default function Comment(props) {
-  const { postId, comment } = props;
-  const { touch } = useGeneralContext();
+  const { postId, comment, postUser } = props;
+  const { touch, themes, setDeleteAlert } = useGeneralContext();
   const { user } = useAuthContext();
-  const { addReply } = usePostContext();
+  const { addReply, editComment, deleteComment } = usePostContext();
   const [openReply, setOpenReply] = useState(false);
   const [expandReply, setExpandReply] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [editable, setEditable] = useState(false);
+  const editText = useRef();
   const replyRef = useRef();
   const handleAddReply = () => {
     console.log("Add reply");
@@ -32,7 +39,26 @@ export default function Comment(props) {
       commentId: comment._id,
       content: replyRef.current.value,
     });
-    // replyRef.current.value = "";
+    replyRef.current.value = "";
+  };
+  const handleDeleteComment = (id) => {
+    console.log("Delete comment", id);
+    toast.promise(deleteComment({ postId, commentId: id }), {
+      loading: "Deleting comment...",
+      success: "Comment deleted successfully",
+      error: "Comment not deleted",
+    });
+  };
+  const handleEditComment = (id, text) => {
+    console.log("Edit comment", id, text);
+    if (text.trim() === "" || text.trim() === comment.text) {
+      return;
+    }
+    toast.promise(editComment({ postId, commentId: id, text }), {
+      loading: "Editing comment...",
+      success: "Comment edited successfully",
+      error: "Edit comment failed",
+    });
   };
   return (
     <>
@@ -63,25 +89,169 @@ export default function Comment(props) {
                   {comment.user.bio}
                 </span>
               </div>
-              <div className="">
-                <FontAwesomeIcon icon={faEllipsisH} className="h-[20px]" />
-              </div>
+
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button
+                    className="inline-flex w-full justify-center rounded-md px-1 text-sm font-semibold  shadow-sm ring-1 ring-inset ring-gray-300"
+                    style={{
+                      backgroundColor: themes.body,
+                      color: themes.primaryText,
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faEllipsisH} className="h-[20px]" />
+                  </Menu.Button>
+                </div>
+
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-30 mt-0 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      <>
+                        {comment.user._id !== user._id ? (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={`${
+                                  active
+                                    ? "bg-gray-100 text-gray-900"
+                                    : "text-gray-700"
+                                }
+                                flex px-2 py-1 text-sm w-full text-left gap-1`}
+                                onClick={() => {
+                                  //check if post has poll
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faUserPlus}
+                                  className="h-[15px]"
+                                />
+                                Connect
+                              </button>
+                            )}
+                          </Menu.Item>
+                        ) : null}
+                      </>
+                      {comment.user._id === user._id ? (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              className={`${
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700"
+                              }
+                                flex px-2 py-1 text-sm w-full text-left gap-1`}
+                              onClick={() => {
+                                //check if post has poll
+                                setEditable(!editable);
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faEdit}
+                                className="h-[15px]"
+                              />
+                              &nbsp;Edit Comment
+                            </button>
+                          )}
+                        </Menu.Item>
+                      ) : null}
+                      {comment.user._id === user._id ||
+                      postUser._id === user._id ? (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              className={`${
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700"
+                              }
+                                flex px-2 py-1 text-sm w-full text-left gap-1`}
+                              onClick={() => {
+                                setDeleteAlert({
+                                  open: true,
+                                  id: comment._id,
+                                  text: "comment",
+                                  handleDelete: handleDeleteComment,
+                                });
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="h-[15px]"
+                              />
+                              &nbsp;Delete Comment
+                            </button>
+                          )}
+                        </Menu.Item>
+                      ) : null}
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
             </div>
             <div className="w-full flex flex-col items-start gap-1">
-              <div className="w-full flex flex-col items-start gap-1">
-                <span className="text-sm">{comment.text}</span>
+              <div
+                className={`w-full flex flex-col items-start gap-1 ${
+                  editable ? "py-2 px-1 border border-gray-400 rounded-lg" : ""
+                }`}
+              >
+                {editable ? (
+                  <div
+                    contentEditable={true}
+                    ref={editText}
+                    suppressContentEditableWarning={true}
+                    className=" p-2 relative w-full text-xs b rounded-lg focus:outline-none focus:ring-0 focus:border-blue-500"
+                    style={{ fontSize: "13px" }}
+                  >
+                    {comment.text}
+                  </div>
+                ) : (
+                  <span className="text-sm ">{comment.text}</span>
+                )}
+                {editable ? (
+                  <div className="w-full flex flex-row items-center justify-between gap-2 pt-1">
+                    <div className="w-full flex flex-row items-center justify-start gap-2">
+                      <button
+                        className="text-blue-500 p-1 px-3 rounded-full text-xs border border-blue-500 hover:bg-blue-500 hover:text-white"
+                        onClick={() => {
+                          const text = editText.current.innerText;
+                          handleEditComment(comment._id, text);
+                          setEditable(false);
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="bg-red-300 text-white p-1 px-3 rounded-full text-xs hover:bg-red-500"
+                        onClick={() => {
+                          setEditable(false);
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
               <div className="w-full flex flex-row items-center justify-start gap-2">
                 <button className="text-xs font-semibold text-gray-700 hover:text-blue-500">
                   <FontAwesomeIcon icon={faThumbsUp} className="h-[12px]" />{" "}
-                  Like (20)
+                  Like ({comment.likes.length})
                 </button>
                 |
                 <button
                   className="text-xs font-semibold text-gray-700 hover:text-blue-500"
                   onClick={() => setOpenReply(!openReply)}
                 >
-                  Reply (20)
+                  Reply ({comment.replies.length})
                 </button>
               </div>
             </div>
@@ -143,6 +313,7 @@ export default function Comment(props) {
                   postId={postId}
                   commentId={comment._id}
                   reply={reply}
+                  postUser={postUser}
                   parseDate={props.parseDate}
                 />
               ))}
@@ -164,6 +335,7 @@ export default function Comment(props) {
                     commentId={comment._id}
                     reply={reply}
                     parseDate={props.parseDate}
+                    postUser={postUser}
                   />
                 ))}
               </Transition>

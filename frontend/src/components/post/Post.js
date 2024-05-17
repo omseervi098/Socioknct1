@@ -5,6 +5,7 @@ import { useGeneralContext } from "@/context/generalcontext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
+  faBookmark,
   faCircle,
   faComment,
   faCommentAlt,
@@ -16,6 +17,7 @@ import {
   faSmile,
   faThumbsUp,
   faTrash,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import AudioPlayer from "react-h5-audio-player";
 import PdfReader from "../pdfReader/pdfReader";
@@ -33,9 +35,11 @@ import EditArticleModal from "../editModal/editArticleModal";
 import EditDocumentModal from "../editModal/editDocumentModal";
 import EditVideoModal from "../editModal/editVideoModal";
 import EditAudioModal from "../editModal/editAudioModal";
+import DeleteAlert from "../modals/deleteAlert";
 export default function Post(props) {
   const { post } = props;
-  const { themes, touch, addAudioRef, stopAllAudio } = useGeneralContext();
+  const { themes, touch, addAudioRef, stopAllAudio, setDeleteAlert } =
+    useGeneralContext();
   const [seeMore, setSeeMore] = useState(false);
   const [showSeeMore, setShowSeeMore] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -61,8 +65,8 @@ export default function Post(props) {
     setOpenEditModal({ ...openEditModal, [type]: !openEditModal[type] });
   };
   const handleAddComment = () => {
-    console.log("Add comment");
     addComment({ postId: post._id, comment: commentRef.current.value });
+    commentRef.current.value = "";
   };
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -300,7 +304,7 @@ export default function Post(props) {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 z-50 mt-4 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Items className="absolute right-0 z-30 mt-4 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="py-1">
                     {user._id === post.user._id ? (
                       <>
@@ -349,7 +353,14 @@ export default function Post(props) {
                                   : "text-gray-700",
                                 "flex px-4 py-2 text-sm w-full text-left gap-2"
                               )}
-                              onClick={() => handleDeletePost(post._id)}
+                              onClick={() => {
+                                setDeleteAlert({
+                                  id: post._id,
+                                  text: "Post",
+                                  handleDelete: handleDeletePost,
+                                  open: true,
+                                });
+                              }}
                             >
                               <FontAwesomeIcon
                                 icon={faTrash}
@@ -376,10 +387,10 @@ export default function Post(props) {
                               }
                             >
                               <FontAwesomeIcon
-                                icon={faCopy}
+                                icon={faUserPlus}
                                 className="h-[15px]"
                               />
-                              Copy Link
+                              Connect
                             </button>
                           )}
                         </Menu.Item>
@@ -397,10 +408,32 @@ export default function Post(props) {
                               }
                             >
                               <FontAwesomeIcon
-                                icon={faBan}
+                                icon={faBookmark}
                                 className="h-[15px]"
                               />
-                              Not Interested
+                              &nbsp;Bookmark
+                            </button>
+                          )}
+                        </Menu.Item>
+
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "flex px-4 py-2 text-sm w-full text-left gap-2"
+                              )}
+                              onClick={() =>
+                                setOpen({ ...open, audio: !open.audio })
+                              }
+                            >
+                              <FontAwesomeIcon
+                                icon={faCopy}
+                                className="h-[15px]"
+                              />
+                              &nbsp;Copy Link
                             </button>
                           )}
                         </Menu.Item>
@@ -652,13 +685,17 @@ export default function Post(props) {
                 />
               </div>
             </div>
-            <div className="text-xs text-gray-500">110 Likes</div>
+            <div className="text-xs text-gray-500">
+              {post.likes.length} Likes
+            </div>
           </div>
           <div className="flex flex-row items-center gap-1">
             <div className="rounded-full text-gray-500 flex items-center justify-center">
               <FontAwesomeIcon icon={faComment} className="h-[15px]" />
             </div>
-            <div className="text-xs text-gray-500">10 Comments</div>
+            <div className="text-xs text-gray-500">
+              {post.comments.length} Comments
+            </div>
           </div>
         </div>
         <div className="w-full flex flex-row justify-between items-center gap-2  border-t border-gray-300 px-0 pt-1">
@@ -738,6 +775,7 @@ export default function Post(props) {
               parseDate={parseDate}
               key={index}
               postId={post._id}
+              postUser={post.user}
             />
           ))}
           <Transition
@@ -759,6 +797,7 @@ export default function Post(props) {
                     parseDate={parseDate}
                     key={idx}
                     postId={post._id}
+                    postUser={post.user}
                   />
                 ))}
           </Transition>

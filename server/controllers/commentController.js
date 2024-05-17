@@ -43,11 +43,29 @@ export const getComments = async (req, res) => {
 export const updateComment = async (req, res) => {
   try {
     const { content } = req.body;
-    const comment = await Comment.findByIdAndUpdate(
-      req.params.id,
-      { content },
-      { new: true }
-    );
+    console.log(content);
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    comment.text = content;
+    await comment.save();
+    await comment.populate([
+      {
+        path: "user",
+        select: "name avatar bio",
+      },
+      {
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "name avatar bio",
+        },
+      },
+    ]);
     return res
       .status(200)
       .json({ message: "Comment updated successfully", comment });
@@ -57,7 +75,21 @@ export const updateComment = async (req, res) => {
 };
 export const deleteComment = async (req, res) => {
   try {
+    const { postId } = req.body;
     const comment = await Comment.findByIdAndDelete(req.params.id);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    console.log(post.comments, req.params.id);
+    post.comments = post.comments.filter(
+      (comment) => comment.toString() !== req.params.id
+    );
+    await post.save();
+
     return res
       .status(200)
       .json({ message: "Comment deleted successfully", comment });

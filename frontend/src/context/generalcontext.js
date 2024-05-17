@@ -12,7 +12,7 @@ const SET_NEWS = "SET_NEWS";
 const SET_LOADING = "SET_LOADING";
 const SET_TOUCH = "SET_TOUCH";
 const SET_OPEN_DRAWER = "SET_OPEN_DRAWER";
-
+const SET_DELETE_ALERT = "SET_DELETE_ALERT";
 export const GeneralContext = React.createContext();
 const initialState = {
   theme: "light",
@@ -35,6 +35,12 @@ const initialState = {
   touch: false,
   openDrawer: false,
   socket: null,
+  deleteAlert: {
+    open: false,
+    id: "",
+    text: "",
+    handleDelete: null,
+  },
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -58,8 +64,8 @@ const reducer = (state, action) => {
       return { ...state, touch: action.payload };
     case SET_OPEN_DRAWER:
       return { ...state, openDrawer: action.payload };
-    case SET_AUDIO:
-      return { ...state, audio: action.payload };
+    case SET_DELETE_ALERT:
+      return { ...state, deleteAlert: action.payload };
     default:
       return state;
   }
@@ -162,6 +168,9 @@ export const GeneralProvider = ({ children }) => {
       window.matchMedia("(pointer: coarse)").matches && "ontouchstart" in window
     );
   }
+  function setDeleteAlert(data) {
+    dispatch({ type: SET_DELETE_ALERT, payload: data });
+  }
   React.useEffect(() => {
     // Get the theme from local storage
     if (localStorage.getItem("theme")) {
@@ -199,6 +208,7 @@ export const GeneralProvider = ({ children }) => {
     <GeneralContext.Provider
       value={{
         ...state,
+
         toggleDrawer,
         toggleTheme,
         addAudioRef,
@@ -210,6 +220,7 @@ export const GeneralProvider = ({ children }) => {
         getNews,
         getWeather,
         toggleLoading,
+        setDeleteAlert,
       }}
     >
       {children}
