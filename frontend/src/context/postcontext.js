@@ -465,6 +465,21 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  const toggleLike = async ({ id, type }) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        `/api/v1/like/toggle/?id=${id}&type=${type}`;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Like from toggleLike", response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <PostContext.Provider
       value={{
@@ -487,6 +502,7 @@ export const PostProvider = ({ children }) => {
         addReply,
         editReply,
         deleteReply,
+        toggleLike,
       }}
     >
       {children}

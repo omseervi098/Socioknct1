@@ -59,6 +59,7 @@ export default function Post(props) {
     article: false,
     poll: false,
   });
+  const [like, setLike] = useState(false);
   const commentRef = useRef();
 
   const handleOpenEditModal = (type) => {
@@ -258,15 +259,15 @@ export default function Post(props) {
                 alt="avatar"
                 width={50}
                 height={50}
-                className="w-[50px] rounded-full"
+                className="w-[48px] rounded-full"
               />
             </div>
-            <div className="w-auto flex flex-col justify-center">
+            <div className="w-[calc(100%-50px)] flex flex-col justify-center">
               <div className="w-full flex flex-row items-center flex-wrap">
                 <h1 className="text-xs sm:text-sm font-semibold">
                   {post.user.name}
                 </h1>
-                <p className="text-xs text-gray-500 flex items-center">
+                <p className="hidden text-xs text-gray-500 sm:flex items-center">
                   &nbsp;
                   <FontAwesomeIcon
                     icon={faCircle}
@@ -275,9 +276,17 @@ export default function Post(props) {
                   &nbsp;{parseDate(post.createdAt)}
                 </p>
               </div>
-              <div className="w-full text-xs flex flex-row items-center overflow-hidden ">
+              <div className="w-full text-xs  line-clamp-1 sm:line-clamp-2">
                 {post.user.bio}
               </div>
+              <p className="text-xs sm:hidden text-gray-500 flex items-center">
+                &nbsp;
+                <FontAwesomeIcon
+                  icon={faCircle}
+                  className="h-[5px] text-green-500"
+                />
+                &nbsp;{parseDate(post.createdAt)}
+              </p>
             </div>
           </div>
 
@@ -468,8 +477,8 @@ export default function Post(props) {
           </div>
         </div>
         <div
-          className={`relative w-full text-xs sm:text-sm flex items-center pt-2  px-2  ${
-            showSeeMore ? "pb-2" : "pb-0"
+          className={`relative w-full text-sm mb-2 sm:text-sm flex items-center pt-2  px-2  ${
+            showSeeMore ? "pb-2" : "pb-0 "
           } `}
         >
           <div
@@ -477,20 +486,16 @@ export default function Post(props) {
             id={`post-${post._id}-text`}
             dangerouslySetInnerHTML={{ __html: post.text }}
             className={`tiptap transition-all w-full ease-in-out duration-300 block
-                        ${
-                          seeMore
-                            ? "block"
-                            : "max-h-[80px] overflow-hidden mb-2 "
-                        }`}
+                        ${seeMore ? "block" : "max-h-[82px] overflow-hidden"}`}
           ></div>
           {showSeeMore && (
             <div
-              className=" absolute  bottom-0 right-0 text-blue-500 cursor-pointer hover:underline h-3"
+              className="px-2 absolute -bottom-3  right-0 text-blue-500 cursor-pointer hover:underline h-6 "
               onClick={() => {
                 setSeeMore(!seeMore);
               }}
             >
-              {seeMore ? "See Less" : "..See More"}
+              {seeMore ? "See Less..." : "...See More"}
             </div>
           )}
         </div>
@@ -548,6 +553,7 @@ export default function Post(props) {
               open={open}
               handleOpen={handleOpen}
               postInfo={post}
+              parseDate={parseDate}
             />
           </>
         )}
@@ -700,7 +706,10 @@ export default function Post(props) {
         </div>
         <div className="w-full flex flex-row justify-between items-center gap-2  border-t border-gray-300 px-0 pt-1">
           <div className="flex flex-row items-center gap-0">
-            <button className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md">
+            <button
+              className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md"
+              onClick={() => handleLikePost(post._id)}
+            >
               <FontAwesomeIcon icon={faThumbsUp} className="h-[20px]" />
               <span className="text-xs text-gray-700">Like</span>
             </button>
