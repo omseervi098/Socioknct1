@@ -20,11 +20,24 @@ import PostSkeleton from "@/components/post/PostSkeleton";
 import Loader2 from "@/components/loader/loader2";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DeleteAlert from "@/components/modals/deleteAlert";
+import { socket } from "@/utils/socket";
 export default function Feed() {
   const { auth, user } = useAuthContext();
   const { location, getWeather, getNews, deleteAlert, setDeleteAlert } =
     useGeneralContext();
-  const { hasMore, posts, getPosts, addPosts } = usePostContext();
+  const {
+    hasMore,
+    posts,
+    getPosts,
+    addPosts,
+    toggleLikeClient,
+    addCommentClient,
+    editCommentClient,
+    deleteCommentClient,
+    addReplyClient,
+    editReplyClient,
+    deleteReplyClient,
+  } = usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
     if (user && user.location) {
@@ -37,7 +50,18 @@ export default function Feed() {
 
   useEffect(() => {
     getWeatherAndNewsOnce();
-    if (posts.length === 0) getPosts();
+    const fetch = async () => {
+      if (posts.length === 0) await getPosts();
+      //listen for user:liked event after getting posts
+      await socket.on("user:liked", (data) => {
+        console.log("User Liked", data);
+        toggleLikeClient(data);
+      });
+    };
+    fetch();
+    return () => {
+      socket.off("user:liked");
+    };
   }, []);
 
   if (!auth) {

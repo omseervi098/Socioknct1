@@ -174,7 +174,27 @@ export const getPosts = async (req, res) => {
       })
       .populate({
         path: "comments",
+        populate: {
+          path: "replies",
+          populate: { path: "likes" },
+        },
+      })
+      .populate({
+        path: "comments",
         populate: { path: "user", select: "name avatar bio" },
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "likes",
+        },
+      })
+      .populate({
+        path: "likes",
+        populate: {
+          path: "user",
+          select: "name avatar bio",
+        },
       })
       .populate("poll")
       .sort({ createdAt: -1 })

@@ -2,10 +2,13 @@ import { Comment } from "../models/Comment.js";
 import { Post } from "../models/Post.js";
 import { Reply } from "../models/Reply.js";
 import { Like } from "../models/Like.js";
+import axios from "axios";
+import environment from "../config/environment.js";
 export const toggleLike = async (req, res) => {
   try {
     // -- /toggle/?id=123&type=Post
-    const { id, type } = req.query;
+    const { id, type, postId, commentId } = req.body;
+    console.log(req.body);
     const user = req.user._id;
     let likeable, deleted;
     if (type === "post") {
@@ -16,8 +19,8 @@ export const toggleLike = async (req, res) => {
       likeable = await Reply.findById(id).populate("likes");
     }
     //check if the like exists
-    const existingLike = await Like.findOne({
-      user: user._id,
+    const existingLike = await Like.findOneAndDelete({
+      user,
       likeable: id,
       onModel: type,
     });
@@ -25,7 +28,6 @@ export const toggleLike = async (req, res) => {
     if (existingLike) {
       await likeable.likes.pull(existingLike._id);
       await likeable.save();
-      await existingLike.remove();
       deleted = true;
     } else {
       //else create a new like
@@ -37,6 +39,20 @@ export const toggleLike = async (req, res) => {
       likeable.likes.push(newLike._id);
       await likeable.save();
     }
+    const resp = await axios(`${environment.webSocketUrl}/api/v1/like`, {
+      method: "POST",
+      data: {
+        like: {
+          user: user._id,
+          id,
+          type,
+          postId: postId || null,
+          commentId: commentId || null,
+          deleted,
+        },
+      },
+    });
+    console.log(resp.data);
     res.status(200).json({ message: "Like toggled", deleted });
   } catch (err) {
     console.log(err);

@@ -465,19 +465,119 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
-  const toggleLike = async ({ id, type }) => {
+  const toggleLike = async ({ id, type, postId, commentId }) => {
     try {
-      const url =
-        process.env.NEXT_PUBLIC_BACKEND_URL +
-        `/api/v1/like/toggle/?id=${id}&type=${type}`;
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const url = process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/like/toggle`;
+      console.log("URL from toggleLike", url);
+      const response = await axios.patch(
+        url,
+        {
+          id: id,
+          type: type,
+          postId: postId,
+          commentId: commentId,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       console.log("Like from toggleLike", response.data);
     } catch (err) {
       console.log(err);
+      throw new Error(err.response.data.message);
+    }
+  };
+  const addCommentClient = async ({ postId, comment }) => {
+    const post = state.posts.find((post) => post._id === postId);
+    post.comments.push(comment);
+    dispatch({ type: UPDATE_POST, payload: post });
+  };
+  const editCommentClient = async ({ postId, commentId, text }) => {
+    const post = state.posts.find((post) => post._id === postId);
+    const comment = post.comments.find((com) => com._id === commentId);
+    comment.text = text;
+    post.comments = post.comments.map((com) =>
+      com._id === commentId ? comment : com
+    );
+    dispatch({ type: UPDATE_POST, payload: post });
+  };
+  const deleteCommentClient = async ({ postId, commentId }) => {
+    const post = state.posts.find((post) => post._id === postId);
+    post.comments = post.comments.filter((com) => com._id !== commentId);
+    dispatch({ type: UPDATE_POST, payload: post });
+  };
+  const addReplyClient = async ({ postId, commentId, reply }) => {
+    const post = state.posts.find((post) => post._id === postId);
+    const comment = post.comments.find((com) => com._id === commentId);
+    comment.replies.push(reply);
+    post.comments = post.comments.map((com) =>
+      com._id === commentId ? comment : com
+    );
+    dispatch({ type: UPDATE_POST, payload: post });
+  };
+  const editReplyClient = async ({ postId, commentId, replyId, text }) => {
+    const post = state.posts.find((post) => post._id === postId);
+    const comment = post.comments.find((com) => com._id === commentId);
+    const reply = comment.replies.find((rep) => rep._id === replyId);
+    reply.text = text;
+    comment.replies = comment.replies.map((rep) =>
+      rep._id === replyId ? reply : rep
+    );
+    post.comments = post.comments.map((com) =>
+      com._id === commentId ? comment : com
+    );
+    dispatch({ type: UPDATE_POST, payload: post });
+  };
+  const deleteReplyClient = async ({ postId, commentId, replyId }) => {
+    const post = state.posts.find((post) => post._id === postId);
+    const comment = post.comments.find((com) => com._id === commentId);
+    comment.replies = comment.replies.filter((rep) => rep._id !== replyId);
+    post.comments = post.comments.map((com) =>
+      com._id === commentId ? comment : com
+    );
+    dispatch({ type: UPDATE_POST, payload: post });
+  };
+  const toggleLikeClient = async (data) => {
+    const { type, id, postId, commentId, deleted, user } = data;
+    console.log("Toggle Like Client", data, state.posts);
+    if (type == "post") {
+      const post = state.posts.find((post) => post._id === id);
+      if (post.likes.find((like) => like.user._id === user._id)) {
+        post.likes = post.likes.filter((like) => like.user._id !== user._id);
+      } else if (post.likes.find((like) => like.user._id !== user._id)) {
+        post.likes.push(user._id);
+      }
+      dispatch({ type: UPDATE_POST, payload: post });
+    } else if (type == "Comment") {
+      const post = state.posts.find((post) => post._id === postId);
+      const comment = post.comments.find((com) => com._id === id);
+      if (comment.likes.find((like) => like.user === user._id)) {
+        comment.likes = comment.likes.filter((like) => like.user !== user._id);
+      } else {
+        comment.likes.push({ user: user._id });
+      }
+      post.comments = post.comments.map((com) =>
+        com._id === id ? comment : com
+      );
+      dispatch({ type: UPDATE_POST, payload: post });
+    } else if (type == "Reply") {
+      const post = state.posts.find((post) => post._id === postId);
+      const comment = post.comments.find((com) => com._id === commentId);
+      const reply = comment.replies.find((rep) => rep._id === id);
+      if (reply.likes.find((like) => like.user === user._id)) {
+        reply.likes = reply.likes.filter((like) => like.user !== user._id);
+      } else {
+        reply.likes.push({ user: user._id });
+      }
+      comment.replies = comment.replies.map((rep) =>
+        rep._id === id ? reply : rep
+      );
+      post.comments = post.comments.map((com) =>
+        com._id === commentId ? comment : com
+      );
+      dispatch({ type: UPDATE_POST, payload: post });
     }
   };
   return (
@@ -503,6 +603,13 @@ export const PostProvider = ({ children }) => {
         editReply,
         deleteReply,
         toggleLike,
+        addCommentClient,
+        editCommentClient,
+        deleteCommentClient,
+        addReplyClient,
+        editReplyClient,
+        deleteReplyClient,
+        toggleLikeClient,
       }}
     >
       {children}

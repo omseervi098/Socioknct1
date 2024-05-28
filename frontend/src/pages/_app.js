@@ -1,7 +1,7 @@
 "use client";
 import "react-h5-audio-player/lib/styles.css";
 import "@/styles/globals.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Poppins } from "next/font/google";
 import { GeneralProvider } from "@/context/generalcontext";
 import Navbar from "@/components/navbar/navbar";
@@ -20,6 +20,7 @@ import { pdfjs } from "react-pdf";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Loader1 from "@/components/loader/loader1";
 import { useRouter } from "next/router";
+import { connectSocket, disconnectSocket } from "@/utils/socket";
 export default function App({ Component, pageProps }) {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -38,12 +39,14 @@ export default function App({ Component, pageProps }) {
         router.push("/"); //redirect to landing page
       }
     }
+    connectSocket();
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
     }, 2500);
     return () => {
       setLoading(false);
+      disconnectSocket();
     };
   }, []);
   if (loading) {

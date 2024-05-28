@@ -14,6 +14,7 @@ const io = new Server(server, {
 });
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
+
   socket.on("join_room", (room) => {
     socket.join(room);
     console.log("room created", room);
@@ -38,6 +39,19 @@ app.get("/", (req, res) => {
   res.send({
     message: "Welcome to Socioknct Websocket",
   });
+});
+//route for emiting likes
+app.post("/api/v1/like", (req, res) => {
+  const { like } = req.body;
+  console.log(like);
+  io.emit("user:liked", like);
+  res.send({ message: "Like emitted" });
+});
+//route for emiting comments
+app.post("/api/v1/comment", (req, res) => {
+  const { comment } = req.body;
+  io.emit("comment", comment);
+  res.send({ message: "Comment emitted" });
 });
 server.listen(process.env.PORT || 8000, (e) => {
   if (e) {

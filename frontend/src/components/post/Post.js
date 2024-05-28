@@ -46,8 +46,14 @@ export default function Post(props) {
   const [audioVisible, setAudioVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
-  const { deletePost, votePoll, updatePollPost, unvotePoll, addComment } =
-    usePostContext();
+  const {
+    deletePost,
+    votePoll,
+    updatePollPost,
+    unvotePoll,
+    addComment,
+    toggleLike,
+  } = usePostContext();
   const musicRef = useRef(null);
   const [expandComment, setExpandComment] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -61,7 +67,6 @@ export default function Post(props) {
   });
   const [like, setLike] = useState(false);
   const commentRef = useRef();
-
   const handleOpenEditModal = (type) => {
     setOpenEditModal({ ...openEditModal, [type]: !openEditModal[type] });
   };
@@ -96,6 +101,15 @@ export default function Post(props) {
       error: "Error Deleting Post",
     });
   };
+  const handleLikePost = (postId) => {
+    console.log("Like Post", postId);
+    toast.promise(toggleLike({ id: postId, type: "post" }), {
+      loading: "Liking Post...",
+      success: "Post Liked Successfully",
+      error: "Error Liking Post",
+    });
+  };
+
   const parseDate = (date) => {
     const newDate = new Date(date);
     const localDate = new Date(newDate.toLocaleString());
@@ -124,6 +138,7 @@ export default function Post(props) {
     socket.on("poll", (data) => {
       updatePollPost(data);
     });
+
     const videoElement = videoRef.current;
     const audioElement = audioRef.current;
     if (musicRef && musicRef.current) {
@@ -166,7 +181,7 @@ export default function Post(props) {
       if (audioElement) {
         observer2.unobserve(audioElement);
       }
-      socket.off("poll");
+      if (socket) socket.off("poll");
     };
   }, []);
 

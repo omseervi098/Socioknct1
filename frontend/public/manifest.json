@@ -1,5 +1,5 @@
 {
-    "id": "3",
+    "id": "4",
     "name": "Socioknct - Social Media Platform",
     "short_name": "Socioknct",
     "icons": [
@@ -25,6 +25,5 @@
     "theme_color": "#FFFFFF",
     "background_color": "#FFFFFF",
     "start_url": "/",
-    "display": "standalone",
-    "orientation": "any"
+    "display": "standalone"
 }

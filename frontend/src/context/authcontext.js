@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       const user = JSON.parse(localStorage.getItem("user"));
       //wait for the socket to connect
       setTimeout(() => {
-          joinRoom(`Notification-${user._id}`);
+        joinRoom(`Notification-${user._id}`);
       }, 4000);
       dispatch({ type: SET_USER, payload: user });
     } else {
@@ -51,23 +51,31 @@ export const AuthProvider = ({ children }) => {
   // join Room
   const joinRoom = (room) => {
     //send api request to join room
-    const url=process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/notification/join-room";
-    axios.post(url,{roomName:room},{headers:{
-      Authorization: `Bearer ${localStorage.getItem("token")}`
-    }})
-    .then(res=>{
-      //so now 
-      console.log(res.data.data);
-      if(!notificationRoom.includes(res.data.data.name)){
-        socket.emit("join_room", res.data.data.name);
+    const url =
+      process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/notification/join-room";
+    axios
+      .post(
+        url,
+        { roomName: room },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        //so now
+        console.log(res.data.data);
+        if (!notificationRoom.includes(res.data.data.name)) {
+          socket.emit("join_room", res.data.data.name);
 
-        setNotificationRoom([...notificationRoom,res.data.data]);
-      }
-    })
-    .catch(err=>{
-      console.log(err);
-    })
-  }
+          setNotificationRoom([...notificationRoom, res.data.data]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   // Login Function
   const login = async (form) => {
     try {
