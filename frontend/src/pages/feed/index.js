@@ -50,20 +50,19 @@ export default function Feed() {
 
   useEffect(() => {
     getWeatherAndNewsOnce();
-    const fetch = async () => {
-      if (posts.length === 0) await getPosts();
-      //listen for user:liked event after getting posts
-      await socket.on("user:liked", (data) => {
-        console.log("User Liked", data);
-        toggleLikeClient(data);
-      });
-    };
-    fetch();
+
+    if (posts.length === 0) getPosts();
+
+    return () => {};
+  }, []);
+  useEffect(() => {
+    socket.on("user:liked", (data) => {
+      toggleLikeClient(data);
+    });
     return () => {
       socket.off("user:liked");
     };
-  }, []);
-
+  }, [posts]);
   if (!auth) {
     return null;
   }

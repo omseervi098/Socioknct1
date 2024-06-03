@@ -18,11 +18,12 @@ import EmojiPickerModal from "../modals/emojiPickerModal";
 import { Menu, Transition } from "@headlessui/react";
 import { usePostContext } from "@/context/postcontext";
 import toast from "react-hot-toast";
+import { debounce } from "lodash";
 export default function Reply(props) {
   const { commentId, postId, reply, postUser } = props;
   const { touch, themes, setDeleteAlert } = useGeneralContext();
   const { user } = useAuthContext();
-  const { deleteReply, editReply } = usePostContext();
+  const { deleteReply, editReply, toggleLike } = usePostContext();
   const [editable, setEditable] = useState(false);
   const editRef = useRef();
   const handleDeleteReply = async (id) => {
@@ -45,6 +46,18 @@ export default function Reply(props) {
       }
     );
   };
+  const handleLikeReply0 = ({ postId, commentId, replyId }) => {
+    console.log("like/Dislike reply", postId, commentId, replyId);
+    toast.promise(
+      toggleLike({ postId, commentId, id: replyId, type: "reply" }),
+      {
+        loading: "Updating...",
+        success: "Liked/Disliked",
+        error: "Failed",
+      }
+    );
+  };
+  const handleLikeReply = debounce(handleLikeReply0, 2500);
   return (
     <>
       <div className="w-full flex flex-row items-start justify-start gap-2 py-2 ">
@@ -226,8 +239,23 @@ export default function Reply(props) {
               </div>
             </div>
             <div className="w-full flex flex-row items-center justify-start gap-3">
-              <button className="text-xs font-semibold text-gray-700 hover:text-blue-500">
-                <FontAwesomeIcon icon={faThumbsUp} className="h-[12px]" /> Like
+              <button
+                className="text-xs font-semibold text-gray-700 hover:text-blue-500"
+                onClick={() =>
+                  handleLikeReply({ postId, commentId, replyId: reply._id })
+                }
+              >
+                <FontAwesomeIcon
+                  icon={faThumbsUp}
+                  className={`h-[12px] ${
+                    reply.likes.find((like) => like.user === user._id)
+                      ? "text-blue-500"
+                      : "text-gray-500"
+                  }`}
+                />
+                {reply.likes.find((like) => like.user === user._id)
+                  ? " Liked "
+                  : " Like "}
                 ({reply.likes.length})
               </button>
             </div>

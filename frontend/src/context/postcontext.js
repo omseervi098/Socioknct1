@@ -540,39 +540,58 @@ export const PostProvider = ({ children }) => {
     dispatch({ type: UPDATE_POST, payload: post });
   };
   const toggleLikeClient = async (data) => {
-    const { type, id, postId, commentId, deleted, user } = data;
+    //if posts are not loaded
+    if (state.posts.length === 0) {
+      return;
+    }
+    const { liked, postId, commentId, deleted } = data;
     console.log("Toggle Like Client", data, state.posts);
-    if (type == "post") {
-      const post = state.posts.find((post) => post._id === id);
-      if (post.likes.find((like) => like.user._id === user._id)) {
-        post.likes = post.likes.filter((like) => like.user._id !== user._id);
-      } else if (post.likes.find((like) => like.user._id !== user._id)) {
-        post.likes.push(user._id);
+    if (liked.onModel == "post") {
+      const post = state.posts.find((post) => post._id === liked.likeable);
+      if (!post) return; //if post is not found
+      if (!post.likes.find((like) => like.user._id === liked.user._id)) {
+        post.likes.push(liked);
+      } else {
+        post.likes = post.likes.filter(
+          (like) => like.user._id !== liked.user._id
+        );
       }
       dispatch({ type: UPDATE_POST, payload: post });
-    } else if (type == "Comment") {
+    } else if (liked.onModel == "comment") {
       const post = state.posts.find((post) => post._id === postId);
-      const comment = post.comments.find((com) => com._id === id);
-      if (comment.likes.find((like) => like.user === user._id)) {
-        comment.likes = comment.likes.filter((like) => like.user !== user._id);
+      //if post is not found
+      if (!post) return;
+      const comment = post.comments.find((com) => com._id === liked.likeable);
+      //if comment is not found
+      if (!comment) return;
+      if (comment.likes.find((like) => like.user === liked.user)) {
+        comment.likes = comment.likes.filter(
+          (like) => like.user !== liked.user
+        );
       } else {
-        comment.likes.push({ user: user._id });
+        comment.likes.push(liked);
       }
       post.comments = post.comments.map((com) =>
-        com._id === id ? comment : com
+        com._id === liked.likeable ? comment : com
       );
       dispatch({ type: UPDATE_POST, payload: post });
-    } else if (type == "Reply") {
+    } else if (liked.onModel == "reply") {
       const post = state.posts.find((post) => post._id === postId);
+      //if post is not found
+      if (!post) return;
       const comment = post.comments.find((com) => com._id === commentId);
-      const reply = comment.replies.find((rep) => rep._id === id);
-      if (reply.likes.find((like) => like.user === user._id)) {
-        reply.likes = reply.likes.filter((like) => like.user !== user._id);
+      //if comment is not found
+      if (!comment) return;
+      const reply = comment.replies.find((rep) => rep._id === liked.likeable);
+      //if reply is not found
+      if (!reply) return;
+      if (reply.likes.find((like) => like.user === liked.user)) {
+        reply.likes = reply.likes.filter((like) => like.user !== liked.user);
       } else {
-        reply.likes.push({ user: user._id });
+        reply.likes.push(liked);
       }
       comment.replies = comment.replies.map((rep) =>
-        rep._id === id ? reply : rep
+        rep._id === liked.likeable ? reply : rep
       );
       post.comments = post.comments.map((com) =>
         com._id === commentId ? comment : com

@@ -36,6 +36,7 @@ import EditDocumentModal from "../editModal/editDocumentModal";
 import EditVideoModal from "../editModal/editVideoModal";
 import EditAudioModal from "../editModal/editAudioModal";
 import DeleteAlert from "../modals/deleteAlert";
+import { debounce } from "lodash";
 export default function Post(props) {
   const { post } = props;
   const { themes, touch, addAudioRef, stopAllAudio, setDeleteAlert } =
@@ -101,15 +102,15 @@ export default function Post(props) {
       error: "Error Deleting Post",
     });
   };
-  const handleLikePost = (postId) => {
+  const handleLikePost0 = (postId) => {
     console.log("Like Post", postId);
     toast.promise(toggleLike({ id: postId, type: "post" }), {
       loading: "Liking Post...",
-      success: "Post Liked Successfully",
+      success: "Post Like/Dislike",
       error: "Error Liking Post",
     });
   };
-
+  const handleLikePost = debounce(handleLikePost0, 1000);
   const parseDate = (date) => {
     const newDate = new Date(date);
     const localDate = new Date(newDate.toLocaleString());
@@ -353,7 +354,6 @@ export default function Post(props) {
                                     : post.document
                                     ? "document"
                                     : "article";
-                                console.log("Edit Post", ans);
                                 setOpenEditModal({
                                   ...openEditModal,
                                   [ans]: true,
@@ -568,6 +568,7 @@ export default function Post(props) {
               open={open}
               handleOpen={handleOpen}
               postInfo={post}
+              handleLikePost={handleLikePost}
               parseDate={parseDate}
             />
           </>
@@ -725,8 +726,21 @@ export default function Post(props) {
               className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md"
               onClick={() => handleLikePost(post._id)}
             >
-              <FontAwesomeIcon icon={faThumbsUp} className="h-[20px]" />
-              <span className="text-xs text-gray-700">Like</span>
+              <FontAwesomeIcon
+                icon={faThumbsUp}
+                className={` h-[20px]
+              ${
+                post.likes.find((like) => like.user._id === user._id)
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+              `}
+              />
+              <span className="text-xs text-gray-700">
+                {post.likes.find((like) => like.user._id === user._id)
+                  ? "Liked"
+                  : "Like"}
+              </span>
             </button>
             <button
               className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md"

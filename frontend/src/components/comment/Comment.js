@@ -21,11 +21,12 @@ import { usePostContext } from "@/context/postcontext";
 import { Menu, Transition } from "@headlessui/react";
 import DeleteAlert from "../modals/deleteAlert";
 import toast from "react-hot-toast";
+import { debounce } from "lodash";
 export default function Comment(props) {
   const { postId, comment, postUser } = props;
   const { touch, themes, setDeleteAlert } = useGeneralContext();
   const { user } = useAuthContext();
-  const { addReply, editComment, deleteComment } = usePostContext();
+  const { addReply, editComment, deleteComment, toggleLike } = usePostContext();
   const [openReply, setOpenReply] = useState(false);
   const [expandReply, setExpandReply] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -60,6 +61,16 @@ export default function Comment(props) {
       error: "Edit comment failed",
     });
   };
+  const handleLikeComment0 = ({ postId, commentId }) => {
+    console.log("Like/Dislike comment", postId, commentId);
+    toast.promise(toggleLike({ postId, id: commentId, type: "comment" }), {
+      loading: "Processing...",
+      success: "Liked/Disliked",
+      error: "Failed",
+    });
+  };
+  const handleLikeComment = debounce(handleLikeComment0, 2000);
+
   return (
     <>
       <div className="w-full flex flex-row items-start justify-start gap-0">
@@ -242,9 +253,24 @@ export default function Comment(props) {
                 ) : null}
               </div>
               <div className="w-full flex flex-row items-center justify-start gap-2">
-                <button className="text-xs font-semibold text-gray-700 hover:text-blue-500">
-                  <FontAwesomeIcon icon={faThumbsUp} className="h-[12px]" />{" "}
-                  Like ({comment.likes.length})
+                <button
+                  className="text-xs font-semibold text-gray-700 hover:text-blue-500"
+                  onClick={() =>
+                    handleLikeComment({ postId, commentId: comment._id })
+                  }
+                >
+                  <FontAwesomeIcon
+                    icon={faThumbsUp}
+                    className={`h-[15px] ${
+                      comment.likes.find((like) => like.user === user._id)
+                        ? "text-blue-500"
+                        : "text-gray-500"
+                    }`}
+                  />
+                  {comment.likes.find((like) => like.user === user._id)
+                    ? " Liked"
+                    : " Like"}{" "}
+                  ({comment.likes.length})
                 </button>
                 |
                 <button

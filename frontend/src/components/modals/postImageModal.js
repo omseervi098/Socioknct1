@@ -281,12 +281,29 @@ export default function PostImageModal(props) {
                       </div>
                       <div className="px-2 w-full flex flex-row justify-between items-center gap-2  border-t border-gray-300 pt-1">
                         <div className="flex flex-row items-center gap-0">
-                          <button className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md">
+                          <button
+                            className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md"
+                            onClick={() => {
+                              props.handleLikePost(postInfo._id);
+                            }}
+                          >
                             <FontAwesomeIcon
                               icon={faThumbsUp}
-                              className="h-[20px]"
+                              className={`h-[20px]  ${
+                                postInfo.likes.find(
+                                  (like) => like.user._id === user._id
+                                )
+                                  ? "text-blue-500"
+                                  : "text-gray-500"
+                              }`}
                             />
-                            <span className="text-xs text-gray-700">Like</span>
+                            <span className="text-xs text-gray-700">
+                              {postInfo.likes.find(
+                                (like) => like.user._id === user._id
+                              )
+                                ? "Liked"
+                                : "Like"}
+                            </span>
                           </button>
                           <button className="text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-100 p-1 px-2 rounded-md">
                             <FontAwesomeIcon
@@ -378,8 +395,8 @@ export default function PostImageModal(props) {
                                   comment={comment}
                                   parseDate={parseDate}
                                   key={idx}
-                                  postId={post._id}
-                                  postUser={post.user}
+                                  postId={postInfo._id}
+                                  postUser={postInfo.user}
                                 />
                               ))}
                         </Transition>
