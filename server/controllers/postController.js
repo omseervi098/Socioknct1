@@ -126,7 +126,6 @@ export const updatePost = async (req, res) => {
         ],
       },
     ]);
-    console.log(post);
     return res.status(200).json({ message: "Post updated successfully", post });
   } catch (error) {
     console.log(error);
@@ -176,7 +175,9 @@ export const getPosts = async (req, res) => {
         path: "comments",
         populate: {
           path: "replies",
-          populate: { path: "likes" },
+          populate: {
+            path: "likes",
+          },
         },
       })
       .populate({
@@ -232,7 +233,6 @@ export const votePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { optionId } = req.body;
-    console.log("Vote Post", id, optionId);
     const post = await Post.findById(id).populate("poll");
 
     if (!post) {
@@ -277,9 +277,7 @@ export const votePost = async (req, res) => {
 export const unvotePost = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(req.params);
     const userId = req.user._id;
-    console.log("Unvote Post", id, userId);
     const post = await Post.findById(id).populate("poll");
     if (!post) {
       return res.status(404).json({ message: "Post not found" });

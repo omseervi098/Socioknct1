@@ -8,7 +8,7 @@ export const toggleLike = async (req, res) => {
   try {
     // -- /toggle/?id=123&type=Post
     const { id, type, postId, commentId } = req.body;
-    console.log(req.body);
+
     const user = req.user._id;
     let likeable, deleted;
     if (type === "post") {
@@ -18,13 +18,26 @@ export const toggleLike = async (req, res) => {
     } else if (type === "reply") {
       likeable = await Reply.findById(id).populate("likes");
     }
-    //check if the like exists
-    const existingLike = await Like.findOneAndDelete({
-      user,
-      likeable: id,
-      onModel: type,
-    });
-    //if it exists then delete it
+    //find if the like exists and populate user if type is post
+    let liked, existingLike;
+    if (type === "post") {
+      const existingLike1 = await Like.findOneAndDelete({
+        user,
+        likeable: id,
+        onModel: type,
+      }).populate("user", "name avatar bio");
+      existingLike = existingLike1;
+      liked = existingLike1;
+    } else {
+      const existingLike1 = await Like.findOneAndDelete({
+        user,
+        likeable: id,
+        onModel: type,
+      });
+      existingLike = existingLike1;
+      liked = existingLike1;
+    }
+
     if (existingLike) {
       await likeable.likes.pull(existingLike._id);
       await likeable.save();
@@ -36,6 +49,8 @@ export const toggleLike = async (req, res) => {
         likeable: id,
         onModel: type,
       });
+      if (type === "post") newLike.populate("user", "name avatar bio");
+      liked = newLike;
       likeable.likes.push(newLike._id);
       await likeable.save();
     }
@@ -43,16 +58,12 @@ export const toggleLike = async (req, res) => {
       method: "POST",
       data: {
         like: {
-          user: user._id,
-          id,
-          type,
-          postId: postId || null,
-          commentId: commentId || null,
-          deleted,
+          postId,
+          commentId,
+          liked,
         },
       },
     });
-    console.log(resp.data);
     res.status(200).json({ message: "Like toggled", deleted });
   } catch (err) {
     console.log(err);
