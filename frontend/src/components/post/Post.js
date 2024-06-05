@@ -35,8 +35,8 @@ import EditArticleModal from "../editModal/editArticleModal";
 import EditDocumentModal from "../editModal/editDocumentModal";
 import EditVideoModal from "../editModal/editVideoModal";
 import EditAudioModal from "../editModal/editAudioModal";
-import DeleteAlert from "../modals/deleteAlert";
 import { debounce } from "lodash";
+import Link from "next/link";
 export default function Post(props) {
   const { post } = props;
   const { themes, touch, addAudioRef, stopAllAudio, setDeleteAlert } =
@@ -170,10 +170,15 @@ export default function Post(props) {
     if (audioElement) {
       observer2.observe(audioElement);
     }
-    if (textRef.current) {
+    if (textRef.current && !props.full) {
       textRef.current.clientHeight >= 75
         ? setShowSeeMore(true)
         : setShowSeeMore(false);
+    }
+    if (props.full) {
+      setSeeMore(true);
+      setShowSeeMore(false);
+      setExpandComment(true);
     }
     return () => {
       if (videoElement) {
@@ -206,6 +211,10 @@ export default function Post(props) {
       textRef.current.clientHeight >= 70
         ? setShowSeeMore(true)
         : setShowSeeMore(false);
+    }
+    if (props.full) {
+      setSeeMore(true);
+      setShowSeeMore(false);
     }
   }, [post, percentage]);
 
@@ -449,9 +458,18 @@ export default function Post(props) {
                                   : "text-gray-700",
                                 "flex px-4 py-2 text-sm w-full text-left gap-2"
                               )}
-                              onClick={() =>
-                                setOpen({ ...open, audio: !open.audio })
-                              }
+                              onClick={() => {
+                                if (
+                                  !navigator &&
+                                  !navigator.clipboard &&
+                                  !window
+                                )
+                                  return;
+                                navigator.clipboard.writeText(
+                                  `${window.location.origin}/post/${post._id}`
+                                );
+                                toast.success("Link Copied");
+                              }}
                             >
                               <FontAwesomeIcon
                                 icon={faCopy}
@@ -715,9 +733,9 @@ export default function Post(props) {
             <div className="rounded-full text-gray-500 flex items-center justify-center">
               <FontAwesomeIcon icon={faComment} className="h-[15px]" />
             </div>
-            <div className="text-xs text-gray-500">
+            <Link className="text-xs text-gray-500" href={`/post/${post._id}`}>
               {post.comments.length} Comments
-            </div>
+            </Link>
           </div>
         </div>
         <div className="w-full flex flex-row justify-between items-center gap-2  border-t border-gray-300 px-0 pt-1">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useAuthContext } from "./authcontext";
@@ -157,7 +157,8 @@ export const PostProvider = ({ children }) => {
         },
       });
       console.log("Post from getPost", response.data);
-      dispatch({ type: SET_POST, payload: response.data });
+      // dispatch({ type: SET_POST, payload: response.data });
+      return response.data;
     } catch (err) {
       console.log(err);
     }

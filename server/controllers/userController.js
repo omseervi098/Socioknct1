@@ -154,7 +154,7 @@ export const loginUser = async (req, res, next) => {
         );
       }
       //if remember me is checked, set token expiry to 30 days
-      const expiry = rememberMe ? "30d" : "1d";
+      const expiry = rememberMe ? "7d" : "1d";
       const loginToken = jwt.sign(
         {
           id: user._id,

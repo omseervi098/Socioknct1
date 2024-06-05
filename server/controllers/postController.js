@@ -163,7 +163,7 @@ export const getPosts = async (req, res) => {
   try {
     const { offset, limit } = req.query;
     const posts = await Post.find()
-      .populate("user")
+      .populate("user", "name avatar bio")
       .populate({
         path: "comments",
         populate: {
@@ -219,12 +219,38 @@ export const getTotalPosts = async (req, res) => {
 export const getPost = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const post = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+    await post.populate([
+      { path: "poll" },
+      { path: "user", select: "-password" },
+      {
+        path: "comments",
+        populate: [
+          {
+            path: "replies",
+            populate: { path: "user", select: "name avatar bio" },
+          },
+          {
+            path: "user",
+            select: "name avatar bio",
+          },
+        ],
+      },
+      {
+        path: "likes",
+        populate: {
+          path: "user",
+          select: "name avatar bio",
+        },
+      },
+    ]);
     return res.status(200).json({ post });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
