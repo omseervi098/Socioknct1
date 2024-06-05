@@ -489,53 +489,71 @@ export const PostProvider = ({ children }) => {
       throw new Error(err.response.data.message);
     }
   };
-  const addCommentClient = async ({ postId, comment }) => {
-    const post = state.posts.find((post) => post._id === postId);
-    post.comments.push(comment);
+  const addCommentClient = async (comment) => {
+    if (user._id === comment.user._id) return;
+    const post = state.posts.find((post) => post._id === comment.post);
+    //check if post is not found
+    if (!post) return;
+    //check if comment already exists
+    if (post.comments.find((com) => com._id === comment._id)) return;
+    else post.comments.push(comment);
     dispatch({ type: UPDATE_POST, payload: post });
   };
-  const editCommentClient = async ({ postId, commentId, text }) => {
-    const post = state.posts.find((post) => post._id === postId);
-    const comment = post.comments.find((com) => com._id === commentId);
-    comment.text = text;
+  const editCommentClient = async (comment) => {
+    const post = state.posts.find((post) => post._id === comment.post);
+    if (!post) return; //if post is not found
+    let editedComment = post.comments.find((com) => com._id === comment._id);
+    if (!editedComment) return; //if comment is not found
     post.comments = post.comments.map((com) =>
-      com._id === commentId ? comment : com
+      com._id === comment._id ? comment : com
     );
     dispatch({ type: UPDATE_POST, payload: post });
   };
-  const deleteCommentClient = async ({ postId, commentId }) => {
-    const post = state.posts.find((post) => post._id === postId);
-    post.comments = post.comments.filter((com) => com._id !== commentId);
+  const deleteCommentClient = async (comment) => {
+    const post = state.posts.find((post) => post._id === comment.post);
+    //check if post is not found
+    if (!post) return;
+    post.comments = post.comments.filter((com) => com._id !== comment._id);
     dispatch({ type: UPDATE_POST, payload: post });
   };
-  const addReplyClient = async ({ postId, commentId, reply }) => {
-    const post = state.posts.find((post) => post._id === postId);
-    const comment = post.comments.find((com) => com._id === commentId);
+  const addReplyClient = async (reply) => {
+    if (user._id === reply.user._id) return;
+    const post = state.posts.find((post) => post._id === reply.post);
+    if (!post) return; //if post is not found
+    const comment = post.comments.find((com) => com._id === reply.comment);
+    if (!comment) return; //if comment is not found
+    //check if reply already exists
+    if (comment.replies.find((rep) => rep._id === reply._id)) return;
     comment.replies.push(reply);
     post.comments = post.comments.map((com) =>
-      com._id === commentId ? comment : com
+      com._id === reply.comment ? comment : com
     );
     dispatch({ type: UPDATE_POST, payload: post });
   };
-  const editReplyClient = async ({ postId, commentId, replyId, text }) => {
-    const post = state.posts.find((post) => post._id === postId);
-    const comment = post.comments.find((com) => com._id === commentId);
-    const reply = comment.replies.find((rep) => rep._id === replyId);
-    reply.text = text;
+  const editReplyClient = async (reply) => {
+    const post = state.posts.find((post) => post._id === reply.post);
+    if (!post) return; //if post is not found
+    const comment = post.comments.find((com) => com._id === reply.comment);
+    if (!comment) return; //if comment is not found
+    let editedReply = comment.replies.find((rep) => rep._id === reply._id);
+    if (!editedReply) return; //if reply is not found
+    editedReply = reply;
     comment.replies = comment.replies.map((rep) =>
-      rep._id === replyId ? reply : rep
+      rep._id === reply._id ? editedReply : rep
     );
     post.comments = post.comments.map((com) =>
-      com._id === commentId ? comment : com
+      com._id === reply.comment ? comment : com
     );
     dispatch({ type: UPDATE_POST, payload: post });
   };
-  const deleteReplyClient = async ({ postId, commentId, replyId }) => {
-    const post = state.posts.find((post) => post._id === postId);
-    const comment = post.comments.find((com) => com._id === commentId);
-    comment.replies = comment.replies.filter((rep) => rep._id !== replyId);
+  const deleteReplyClient = async (reply) => {
+    const post = state.posts.find((post) => post._id === reply.post);
+    if (!post) return; //if post is not found
+    const comment = post.comments.find((com) => com._id === reply.comment);
+    if (!comment) return; //if comment is not found
+    comment.replies = comment.replies.filter((rep) => rep._id !== reply._id);
     post.comments = post.comments.map((com) =>
-      com._id === commentId ? comment : com
+      com._id === reply.comment ? comment : com
     );
     dispatch({ type: UPDATE_POST, payload: post });
   };

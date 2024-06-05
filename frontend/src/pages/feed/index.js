@@ -59,8 +59,32 @@ export default function Feed() {
     socket.on("user:liked", (data) => {
       toggleLikeClient(data);
     });
+    socket.on("user:comment", (data) => {
+      const { comment, type } = data;
+      console.log(comment, type);
+      if (type === "new") {
+        addCommentClient(comment);
+      } else if (type === "edit") {
+        editCommentClient(comment);
+      } else if (type === "delete") {
+        deleteCommentClient(comment);
+      }
+    });
+    socket.on("user:reply", (data) => {
+      const { reply, type } = data;
+      console.log(reply, type);
+      if (type === "new") {
+        addReplyClient(reply);
+      } else if (type === "edit") {
+        editReplyClient(reply);
+      } else if (type === "delete") {
+        deleteReplyClient(reply);
+      }
+    });
     return () => {
       socket.off("user:liked");
+      socket.off("user:comment");
+      socket.off("user:reply");
     };
   }, [posts]);
   if (!auth) {

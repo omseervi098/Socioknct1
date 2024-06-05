@@ -47,12 +47,19 @@ app.post("/api/v1/like", (req, res) => {
   io.emit("user:liked", like);
   res.send({ message: "Like emitted" });
 });
-//route for emiting comments
+//route for emiting new, edited and deleted comments
 app.post("/api/v1/comment", (req, res) => {
-  const { comment } = req.body;
-  io.emit("comment", comment);
+  const { comment, type } = req.body;
+  io.emit("user:comment", { comment, type });
   res.send({ message: "Comment emitted" });
 });
+//route for emiting new, edited and deleted replies
+app.post("/api/v1/reply", (req, res) => {
+  const { reply, type } = req.body;
+  io.emit("user:reply", { reply, type });
+  res.send({ message: "Reply emitted" });
+});
+
 server.listen(process.env.PORT || 8000, (e) => {
   if (e) {
     console.log(e);

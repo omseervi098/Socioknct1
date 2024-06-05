@@ -1,7 +1,8 @@
 import { text } from "express";
 import { Post } from "../models/Post.js";
 import { Comment } from "../models/Comment.js";
-
+import axios from "axios";
+import environment from "./../config/environment.js";
 export const createComment = async (req, res) => {
   try {
     const { postId, content } = req.body;
@@ -13,7 +14,6 @@ export const createComment = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    console.log(postId, content, req.user._id);
     const newComment = await Comment.create({
       user: req.user._id,
       post: postId,
@@ -21,9 +21,16 @@ export const createComment = async (req, res) => {
     });
     //populate the user field
     await newComment.populate("user", "name avatar bio");
-
     post.comments.push(newComment._id);
     await post.save();
+    //emit the comment to the websocket server
+    const resp = await axios.post(
+      environment.webSocketUrl + "/api/v1/comment",
+      {
+        comment: newComment,
+        type: "new",
+      }
+    );
     return res
       .status(200)
       .json({ message: "Comment created successfully", newComment });
@@ -43,7 +50,6 @@ export const getComments = async (req, res) => {
 export const updateComment = async (req, res) => {
   try {
     const { content } = req.body;
-    console.log(content);
     const comment = await Comment.findById(req.params.id);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
@@ -66,6 +72,14 @@ export const updateComment = async (req, res) => {
         },
       },
     ]);
+    const resp = await axios.post(
+      environment.webSocketUrl + "/api/v1/comment",
+      {
+        comment: comment,
+        type: "edit",
+      }
+    );
+
     return res
       .status(200)
       .json({ message: "Comment updated successfully", comment });
@@ -84,11 +98,17 @@ export const deleteComment = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    console.log(post.comments, req.params.id);
     post.comments = post.comments.filter(
       (comment) => comment.toString() !== req.params.id
     );
     await post.save();
+    const resp = await axios.post(
+      environment.webSocketUrl + "/api/v1/comment",
+      {
+        comment: comment,
+        type: "delete",
+      }
+    );
 
     return res
       .status(200)

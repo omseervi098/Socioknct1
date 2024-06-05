@@ -1,10 +1,10 @@
-import { copyFileSync } from "fs";
+import environment from "../config/environment.js";
 import { Reply } from "../models/Reply.js";
 import { Comment } from "../models/Comment.js";
+import axios from "axios";
 export const createReply = async (req, res) => {
   try {
     const { commentId, postId, content } = req.body;
-    console.log(commentId, postId, content);
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -23,6 +23,11 @@ export const createReply = async (req, res) => {
     await reply.populate("user", "name avatar bio");
     comment.replies.push(reply._id);
     await comment.save();
+    //emit the reply to the websocket server
+    const resp = await axios.post(environment.webSocketUrl + "/api/v1/reply", {
+      reply: reply,
+      type: "new",
+    });
     return res
       .status(200)
       .json({ message: "Reply created successfully", reply });
@@ -43,7 +48,14 @@ export const editReply = async (req, res) => {
     }
     const { content } = req.body;
     reply.text = content;
+    await reply.populate("user", "name avatar bio");
     await reply.save();
+    //emit the reply to the websocket server
+    const resp = await axios.post(environment.webSocketUrl + "/api/v1/reply", {
+      reply: reply,
+      type: "edit",
+    });
+
     return res
       .status(200)
       .json({ message: "Reply updated successfully", reply });
@@ -56,7 +68,6 @@ export const deleteReply = async (req, res) => {
   try {
     const { replyId } = req.params;
     const { commentId } = req.body;
-    console.log(replyId, commentId);
     const reply = await Reply.findByIdAndDelete(replyId);
     if (!reply) {
       return res.status(404).json({ message: "Reply not found" });
@@ -73,6 +84,11 @@ export const deleteReply = async (req, res) => {
     }
     comment.replies = comment.replies.filter((r) => r.toString() !== replyId);
     await comment.save();
+    //emit the reply to the websocket server
+    const resp = await axios.post(environment.webSocketUrl + "/api/v1/reply", {
+      reply: reply,
+      type: "delete",
+    });
 
     return res.status(200).json({ message: "Reply deleted successfully" });
   } catch (error) {
