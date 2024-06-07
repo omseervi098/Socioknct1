@@ -65,11 +65,19 @@ export const updateComment = async (req, res) => {
         select: "name avatar bio",
       },
       {
+        path: "likes",
+      },
+      {
         path: "replies",
-        populate: {
-          path: "user",
-          select: "name avatar bio",
-        },
+        populate: [
+          {
+            path: "user",
+            select: "name avatar bio",
+          },
+          {
+            path: "likes",
+          },
+        ],
       },
     ]);
     const resp = await axios.post(

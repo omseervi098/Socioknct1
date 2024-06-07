@@ -733,7 +733,12 @@ export default function Post(props) {
             <div className="rounded-full text-gray-500 flex items-center justify-center">
               <FontAwesomeIcon icon={faComment} className="h-[15px]" />
             </div>
-            <Link className="text-xs text-gray-500" href={`/post/${post._id}`}>
+            <Link
+              className="text-xs text-gray-500"
+              href={`/post/${post._id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               {post.comments.length} Comments
             </Link>
           </div>

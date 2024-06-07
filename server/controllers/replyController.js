@@ -48,7 +48,10 @@ export const editReply = async (req, res) => {
     }
     const { content } = req.body;
     reply.text = content;
-    await reply.populate("user", "name avatar bio");
+    await reply.populate([
+      { path: "user", select: "name avatar bio" },
+      { path: "likes" },
+    ]);
     await reply.save();
     //emit the reply to the websocket server
     const resp = await axios.post(environment.webSocketUrl + "/api/v1/reply", {

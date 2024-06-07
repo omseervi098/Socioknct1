@@ -11,40 +11,114 @@ import axios from "axios";
 import InfoCardSkeleton from "@/components/infoCard/infoCardSkeleton";
 import InfoCard1 from "@/components/infoCard/infoCard1";
 import Footer from "@/components/footer/footer";
-export const getServerSideProps = async (context) => {
-  const { id } = context.query;
-  const token = context.req.cookies.token;
-  const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/post/${id}`;
+import { socket } from "@/utils/socket";
+import DeleteAlert from "@/components/modals/deleteAlert";
+export async function getServerSideProps(context) {
+  const { id } = context.params;
+  const cookie = context.req.cookies.token;
   try {
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/post/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      }
+    );
+    return {
+      props: {
+        initialPost: res.data.post,
       },
-    });
-    const post = response.data.post;
-    return {
-      props: { post },
     };
-  } catch (error) {
+  } catch (err) {
+    console.log("error");
     return {
-      props: { post: null },
+      props: {
+        initialPost: null,
+      },
     };
   }
-};
-export default function Page({ post }) {
+}
+export default function Page({ initialPost }) {
   const router = useRouter();
   const { user } = useAuthContext();
+  const { deleteAlert, setDeleteAlert } = useGeneralContext();
+  const { id } = router.query;
+  const {
+    posts,
+    getPost,
+    setPosts,
+    toggleLikeClient,
+    addCommentClient,
+    editCommentClient,
+    deleteCommentClient,
+    addReplyClient,
+    editReplyClient,
+    deleteReplyClient,
+  } = usePostContext();
+  const [post, setPost] = useState(initialPost);
   if (localStorage.getItem("token") === null) {
     router.push("/login");
   }
-  if (router.isFallback || !post || !user) {
+  useEffect(() => {
+    async function fetchData() {
+      const resp = await getPost(id);
+      setPost(resp);
+      setPosts([resp]);
+    }
+    console.log("fetching", posts, post);
+    fetchData();
+    return () => {
+      setPost(null);
+      setPosts([]);
+    };
+  }, []);
+  useEffect(() => {
+    console.log("post", posts);
+    //update post
+    setPost(posts[0]);
+    socket.on("user:liked", (data) => {
+      //dont update for useriteself
+      // if (data.liked.user._id === user._id || data.liked.user === user._id)
+      //   return;
+      toggleLikeClient(data);
+    });
+    socket.on("user:comment", (data) => {
+      const { comment, type } = data;
+      console.log(comment, type);
+      if (type === "new") {
+        addCommentClient(comment);
+      } else if (type === "edit") {
+        editCommentClient(comment);
+      } else if (type === "delete") {
+        deleteCommentClient(comment);
+      }
+    });
+    socket.on("user:reply", (data) => {
+      const { reply, type } = data;
+      console.log(reply, type);
+      if (type === "new") {
+        addReplyClient(reply);
+      } else if (type === "edit") {
+        editReplyClient(reply);
+      } else if (type === "delete") {
+        deleteReplyClient(reply);
+      }
+    });
+    return () => {
+      socket.off("user:liked");
+      socket.off("user:comment");
+      socket.off("user:reply");
+    };
+  }, [post, posts, initialPost]);
+  if (router.isFallback || !post || !posts.length || !user) {
     return (
-      <div className="flex flex-row justify-center items-start w-full h-full md:space-x-4 mt-5 md:px-10 xl:px-16">
-        <div className="hidden md:block w-1/3">
+      <div className="flex flex-col md:flex-row justify-center items-start w-full h-full md:space-x-4 md:mt-5 md:px-10 xl:px-24 gap-4 md:gap-0">
+        <div className="px-2 sm:px-3 md:px-0 block w-full md:w-1/3 lg:w-1/4">
           <InfoCardSkeleton />
         </div>
-        <div className="flex-grow px-2">
-          <PostSkeleton />
+        <div className="px-2 md:px-0 w-full md:w-2/3">
+          <PostSkeleton one={true} />
         </div>
       </div>
     );
@@ -63,9 +137,18 @@ export default function Page({ post }) {
           <Footer />
         </div>
       </div>
+
       <div className="px-2 md:px-0 w-full md:w-2/3">
         <Post post={post} full={true} />
       </div>
+      <DeleteAlert
+        text={deleteAlert.text}
+        id={deleteAlert.id}
+        open={deleteAlert.open}
+        setOpen={setDeleteAlert}
+        handleDelete={deleteAlert.handleDelete}
+      />
     </div>
   );
 }
+export const dynamic = "force-dynamic";

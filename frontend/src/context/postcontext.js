@@ -156,12 +156,20 @@ export const PostProvider = ({ children }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log("Post from getPost", response.data);
-      // dispatch({ type: SET_POST, payload: response.data });
-      return response.data;
+      console.log("Post from getPost", response.data.post);
+      dispatch({ type: SET_POSTS, payload: [response.data.post] });
+
+      console.log("Updating Posts", state.posts);
+
+      return response.data.post;
     } catch (err) {
       console.log(err);
     }
+  };
+  //set posts
+  const setPosts = (posts) => {
+    console.log("Setting Posts", posts);
+    dispatch({ type: SET_POSTS, payload: posts });
   };
   // Create Post
   const createPost = async (form) => {
@@ -469,7 +477,6 @@ export const PostProvider = ({ children }) => {
   const toggleLike = async ({ id, type, postId, commentId }) => {
     try {
       const url = process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/like/toggle`;
-      console.log("URL from toggleLike", url);
       const response = await axios.patch(
         url,
         {
@@ -484,7 +491,7 @@ export const PostProvider = ({ children }) => {
           },
         }
       );
-      console.log("Like from toggleLike", response.data);
+      // toggleLikeClient(response.data.like);
     } catch (err) {
       console.log(err);
       throw new Error(err.response.data.message);
@@ -563,17 +570,18 @@ export const PostProvider = ({ children }) => {
     if (state.posts.length === 0) {
       return;
     }
-    const { liked, postId, commentId, deleted } = data;
-    console.log("Toggle Like Client", data, state.posts);
+    const { liked, postId, commentId } = data;
     if (liked.onModel == "post") {
       const post = state.posts.find((post) => post._id === liked.likeable);
       if (!post) return; //if post is not found
       if (!post.likes.find((like) => like.user._id === liked.user._id)) {
         post.likes.push(liked);
+        console.log("Liked post", post.likes);
       } else {
         post.likes = post.likes.filter(
           (like) => like.user._id !== liked.user._id
         );
+        console.log("Unliked post", post.likes);
       }
       dispatch({ type: UPDATE_POST, payload: post });
     } else if (liked.onModel == "comment") {
@@ -587,8 +595,10 @@ export const PostProvider = ({ children }) => {
         comment.likes = comment.likes.filter(
           (like) => like.user !== liked.user
         );
+        console.log("Liked comment", comment.likes);
       } else {
         comment.likes.push(liked);
+        console.log("Unliked comment", comment.likes);
       }
       post.comments = post.comments.map((com) =>
         com._id === liked.likeable ? comment : com
@@ -606,8 +616,10 @@ export const PostProvider = ({ children }) => {
       if (!reply) return;
       if (reply.likes.find((like) => like.user === liked.user)) {
         reply.likes = reply.likes.filter((like) => like.user !== liked.user);
+        console.log("Liked reply", reply.likes);
       } else {
         reply.likes.push(liked);
+        console.log("Unliked reply", reply.likes);
       }
       comment.replies = comment.replies.map((rep) =>
         rep._id === liked.likeable ? reply : rep
@@ -626,6 +638,7 @@ export const PostProvider = ({ children }) => {
         addPosts,
         getTotalPosts,
         getPost,
+        setPosts,
         createPost,
         updatePost,
         deletePost,

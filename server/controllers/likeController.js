@@ -64,7 +64,9 @@ export const toggleLike = async (req, res) => {
         },
       },
     });
-    res.status(200).json({ message: "Like toggled", deleted });
+    res
+      .status(200)
+      .json({ message: "Like toggled", like: { postId, commentId, liked } });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });

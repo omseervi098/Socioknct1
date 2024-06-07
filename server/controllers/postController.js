@@ -232,11 +232,17 @@ export const getPost = async (req, res) => {
         populate: [
           {
             path: "replies",
-            populate: { path: "user", select: "name avatar bio" },
+            populate: [
+              { path: "user", select: "name avatar bio" },
+              { path: "likes" },
+            ],
           },
           {
             path: "user",
             select: "name avatar bio",
+          },
+          {
+            path: "likes",
           },
         ],
       },
@@ -284,7 +290,28 @@ export const votePost = async (req, res) => {
     poll.options[optionIndex].votes.push(req.user._id);
     poll.totalVotes += 1;
     await poll.save();
-    await post.populate("user");
+    await post.populate([
+      { path: "user", select: "-password" },
+      { path: "poll" },
+      { path: "likes", populate: { path: "user", select: "name avatar bio" } },
+      {
+        path: "comments",
+        populate: [
+          { path: "user", select: "name avatar bio" },
+          { path: "likes" },
+        ],
+      },
+      {
+        path: "comments",
+        populate: {
+          path: "replies",
+          populate: [
+            { path: "user", select: "name avatar bio" },
+            { path: "likes" },
+          ],
+        },
+      },
+    ]);
     try {
       // send request to websocket server
       const url = `${environment.webSocketUrl}/api/v1/vote`;
@@ -325,7 +352,28 @@ export const unvotePost = async (req, res) => {
     });
     poll.totalVotes -= 1;
     await poll.save();
-    await post.populate("user");
+    await post.populate([
+      { path: "user", select: "-password" },
+      { path: "poll" },
+      { path: "likes", populate: { path: "user", select: "name avatar bio" } },
+      {
+        path: "comments",
+        populate: [
+          { path: "user", select: "name avatar bio" },
+          { path: "likes" },
+        ],
+      },
+      {
+        path: "comments",
+        populate: {
+          path: "replies",
+          populate: [
+            { path: "user", select: "name avatar bio" },
+            { path: "likes" },
+          ],
+        },
+      },
+    ]);
     try {
       //send request to websocket server
       const url = `${environment.webSocketUrl}/api/v1/vote`;
