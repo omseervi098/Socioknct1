@@ -24,7 +24,7 @@ export default function SuggestionsCard() {
     loadSuggestions();
   }, []);
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg p-3 shadow-lg gap-2">
+    <div className=" flex flex-col items-center justify-center w-full h-full bg-white rounded-lg p-3 shadow-lg gap-2">
       <div className="flex justify-between w-full">
         <div className="font-semibold text-md">Suggestions</div>
         <FontAwesomeIcon icon={faUserFriends} />

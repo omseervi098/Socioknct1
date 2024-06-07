@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { createRef, use, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthContext } from "@/context/authcontext";
@@ -56,6 +56,25 @@ export default function Feed() {
     return () => {};
   }, []);
   useEffect(() => {
+    window.onscroll = function () {
+      console.log(window.scrollY);
+      const suggestionsCard = document.getElementById("suggestionsCard");
+      const newsCard = document.getElementById("newsCard");
+      if (!suggestionsCard || !newsCard) return;
+      const suggestionsCardWidth = suggestionsCard.offsetWidth;
+      const newsCardWidth = newsCard.offsetWidth;
+      if (window.scrollY > 1000) {
+        suggestionsCard.style.position = "fixed";
+        suggestionsCard.style.width = `${suggestionsCardWidth}px`;
+        newsCard.style.position = "fixed";
+        newsCard.style.width = `${newsCardWidth}px`;
+      } else if (window.scrollY < 1000) {
+        suggestionsCard.style.position = "sticky";
+        suggestionsCard.style.width = "100%";
+        newsCard.style.position = "sticky";
+        newsCard.style.width = "100%";
+      }
+    };
     socket.on("user:liked", (data) => {
       toggleLikeClient(data);
     });
@@ -85,6 +104,7 @@ export default function Feed() {
       socket.off("user:liked");
       socket.off("user:comment");
       socket.off("user:reply");
+      window.onscroll = function () {};
     };
   }, [posts]);
   if (!auth) {
@@ -98,15 +118,17 @@ export default function Feed() {
           New Posts
         </button>
       </div> */}
-      <div className="hidden m-0 p-0 md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5 ">
+      <div
+        className={`hidden relative h-[2000px] m-0 p-0 md:flex flex-col w-1/3 lg:w-1/4 xl:w-1/5`}
+      >
         <div className="mb-3 m-0 p-0">
           <InfoCard />
         </div>
-        <div className="">
+        <div className="sticky top-20" id="suggestionsCard">
           <SuggestionsCard />
         </div>
       </div>
-      <div className=" w-full md:w-2/3 lg:w-1/2 px-1 md:px-4">
+      <div className="h-full w-full md:w-2/3 lg:w-1/2 px-1 md:px-4">
         <div className="mb-4 hidden md:block">
           <AddPost />
         </div>
@@ -131,15 +153,17 @@ export default function Feed() {
           </div>
         </InfiniteScroll>
       </div>
-      <div className="hidden lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">
+      <div className="hidden relative h-[2500px] lg:flex flex-col gap-3 lg:w-1/4 xl:w-1/4 px-0">
         <div className="">
           <WeatherCard />
         </div>
-        <div className="">
-          <NewsCard />
-        </div>
-        <div className="">
-          <Footer />
+        <div className="sticky top-20" id="newsCard">
+          <div className="">
+            <NewsCard />
+          </div>
+          <div className="">
+            <Footer />
+          </div>
         </div>
       </div>
       <button
