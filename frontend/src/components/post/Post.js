@@ -37,6 +37,7 @@ import EditVideoModal from "../editModal/editVideoModal";
 import EditAudioModal from "../editModal/editAudioModal";
 import { debounce } from "lodash";
 import Link from "next/link";
+import LikesModal from "../modals/likesModal";
 export default function Post(props) {
   const { post } = props;
   const { themes, touch, addAudioRef, stopAllAudio, setDeleteAlert } =
@@ -66,7 +67,8 @@ export default function Post(props) {
     article: false,
     poll: false,
   });
-  const [like, setLike] = useState(false);
+  const [openLikesModal, setOpenLikesModal] = useState(false);
+
   const commentRef = useRef();
   const handleOpenEditModal = (type) => {
     setOpenEditModal({ ...openEditModal, [type]: !openEditModal[type] });
@@ -695,36 +697,53 @@ export default function Post(props) {
           </div>
         )}
         <div className="w-full flex flex-row justify-between items-center gap-2 pb-2 pt-1 px-1">
-          <div className="flex flex-row items-center gap-2">
-            <div className="relative flex flex-row items-center gap-0 w-14 ">
-              <div className="w-6 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
-                <Image
-                  src="https://ui-avatars.com/api/?name=Ocs+Gkads"
-                  alt="avatar"
-                  width={50}
-                  height={50}
-                  className=" rounded-full"
-                />
+          <div
+            className="flex flex-row items-center gap-2 cursor-pointer hover:bg-gray-100 pr-2 rounded-md"
+            onClick={() => setOpenLikesModal(true)}
+          >
+            {post.likes.length > 0 && (
+              <div
+                className={`relative flex flex-row items-center gap-0 ${
+                  post.likes.length > 1 ? "w-14" : ""
+                }`}
+              >
+                <>
+                  <div className="w-6 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
+                    <Image
+                      src={post.likes[0].user.avatar}
+                      alt="avatar"
+                      width={50}
+                      height={50}
+                      className=" rounded-full"
+                    />
+                  </div>
+                  {post.likes.length > 1 && (
+                    <>
+                      <div className="absolute w-6 left-4 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
+                        <Image
+                          src={post.likes[1].user.avatar}
+                          alt="avatar"
+                          width={50}
+                          height={50}
+                          className=" rounded-full"
+                        />
+                      </div>
+                      {post.likes.length > 2 && (
+                        <div className="absolute left-8 w-6 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
+                          <Image
+                            src={post.likes[2].user.avatar}
+                            alt="avatar"
+                            width={50}
+                            height={50}
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
               </div>
-              <div className="absolute w-6 left-4 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
-                <Image
-                  src="https://ui-avatars.com/api/?name=Fed+Jsss"
-                  alt="avatar"
-                  width={50}
-                  height={50}
-                  className=" rounded-full"
-                />
-              </div>
-              <div className="absolute left-8 w-6 h-6 rounded-full bg-gray-300 overflow-hidden border border-gray-800">
-                <Image
-                  src="https://ui-avatars.com/api/?name=John+Doe"
-                  alt="avatar"
-                  width={50}
-                  height={50}
-                  className="object-cover"
-                />
-              </div>
-            </div>
+            )}
             <div className="text-xs text-gray-500">
               {post.likes.length} Likes
             </div>
@@ -909,6 +928,11 @@ export default function Post(props) {
             open={openEditModal["article"]}
             handleOpen={handleOpenEditModal}
             post={post}
+          />
+          <LikesModal
+            open={openLikesModal}
+            setOpen={setOpenLikesModal}
+            likes={post.likes}
           />
         </div>
       </div>
