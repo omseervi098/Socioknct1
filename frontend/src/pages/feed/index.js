@@ -57,7 +57,6 @@ export default function Feed() {
   }, []);
   useEffect(() => {
     window.onscroll = function () {
-      console.log(window.scrollY);
       const suggestionsCard = document.getElementById("suggestionsCard");
       const newsCard = document.getElementById("newsCard");
       if (!suggestionsCard || !newsCard) return;

@@ -117,6 +117,22 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  //get bookmarked posts
+  const getBookmarkedPosts = async () => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/bookmark/posts";
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Posts from getBookmarkedPosts", response.data.posts);
+      dispatch({ type: SET_POSTS, payload: response.data.posts });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   //add posts
   const addPosts = async () => {
     try {
@@ -197,6 +213,25 @@ export const PostProvider = ({ children }) => {
       } else {
         throw new Error("Something went wrong! Please try again.");
       }
+    }
+  };
+  // Add Bookmark
+  const addBookmark = async ({ postId }) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/bookmark/post/${postId}`;
+      const response = await axios.patch(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Post from addBookmark", response.data);
+    } catch (err) {
+      console.log(err);
     }
   };
   // Update Post
@@ -658,6 +693,8 @@ export const PostProvider = ({ children }) => {
         editCommentClient,
         deleteCommentClient,
         addReplyClient,
+        getBookmarkedPosts,
+        addBookmark,
         editReplyClient,
         deleteReplyClient,
         toggleLikeClient,

@@ -2,6 +2,7 @@ import { Poll } from "../models/Poll.js";
 import { Post } from "../models/Post.js";
 import environment from "../config/environment.js";
 import axios from "axios";
+import { Bookmark } from "../models/Bookmark.js";
 export const createPost = async (req, res) => {
   try {
     const { type } = req.body;

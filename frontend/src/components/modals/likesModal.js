@@ -94,14 +94,13 @@ export default function LikesModal(props) {
                                     </div>
                                   </div>
                                   <div className="flex ms-3 justify-center items-center">
-                                    <button
-                                      className="text-blue-500"
+                                    <FontAwesomeIcon
+                                      icon={faUserPlus}
+                                      className="text-blue-500 cursor-pointer"
                                       onClick={() => {
                                         console.log("clicked");
                                       }}
-                                    >
-                                      <FontAwesomeIcon icon={faUserPlus} />
-                                    </button>
+                                    />
                                   </div>
                                 </li>
                               );

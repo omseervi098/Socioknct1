@@ -12,6 +12,7 @@ import commentRouter from "./routes/commentRouter.js";
 import replyRouter from "./routes/replyRouter.js";
 import userRouter from "./routes/userRouter.js";
 import likeRouter from "./routes/likeRouter.js";
+import bookmarkRouter from "./routes/bookmarkRouter.js";
 import notificationRouter from "./routes/notificationRouter.js";
 import { apiContent } from "./middlewares/apiContentType.js";
 import { allowCrossDomain } from "./middlewares/allowCrossDomain.js";
@@ -43,6 +44,7 @@ app.use("/api/v1/reply", replyRouter);
 app.use("/api/v1/notification", notificationRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/like", likeRouter);
+app.use("/api/v1/bookmark", bookmarkRouter);
 app.get("/api/v1", (req, res) => {
   res.send({
     message: "Welcome to Socioknct API",

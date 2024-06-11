@@ -38,6 +38,7 @@ import EditAudioModal from "../editModal/editAudioModal";
 import { debounce } from "lodash";
 import Link from "next/link";
 import LikesModal from "../modals/likesModal";
+import ShareModal from "../modals/shareModal";
 export default function Post(props) {
   const { post } = props;
   const { themes, touch, addAudioRef, stopAllAudio, setDeleteAlert } =
@@ -55,6 +56,7 @@ export default function Post(props) {
     unvotePoll,
     addComment,
     toggleLike,
+    addBookmark,
   } = usePostContext();
   const musicRef = useRef(null);
   const [expandComment, setExpandComment] = useState(false);
@@ -68,7 +70,7 @@ export default function Post(props) {
     poll: false,
   });
   const [openLikesModal, setOpenLikesModal] = useState(false);
-
+  const [openShareModal, setOpenShareModal] = useState(false);
   const commentRef = useRef();
   const handleOpenEditModal = (type) => {
     setOpenEditModal({ ...openEditModal, [type]: !openEditModal[type] });
@@ -275,6 +277,14 @@ export default function Post(props) {
         console.log(err);
       });
   };
+  const handleBookmark = ({ postId }) => {
+    console.log("Bookmarking", postId);
+    toast.promise(addBookmark({ postId }), {
+      loading: "Bookmarking...",
+      success: "Bookmarked Successfully",
+      error: "Error Bookmarking",
+    });
+  };
   return (
     <div className="flex flex-col items-center justify-center w-full overflow-hidden h-full px-0 sm:px-1 lg:px-4">
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
@@ -439,7 +449,7 @@ export default function Post(props) {
                                 "flex px-4 py-2 text-sm w-full text-left gap-2"
                               )}
                               onClick={() =>
-                                setOpen({ ...open, audio: !open.audio })
+                                handleBookmark({ postId: post._id })
                               }
                             >
                               <FontAwesomeIcon
@@ -493,9 +503,7 @@ export default function Post(props) {
                               : "text-gray-700",
                             "block px-4 py-2 text-sm w-full text-left"
                           )}
-                          onClick={() =>
-                            setOpen({ ...open, article: !open.article })
-                          }
+                          onClick={() => setOpenShareModal(true)}
                         >
                           <FontAwesomeIcon
                             icon={faShare}
@@ -933,6 +941,11 @@ export default function Post(props) {
             open={openLikesModal}
             setOpen={setOpenLikesModal}
             likes={post.likes}
+          />
+          <ShareModal
+            open={openShareModal}
+            setOpen={setOpenShareModal}
+            url={`${window.location.origin}/post/${post._id}`}
           />
         </div>
       </div>
