@@ -234,6 +234,22 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  //Remove Bookmark
+  const removeBookmark = async ({ postId }) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/bookmark/post/${postId}`;
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Post from removeBookmark", response.data);
+      dispatch({ type: DELETE_POST, payload: postId });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   // Update Post
   const updatePost = async (id, form) => {
     try {
@@ -698,6 +714,7 @@ export const PostProvider = ({ children }) => {
         editReplyClient,
         deleteReplyClient,
         toggleLikeClient,
+        removeBookmark,
       }}
     >
       {children}

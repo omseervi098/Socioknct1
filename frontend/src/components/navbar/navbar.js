@@ -11,6 +11,7 @@ import {
   faArrowRightFromBracket,
   faBars,
   faBell,
+  faBookmark,
   faChevronDown,
   faGear,
   faHome,
@@ -468,6 +469,26 @@ export default function Navbar() {
                         )}
                       </Menu.Item>
                       <hr />
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/bookmarks"
+                            className={classNames(
+                              active
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-700",
+                              "block px-4 py-2 text-sm"
+                            )}
+                          >
+                            <FontAwesomeIcon
+                              icon={faBookmark}
+                              className="me-2"
+                            />
+                            &nbsp;Bookmarks
+                          </Link>
+                        )}
+                      </Menu.Item>
+
                       <Menu.Item>
                         {({ active }) => (
                           <Link

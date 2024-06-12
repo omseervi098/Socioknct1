@@ -75,3 +75,21 @@ export const getBookmarkedPosts = async (req, res) => {
     });
   }
 };
+export const removeBookmark = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+    // Check if post is bookmarked and if yes then remove it from bookmark
+    const bookmark = await Bookmark.findOne({ user: user._id, post: id });
+    if (!bookmark) {
+      return res.status(400).json({ message: "Post not bookmarked" });
+    }
+    await Bookmark.findByIdAndDelete(bookmark._id);
+    return res.status(200).json({ message: "Bookmark removed successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};

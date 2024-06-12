@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addBookmark,
+  removeBookmark,
   getBookmarkedPosts,
 } from "../controllers/bookmarkController.js";
 import passport from "passport";
@@ -17,5 +18,11 @@ router.get(
   rateLimit1,
   passport.authenticate("jwt", { session: false }),
   getBookmarkedPosts
+);
+router.delete(
+  "/post/:id",
+  rateLimit2,
+  passport.authenticate("jwt", { session: false }),
+  removeBookmark
 );
 export default router;

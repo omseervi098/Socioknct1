@@ -37,6 +37,7 @@ export default function Feed() {
     addReplyClient,
     editReplyClient,
     deleteReplyClient,
+    setPosts,
   } = usePostContext();
   const router = useRouter();
   const getWeatherAndNewsOnce = useCallback(() => {
@@ -51,9 +52,11 @@ export default function Feed() {
   useEffect(() => {
     getWeatherAndNewsOnce();
 
-    if (posts.length === 0) getPosts();
+    getPosts();
 
-    return () => {};
+    return () => {
+      setPosts([]);
+    };
   }, []);
   useEffect(() => {
     window.onscroll = function () {

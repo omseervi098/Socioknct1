@@ -36,6 +36,7 @@ import EditDocumentModal from "../editModal/editDocumentModal";
 import EditVideoModal from "../editModal/editVideoModal";
 import EditAudioModal from "../editModal/editAudioModal";
 import { debounce } from "lodash";
+import { parseDate } from "../../utils/dates";
 import Link from "next/link";
 import LikesModal from "../modals/likesModal";
 import ShareModal from "../modals/shareModal";
@@ -115,29 +116,6 @@ export default function Post(props) {
     });
   };
   const handleLikePost = debounce(handleLikePost0, 1000);
-  const parseDate = (date) => {
-    const newDate = new Date(date);
-    const localDate = new Date(newDate.toLocaleString());
-    const currentDate = new Date();
-    const diff = currentDate - newDate;
-    const seconds = diff / 1000;
-    if (seconds < 60) {
-      return `${Math.floor(seconds)} seconds ago`;
-    }
-    if (seconds < 60 * 60) {
-      return `${Math.floor(seconds / 60)} minutes ago`;
-    }
-    if (seconds < 60 * 60 * 24) {
-      return `${Math.floor(seconds / 60 / 60)} hours ago`;
-    }
-    if (seconds < 60 * 60 * 24 * 30) {
-      return `${Math.floor(seconds / 60 / 60 / 24)} days ago`;
-    }
-    if (seconds < 60 * 60 * 24 * 30 * 12) {
-      return `${Math.floor(seconds / 60 / 60 / 24 / 30)} months ago`;
-    }
-    return `${Math.floor(seconds / 60 / 60 / 24 / 30 / 12)} years ago`;
-  };
 
   useEffect(() => {
     socket.on("poll", (data) => {
