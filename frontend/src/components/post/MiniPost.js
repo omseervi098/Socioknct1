@@ -20,19 +20,13 @@ import { usePostContext } from "@/context/postcontext";
 import { socket } from "@/utils/socket";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-export default function MiniPost({ post }) {
+export default function MiniPost({ post, handleDelete }) {
   const { auth, user } = useAuthContext();
   const { themes, deleteAlert, setDeleteAlert } = useGeneralContext();
   const { removeBookmark } = usePostContext();
   const [readMore, setReadMore] = useState(false);
   const router = useRouter();
-  const handleDelete = (id) => {
-    toast.promise(removeBookmark({ postId: id }), {
-      loading: "Removing post from bookmarks",
-      success: "Post removed from bookmarks",
-      error: "Failed to remove post from bookmarks",
-    });
-  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full overflow-hidden h-full px-0 sm:px-1 lg:px-4">
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
@@ -151,7 +145,13 @@ export default function MiniPost({ post }) {
             </Menu>
           </div>
         </div>
-        <div className="w-full relative gap-2 px-2">
+        <div
+          className="w-full relative gap-2 px-2"
+          onDoubleClick={() => {
+            //open post in new tab
+            window.open(`/post/${post._id}`, "_blank");
+          }}
+        >
           <div
             className={`w-full text-wrap tiptap text-sm ${
               readMore ? "" : "line-clamp-3"

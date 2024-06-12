@@ -128,7 +128,7 @@ export const PostProvider = ({ children }) => {
         },
       });
       console.log("Posts from getBookmarkedPosts", response.data.posts);
-      dispatch({ type: SET_POSTS, payload: response.data.posts });
+      return response.data.posts;
     } catch (err) {
       console.log(err);
     }
@@ -245,9 +245,10 @@ export const PostProvider = ({ children }) => {
         },
       });
       console.log("Post from removeBookmark", response.data);
-      dispatch({ type: DELETE_POST, payload: postId });
+      return response.data;
     } catch (err) {
       console.log(err);
+      throw new Error("Something went wrong! Please try again.");
     }
   };
   // Update Post

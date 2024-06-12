@@ -33,7 +33,13 @@ import VideoModal from "../modals/videoModal";
 import DocumentModal from "../modals/documentModal";
 import PollModal from "../modals/pollModal";
 import AudioModal from "../modals/audioModal";
-
+import { Poppins } from "next/font/google";
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "auto",
+});
 export default function Navbar() {
   const { theme, themes, toggleTheme, openDrawer, toggleDrawer } =
     useGeneralContext();
@@ -590,7 +596,9 @@ export default function Navbar() {
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >
-                  <Dialog.Panel className="pointer-events-auto relative w-screen ">
+                  <Dialog.Panel
+                    className={`pointer-events-auto relative w-screen ${poppins.className}`}
+                  >
                     <Transition.Child
                       as={Fragment}
                       enter="ease-in-out duration-500"
@@ -680,6 +688,18 @@ export default function Navbar() {
                             <FontAwesomeIcon icon={faGear} className="me-2" />
                             Settings
                           </Link>
+                          <Link
+                            href="/bookmarks"
+                            onClick={() => setOpenDialog(false)}
+                            className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <FontAwesomeIcon
+                              icon={faBookmark}
+                              className="me-2"
+                            />
+                            Bookmarks
+                          </Link>
+
                           <button
                             onClick={() => {
                               logout();
