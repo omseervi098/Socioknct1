@@ -456,7 +456,7 @@ export default function Post(props) {
                                 )
                                   return;
                                 navigator.clipboard.writeText(
-                                  `${window.location.origin}/post/${post._id}`
+                                  `${window.location.origin}/post?id=${post._id}`
                                 );
                                 toast.success("Link Copied");
                               }}
@@ -740,7 +740,7 @@ export default function Post(props) {
             </div>
             <Link
               className="text-xs text-gray-500"
-              href={`/post/${post._id}`}
+              href={`/post?id=${post._id}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -923,7 +923,7 @@ export default function Post(props) {
           <ShareModal
             open={openShareModal}
             setOpen={setOpenShareModal}
-            url={`${window.location.origin}/post/${post._id}`}
+            url={`${window.location.origin}/post?id=${post._id}`}
           />
         </div>
       </div>

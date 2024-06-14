@@ -4,7 +4,6 @@ import PostSkeleton from "@/components/post/PostSkeleton";
 import { useAuthContext } from "@/context/authcontext";
 import { useGeneralContext } from "@/context/generalcontext";
 import { usePostContext } from "@/context/postcontext";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -13,37 +12,9 @@ import InfoCard1 from "@/components/infoCard/infoCard1";
 import Footer from "@/components/footer/footer";
 import { socket } from "@/utils/socket";
 import DeleteAlert from "@/components/modals/deleteAlert";
-export async function getServerSideProps(context) {
-  const { id } = context.params;
-  const cookie = context.req.cookies.token;
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/post/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${cookie}`,
-        },
-      }
-    );
-    return {
-      props: {
-        initialPost: res.data.post,
-      },
-    };
-  } catch (err) {
-    console.log("error");
-    return {
-      props: {
-        initialPost: null,
-      },
-    };
-  }
-}
-export default function Page({ initialPost }) {
-  const router = useRouter();
+export default function PostPage({ id }) {
   const { user } = useAuthContext();
   const { deleteAlert, setDeleteAlert } = useGeneralContext();
-  const { id } = router.query;
   const {
     posts,
     getPost,
@@ -56,7 +27,7 @@ export default function Page({ initialPost }) {
     editReplyClient,
     deleteReplyClient,
   } = usePostContext();
-  const [post, setPost] = useState(initialPost);
+  const [post, setPost] = useState();
   if (localStorage.getItem("token") === null) {
     router.push("/login");
   }
@@ -110,8 +81,8 @@ export default function Page({ initialPost }) {
       socket.off("user:comment");
       socket.off("user:reply");
     };
-  }, [post, posts, initialPost]);
-  if (router.isFallback || !post || !posts.length || !user) {
+  }, [post, posts]);
+  if (!post || !posts.length || !user) {
     return (
       <div className="flex flex-col md:flex-row justify-center items-start w-full h-full md:space-x-4 md:mt-5 md:px-10 xl:px-24 gap-4 md:gap-0">
         <div className="px-2 sm:px-3 md:px-0 block w-full md:w-1/3 lg:w-1/4">

@@ -19,9 +19,11 @@ const nextConfig = {
   //   // appDocumentPreloading: true,
 
   // },
-
+  output: "export",
+  //dont optimize images
   reactStrictMode: false,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         hostname: "res.cloudinary.com",
