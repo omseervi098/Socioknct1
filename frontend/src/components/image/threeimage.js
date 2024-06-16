@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useGeneralContext } from "@/context/generalcontext";
 export default function ThreeImage(props) {
+  console.log(props);
   return (
     <div className="grid grid-cols-3 max-h-[450px] w-full min-h-[250px]">
       <button className="max-h-[450px] col-span-2">

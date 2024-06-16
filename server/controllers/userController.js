@@ -10,6 +10,7 @@ import User from "../models/User.js";
 import env from "../config/environment.js";
 import { OAuth2Client } from "google-auth-library";
 import Otp from "../models/Otp.js";
+import { Post } from "../models/Post.js";
 const client = new OAuth2Client(env.googleClientId);
 export const googleAuth = async (req, res, next) => {
   const { credential, client_id } = req.body;
@@ -191,6 +192,52 @@ export const suggestUsers = async (req, res, next) => {
     users.sort(() => Math.random() - 0.5);
     const suggestedUsers = users.slice(0, 4);
     return res.status(200).json({ suggestedUsers });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.params.username);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.password = undefined;
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getAllMediaOfUser = async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.params.username);
+    //get all post of user
+    const post = await Post.find({ user: user._id });
+    //get all images,videos,audios of user
+
+    let media = {
+      images: [],
+      videos: [],
+      audios: [],
+    };
+
+    post.map((p) => {
+      if (p.images && p.images.length > 0) {
+        media.images.push(...p.images);
+        return;
+      }
+      if (p.video) {
+        media.videos.push(p.video);
+        return;
+      }
+      if (p.audio) {
+        media.audios.push(p.audio);
+        return;
+      }
+    });
+    return res.status(200).json({ media });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }

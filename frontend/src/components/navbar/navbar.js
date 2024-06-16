@@ -45,7 +45,6 @@ export default function Navbar() {
     useGeneralContext();
   const { auth, user, logout } = useAuthContext();
   const [openDialog, setOpenDialog] = React.useState(false);
-
   const router = useRouter();
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -458,7 +457,7 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <Link
-                            href="/profile"
+                            href={`/profile`}
                             className={classNames(
                               active
                                 ? "bg-gray-100 text-gray-900"
@@ -666,7 +665,7 @@ export default function Navbar() {
                           </>
                         ) : null}
                         <Link
-                          href="/profile"
+                          href={`/profile`}
                           onClick={() => setOpenDialog(false)}
                           className={classNames(
                             "block px-4 py-1 text-sm border font-semibold rounded-full mx-3 text-center mb-2 mt-14 hover:bg-blue-100"
