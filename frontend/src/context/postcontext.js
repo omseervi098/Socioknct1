@@ -133,6 +133,59 @@ export const PostProvider = ({ children }) => {
       console.log(err);
     }
   };
+  //get all posts of user
+  const getAllPostsOfUser = async (username) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL + `/api/v1/user/${username}/posts`;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Posts from getAllPostsOfUser", response.data.posts);
+      dispatch({ type: SET_POSTS, payload: response.data.posts });
+      return response.data.posts;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  //get all liked posts of user
+  const getAllLikedPostsOfUser = async (username) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        `/api/v1/user/${username}/posts/liked`;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Posts from getAllLikedPostsOfUser", response.data.posts);
+      dispatch({ type: SET_POSTS, payload: response.data.posts });
+      return response.data.posts;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  //get all commented posts of user
+  const getAllCommentedPostsOfUser = async (username) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        `/api/v1/user/${username}/posts/commented`;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Posts from getAllCommentedPostsOfUser", response.data.posts);
+      dispatch({ type: SET_POSTS, payload: response.data.posts });
+      return response.data.posts;
+    } catch (err) {
+      console.log(err);
+    }
+  };
   //add posts
   const addPosts = async () => {
     try {
@@ -186,6 +239,9 @@ export const PostProvider = ({ children }) => {
   const setPosts = (posts) => {
     console.log("Setting Posts", posts);
     dispatch({ type: SET_POSTS, payload: posts });
+    dispatch({ type: SET_HAS_MORE, payload: true });
+    dispatch({ type: SET_OFFSET, payload: 3 });
+    dispatch({ type: SET_TOTAL_POSTS, payload: posts.length });
   };
   // Create Post
   const createPost = async (form) => {
@@ -715,6 +771,9 @@ export const PostProvider = ({ children }) => {
         editReplyClient,
         deleteReplyClient,
         toggleLikeClient,
+        getAllCommentedPostsOfUser,
+        getAllLikedPostsOfUser,
+        getAllPostsOfUser,
         removeBookmark,
       }}
     >

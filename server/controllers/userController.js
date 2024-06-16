@@ -11,6 +11,9 @@ import env from "../config/environment.js";
 import { OAuth2Client } from "google-auth-library";
 import Otp from "../models/Otp.js";
 import { Post } from "../models/Post.js";
+import { Comment } from "../models/Comment.js";
+import { Reply } from "../models/Reply.js";
+import { Like } from "../models/Like.js";
 const client = new OAuth2Client(env.googleClientId);
 export const googleAuth = async (req, res, next) => {
   const { credential, client_id } = req.body;
@@ -239,6 +242,146 @@ export const getAllMediaOfUser = async (req, res, next) => {
     });
     return res.status(200).json({ media });
   } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const getAllPostsOfUser = async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.params.username);
+    const posts = await Post.find({ user: user._id })
+      .populate("user", "name avatar bio")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "replies",
+          populate: { path: "user", select: "name avatar bio" },
+        },
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "replies",
+          populate: {
+            path: "likes",
+          },
+        },
+      })
+      .populate({
+        path: "comments",
+        populate: { path: "user", select: "name avatar bio" },
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "likes",
+        },
+      })
+      .populate({
+        path: "likes",
+        populate: {
+          path: "user",
+          select: "name avatar bio",
+        },
+      })
+      .populate("poll")
+      .sort({ createdAt: -1 });
+    return res.status(200).json({ posts });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const getAllCommentedPostsOfUser = async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.params.username);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    //get all post of user where user has commented but populate first comments and then replies
+    const comments = await Comment.find({ user: user._id }).populate([
+      {
+        path: "post",
+        populate: [
+          { path: "poll" },
+          { path: "user", select: "-password" },
+          {
+            path: "comments",
+            populate: [
+              {
+                path: "replies",
+                populate: [
+                  { path: "user", select: "name avatar bio" },
+                  { path: "likes" },
+                ],
+              },
+              {
+                path: "user",
+                select: "name avatar bio",
+              },
+              {
+                path: "likes",
+              },
+            ],
+          },
+          {
+            path: "likes",
+            populate: {
+              path: "user",
+              select: "name avatar bio",
+            },
+          },
+        ],
+      },
+    ]);
+    const posts = comments.map((c) => c.post);
+    const filteredPosts = posts.filter((post) => post != null);
+    return res.status(200).json({ posts: filteredPosts });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const getAllLikedPostsOfUser = async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.params.username);
+    const likes = await Like.find({ user: user._id, onModel: "post" });
+
+    console.log(likes);
+    const postids = likes.map((l) => l.likeable);
+    //get all post of user where user has liked
+    const posts = await Post.find({ _id: { $in: postids } }).populate([
+      { path: "poll" },
+      { path: "user", select: "-password" },
+      {
+        path: "comments",
+        populate: [
+          {
+            path: "replies",
+            populate: [
+              { path: "user", select: "name avatar bio" },
+              { path: "likes" },
+            ],
+          },
+          {
+            path: "user",
+            select: "name avatar bio",
+          },
+          {
+            path: "likes",
+          },
+        ],
+      },
+      {
+        path: "likes",
+        populate: {
+          path: "user",
+          select: "name avatar bio",
+        },
+      },
+    ]);
+    return res.status(200).json({ posts });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

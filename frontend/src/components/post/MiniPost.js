@@ -26,7 +26,12 @@ export default function MiniPost({ post, handleDelete }) {
   const { removeBookmark } = usePostContext();
   const [readMore, setReadMore] = useState(false);
   const router = useRouter();
-
+  if (!auth) {
+    return null;
+  }
+  if (!post) {
+    return null;
+  }
   return (
     <div className="flex flex-col items-center justify-center w-full overflow-hidden h-full px-0 sm:px-1 lg:px-4">
       <div className="bg-white rounded-lg shadow-lg w-full px-2 sm:px-4 py-2">
@@ -128,7 +133,7 @@ export default function MiniPost({ post, handleDelete }) {
                                 `}
                           onClick={() => {
                             navigator.clipboard.writeText(
-                              `${window.location.origin}/post/${post._id}`
+                              `${window.location.origin}/post?id=${post._id}`
                             );
 
                             toast.success("Link copied to clipboard");
@@ -149,7 +154,7 @@ export default function MiniPost({ post, handleDelete }) {
           className="w-full relative gap-2 px-2"
           onDoubleClick={() => {
             //open post in new tab
-            window.open(`/post/${post._id}`, "_blank");
+            window.open(`/post?id=${post._id}`, "_blank");
           }}
         >
           <div
@@ -169,7 +174,7 @@ export default function MiniPost({ post, handleDelete }) {
           className="w-full flex flex-row justify-between gap-2 px-2 cursor-pointer"
           onClick={() => {
             //open post in new tab
-            window.open(`/post/${post._id}`, "_blank");
+            window.open(`/post?id=${post._id}`, "_blank");
           }}
         >
           {post.images && post.images.length > 0 && (
