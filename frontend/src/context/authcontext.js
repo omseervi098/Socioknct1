@@ -99,6 +99,35 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
+  //updateAvatar
+  const updateUserData = async (form) => {
+    try {
+      const url =
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+        "/api/v1/user" +
+        "/" +
+        form?.username;
+      const response = await axios.put(
+        url,
+        { ...form },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const { user } = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: SET_USER, payload: user });
+    } catch (err) {
+      if (err.response) {
+        throw new Error(err.response.data.message);
+      } else {
+        throw new Error("Network Error");
+      }
+    }
+  };
+
   //signup function
   const signup = async (form) => {
     try {
@@ -163,7 +192,15 @@ export const AuthProvider = ({ children }) => {
   };
   return (
     <AuthContext.Provider
-      value={{ ...state, login, logout, signup, googleLogin, sendOtp }}
+      value={{
+        ...state,
+        login,
+        logout,
+        signup,
+        googleLogin,
+        sendOtp,
+        updateUserData,
+      }}
     >
       {children}
     </AuthContext.Provider>

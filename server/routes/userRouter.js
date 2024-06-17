@@ -6,6 +6,7 @@ import {
   getAllCommentedPostsOfUser,
   getAllLikedPostsOfUser,
   getAllMediaOfUser,
+  updateUser,
 } from "../controllers/userController.js";
 import { rateLimit2 } from "../middlewares/ratelimit.js";
 const router = Router();
@@ -19,4 +20,5 @@ router.get(
   rateLimit2,
   getAllCommentedPostsOfUser
 );
+router.put("/:username", rateLimit2, updateUser);
 export default router;

@@ -1,7 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@view-transition {
+ navigation:auto;
+}
 :root {
   --body-color: #efefef;
   --primary-color: #1b8dff;
@@ -13,6 +15,7 @@
   --success-color: #4caf50;
   --secondary-color-hover: #cfcfcf68;
 }
+
 [data-theme="dark"] {
   --body-color: rgb(17, 17, 17);
   --primary-color: #1b8dff;

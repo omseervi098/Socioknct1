@@ -385,3 +385,24 @@ export const getAllLikedPostsOfUser = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+export const updateUser = async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.params.username);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const { name, bio, avatar, background, location, dob, phone } = req.body;
+    if (name) user.name = name;
+    if (bio) user.bio = bio;
+    if (avatar) user.avatar = avatar;
+    if (background) user.background = background;
+    if (location) user.location = location;
+    if (dob) user.dob = dob;
+    if (phone) user.phone = phone;
+    await user.save();
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
