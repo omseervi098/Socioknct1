@@ -34,7 +34,7 @@ export default function EditBackgroundModal(props) {
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [imageSource, setImageSource] = useState(user?.avatar);
+  const [imageSource, setImageSource] = useState(user?.background);
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };

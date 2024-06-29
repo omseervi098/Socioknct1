@@ -20,7 +20,7 @@ export default function InfoCard() {
       <div className="flex flex-col items-center justify-center w-full h-full ">
         <div className="relative w-full overflow-hidden">
           <Image
-            src="/login.jpg"
+            src={user.background}
             alt="login"
             width={240}
             height={200}

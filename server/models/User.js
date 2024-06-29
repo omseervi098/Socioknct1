@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     dob: {
-      type: Date,
+      type: String,
     },
     location: {
       type: Object,

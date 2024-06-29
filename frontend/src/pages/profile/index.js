@@ -28,6 +28,7 @@ import { set } from "lodash";
 import { edit } from "@cloudinary/url-gen/actions/animated";
 import EditAvatarModal from "@/components/editModal/editAvatarModal";
 import EditBackgroundModal from "@/components/editModal/editBackgroundModal";
+import EditUserInfoModal from "@/components/editModal/editUserInfoModal";
 export default function Profile() {
   const { user, auth } = useAuthContext();
   const { deleteAlert, setDeleteAlert } = useGeneralContext();
@@ -238,7 +239,10 @@ export default function Profile() {
                 </div>
                 {username && user.username !== username ? null : (
                   <div className="absolute bottom-0 right-14 rounded-lg">
-                    <button className="bg-blue-400 hover:bg-blue-500 text-white font-bold p-2 md:p-3 rounded-full flex items-center justify-center absolute top-2 left-2">
+                    <button
+                      className="bg-blue-400 hover:bg-blue-500 text-white font-bold p-2 md:p-3 rounded-full flex items-center justify-center absolute top-2 left-2"
+                      onClick={() => handleOpen("info")}
+                    >
                       <FontAwesomeIcon icon={faPencil} />
                     </button>
                   </div>
@@ -265,14 +269,16 @@ export default function Profile() {
                   {username && user.username !== username
                     ? userDetails?.bio
                     : user?.bio}{" "}
-                  |
-                  {username && user.username !== username
-                    ? userDetails?.bio
-                    : user?.bio}
                 </p>
                 <p className="text-xs md:text-sm font-semibold text-gray-600 m-0 p-0 mt-1">
                   <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                  Thane, Maharashtra, India
+                  {user.location
+                    ? user.location.name +
+                      " , " +
+                      user.location.state +
+                      " , " +
+                      user.location.country
+                    : "Nothing"}
                 </p>{" "}
                 <p className="text-xs md:text-sm font-semibold text-gray-600 m-0 p-0 mt-1">
                   <FontAwesomeIcon icon={faUserFriends} className="mr-2" />
@@ -447,9 +453,9 @@ export default function Profile() {
                       No posts found
                     </div>
                   ) : (
-                    posts.map((post) => (
-                      <div className="mx-auto w-full lg:w-[90%]" key={post._id}>
-                        <Post key={post._id} post={post} />
+                    posts.map((post, idx) => (
+                      <div className="mx-auto w-full lg:w-[90%]" key={idx}>
+                        <Post post={post} />
                       </div>
                     ))
                   )}
@@ -467,9 +473,9 @@ export default function Profile() {
                       No comments found
                     </div>
                   ) : (
-                    posts.map((post) => (
-                      <div className="mx-auto  lg:w-[90%]" key={post._id}>
-                        <Post key={post._id} post={post} />
+                    posts.map((post, idx) => (
+                      <div className="mx-auto w-full lg:w-[90%]" key={idx}>
+                        <Post post={post} />
                       </div>
                     ))
                   )}
@@ -487,9 +493,9 @@ export default function Profile() {
                       No liked posts found
                     </div>
                   ) : (
-                    posts.map((post) => (
-                      <div className="mx-auto lg:w-[90%]" key={post._id}>
-                        <MiniPost key={post._id} post={post} />
+                    posts.map((post, idx) => (
+                      <div className="mx-auto lg:w-[90%]" key={idx}>
+                        <MiniPost post={post} />
                       </div>
                     ))
                   )}
@@ -516,6 +522,7 @@ export default function Profile() {
         handleOpen={handleOpen}
         background={user.background}
       />
+      <EditUserInfoModal open={openModals.info} handleOpen={handleOpen} />
     </div>
   );
 }
