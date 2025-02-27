@@ -11,7 +11,7 @@
   "dependencies": {
     "@cloudinary/react": "^1.13.0",
     "@cloudinary/url-gen": "^1.19.0",
-    "@ducanh2912/next-pwa": "^10.2.6",
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@files-ui/react": "^1.2.4",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
